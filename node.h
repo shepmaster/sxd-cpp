@@ -8,18 +8,6 @@ typedef struct nodeS node_t;
 void
 node_free(node_t *node);
 
-node_t *
-node_cast_to_node(node_t *n);
-
-const char *
-node_name(node_t *node);
-
-void
-node_set_attribute(node_t *node, const char * const name, const char * const value);
-
-const char *
-node_get_attribute(node_t *node, const char * const name);
-
 void
 node_append_child(node_t *node, node_t *child);
 
