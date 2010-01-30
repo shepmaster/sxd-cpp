@@ -8,6 +8,7 @@ LDFLAGS := $(GLIB_LDFLAGS)
 ALL_C_FILES := $(wildcard *.c)
 
 TESTS := $(filter %-test.c,$(ALL_C_FILES))
+TEST_OBJECTS := $(patsubst %.c,%.o,$(TESTS))
 TESTS := $(patsubst %.c,%,$(TESTS))
 TEST_RESULTS := $(addsuffix .results,$(TESTS))
 
@@ -23,6 +24,6 @@ default: $(TEST_RESULTS) $(TESTS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm -f $(TEST_RESULTS) $(TESTS) $(LIB_OBJECTS)
+	rm -f $(TEST_RESULTS) $(TESTS) $(LIB_OBJECTS) $(TEST_OBJECTS)
 
 .PRECIOUS: %.o
