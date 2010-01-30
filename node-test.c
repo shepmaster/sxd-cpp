@@ -6,6 +6,14 @@
 #include "document.h"
 #include "node.h"
 
+static node_t *
+test_helper_new_node(document_t *doc, const char * const name)
+{
+  element_t *e;
+  e = document_element_new(doc, "parent");
+  return element_cast_to_node(e);
+}
+
 static void
 test_append_child(void)
 {
@@ -14,8 +22,8 @@ test_append_child(void)
   node_t *child;
 
   doc = document_new();
-  parent = document_node_new(doc, "parent");
-  child = document_node_new(doc, "child");
+  parent = test_helper_new_node(doc, "parent");
+  child = test_helper_new_node(doc, "child");
 
   node_append_child(parent, child);
   assert(node_first_child(parent) == child);
@@ -33,8 +41,8 @@ test_remove_child(void)
   node_t *child;
 
   doc = document_new();
-  parent = document_node_new(doc, "parent");
-  child = document_node_new(doc, "child");
+  parent = test_helper_new_node(doc, "parent");
+  child = test_helper_new_node(doc, "child");
 
   node_append_child(parent, child);
   node_remove_child(parent, child);
@@ -53,8 +61,8 @@ test_free_child(void)
   node_t *child;
 
   doc = document_new();
-  parent = document_node_new(doc, "parent");
-  child = document_node_new(doc, "child");
+  parent = test_helper_new_node(doc, "parent");
+  child = test_helper_new_node(doc, "child");
 
   node_append_child(parent, child);
   node_free(child);
@@ -73,9 +81,9 @@ test_sibling(void)
   node_t *child2;
 
   doc = document_new();
-  parent = document_node_new(doc, "parent");
-  child1 = document_node_new(doc, "child1");
-  child2 = document_node_new(doc, "child2");
+  parent = test_helper_new_node(doc, "parent");
+  child1 = test_helper_new_node(doc, "child1");
+  child2 = test_helper_new_node(doc, "child2");
 
   node_append_child(parent, child1);
   node_append_child(parent, child2);

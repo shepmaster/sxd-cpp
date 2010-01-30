@@ -13,9 +13,6 @@ document_free(document_t *doc);
 document_t *
 document_new(void);
 
-node_t *
-document_node_new(document_t *doc, const char * const name);
-
 element_t *
 document_element_new(document_t *doc, const char * const name);
 

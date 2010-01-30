@@ -34,15 +34,10 @@ node_free(node_t *node)
   free(node);
 }
 
-node_t *
-node_new(document_t *doc, const char * const name)
+void
+node_init(node_t * node, document_t *doc)
 {
-  node_t *node;
-
-  node = calloc(1, sizeof(*node));
   node->doc = doc;
-
-  return node;
 }
 
 node_t *

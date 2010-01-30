@@ -32,16 +32,6 @@ document_new(void)
   return doc;
 }
 
-node_t *
-document_node_new(document_t *doc, const char * const name)
-{
-  node_t *n = node_new(doc, name);
-  if (n) {
-    doc->managed_node_count++;
-  }
-  return n;
-}
-
 element_t *
 document_element_new(document_t *doc, const char * const name)
 {

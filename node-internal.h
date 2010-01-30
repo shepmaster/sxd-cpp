@@ -19,8 +19,8 @@ struct nodeS {
 void
 node_destroy(node_t *node);
 
-node_t *
-node_new(document_t *doc, const char * const name);
+void
+node_init(node_t *node, document_t *doc);
 
 void
 node_change_document(node_t *node, document_t *doc);
