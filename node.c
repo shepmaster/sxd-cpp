@@ -30,8 +30,7 @@ node_destroy(node_t *node)
 void
 node_free(node_t *node)
 {
-  node_destroy(node);
-  free(node);
+  node->fn.free_node(node);
 }
 
 void

@@ -23,6 +23,12 @@ element_free(element_t *e)
   free(e);
 }
 
+static void
+element_free_node(node_t *node)
+{
+  element_free((element_t *)node);
+}
+
 static GHashTable *
 element_attributes_new(void)
 {
@@ -36,6 +42,7 @@ element_new(document_t *doc, const char * const name)
 
   e = calloc(1, sizeof(*e));
   node_init(&e->node, doc);
+  e->node.fn.free_node = element_free_node;
   e->node.fn.change_document = element_change_document;
   e->name = document_intern(e->node.doc, name);
   e->attributes = element_attributes_new();
