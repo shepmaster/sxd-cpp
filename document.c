@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <glib.h>
 
 #include "document.h"
 #include "node-internal.h"
