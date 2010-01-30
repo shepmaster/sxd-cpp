@@ -4,6 +4,7 @@
 
 #include "document.h"
 #include "node-internal.h"
+#include "element-internal.h"
 #include "intern.h"
 
 struct documentS {
@@ -39,6 +40,16 @@ document_node_new(document_t *doc, const char * const name)
     doc->managed_node_count++;
   }
   return n;
+}
+
+element_t *
+document_element_new(document_t *doc, const char * const name)
+{
+  element_t *e = element_new(doc, name);
+  if (e) {
+    doc->managed_node_count++;
+  }
+  return e;
 }
 
 text_node_t *

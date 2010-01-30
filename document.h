@@ -4,6 +4,7 @@
 typedef struct documentS document_t;
 
 #include "node.h"
+#include "element.h"
 #include "text-node.h"
 
 void
@@ -14,6 +15,9 @@ document_new(void);
 
 node_t *
 document_node_new(document_t *doc, const char * const name);
+
+element_t *
+document_element_new(document_t *doc, const char * const name);
 
 text_node_t *
 document_text_node_new(document_t *doc, const char * const text);

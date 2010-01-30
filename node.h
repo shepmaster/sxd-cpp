@@ -8,6 +8,9 @@ typedef struct nodeS node_t;
 void
 node_free(node_t *node);
 
+node_t *
+node_cast_to_node(node_t *n);
+
 const char *
 node_name(node_t *node);
 
