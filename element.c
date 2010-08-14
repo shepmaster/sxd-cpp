@@ -83,7 +83,7 @@ element_get_attribute(element_t *element, const char * const name)
 {
   return g_hash_table_lookup(element->attributes, name);
 }
- 
+
 typedef struct {
   element_t *element;
   GHashTable *new_attributes;
@@ -117,24 +117,46 @@ element_change_document(node_t *node, document_t *doc)
 }
 
 static void
-element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer unused)
+element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer output_as_gp)
 {
   const char * const name = name_as_gp;
   const char * const value = value_as_gp;
+  output_t *output = output_as_gp;
 
-  printf(" %s=\"%s\"", name, value);
+  output->fn(output->data, " %s=\"%s\"", name, value);
+}
+
+#include <stdarg.h>
+
+static void
+fprintf_wrapper(void *data, const char *format, ...)
+{
+  FILE *stream = data;
+  va_list params;
+
+  va_start(params, format);
+  vfprintf(stream, format, params);
+  va_end(params);
 }
 
 void
-element_output(element_t *element)
+element_output(element_t *element, output_t *output)
 {
-  printf("<%s", element->name);
-  g_hash_table_foreach(element->attributes, element_output_attribute, NULL);
+  output_t def_output;
+
+  if (output == NULL) {
+    def_output.fn = fprintf_wrapper;
+    def_output.data = stderr;
+    output = &def_output;
+  }
+
+  output->fn(output->data, "<%s", element->name);
+  g_hash_table_foreach(element->attributes, element_output_attribute, output);
   if (node_first_child(element_cast_to_node(element))) {
-    printf(">");
-    /*foreach_child(node_output(child));*/
-    printf("</%s>", element->name);      
+    output->fn(output->data, ">");
+    node_output_children(element_cast_to_node(element), output);
+    output->fn(output->data, "</%s>", element->name);
   } else {
-    printf(" />");
+    output->fn(output->data, " />");
   }
 }

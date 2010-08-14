@@ -29,4 +29,7 @@ node_init(node_t *node, document_t *doc);
 void
 node_change_document(node_t *node, document_t *doc);
 
+void
+node_output_children(node_t *node, output_t *output);
+
 #endif

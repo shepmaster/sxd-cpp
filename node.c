@@ -153,3 +153,27 @@ node_select_xpath(node_t *node, xpath_predicate_t select)
 
   return data.nodeset;
 }
+
+void
+node_output(node_t *node, output_t *output)
+{
+  switch(node->type) {
+  case NODE_TYPE_ELEMENT:
+    element_output((element_t *)node, output);
+    break;
+  case NODE_TYPE_TEXT_NODE:
+    break;
+ }
+}
+
+static void
+node_output_wrapper(gpointer node_as_gp, gpointer output_as_gp)
+{
+  node_output(node_as_gp, output_as_gp);
+}
+
+void
+node_output_children(node_t *node, output_t *output)
+{
+  g_list_foreach(node->children, node_output_wrapper, output);
+}
