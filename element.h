@@ -20,4 +20,7 @@ element_set_attribute(element_t *e, const char * const name, const char * const 
 const char *
 element_get_attribute(element_t *e, const char * const name);
 
+void
+element_output(element_t *element);
+
 #endif

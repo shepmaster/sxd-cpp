@@ -115,3 +115,26 @@ element_change_document(node_t *node, document_t *doc)
   g_hash_table_destroy(element->attributes);
   element->attributes = ca.new_attributes;
 }
+
+static void
+element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer unused)
+{
+  const char * const name = name_as_gp;
+  const char * const value = value_as_gp;
+
+  printf(" %s=\"%s\"", name, value);
+}
+
+void
+element_output(element_t *element)
+{
+  printf("<%s", element->name);
+  g_hash_table_foreach(element->attributes, element_output_attribute, NULL);
+  if (node_first_child(element_cast_to_node(element))) {
+    printf(">");
+    /*foreach_child(node_output(child));*/
+    printf("</%s>", element->name);      
+  } else {
+    printf(" />");
+  }
+}

@@ -104,6 +104,21 @@ test_mutated_attribute(void)
   free(attr_value);
 }
 
+static void
+test_output(void)
+{
+  document_t *doc;
+  element_t *element;
+
+  doc = document_new();
+  element = document_element_new(doc, "one");
+
+  element_output(element);
+
+  element_free(element);
+  document_free(doc);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -112,6 +127,7 @@ main(int argc, char **argv)
   test_mutated_name();
   test_set_attribute();
   test_mutated_attribute();
+  test_output();
 
   return EXIT_SUCCESS;
 }
