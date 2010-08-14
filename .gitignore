@@ -1,4 +1,3 @@
-*.o
+build
+cscope.out
 *~
-*-test
-*-test.results
