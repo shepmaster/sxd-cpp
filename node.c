@@ -114,3 +114,42 @@ node_change_document(node_t *node, document_t *doc)
 
   g_list_foreach(node->children, node_change_document_children, node->doc);
 }
+
+typedef struct {
+  nodeset_t *nodeset;
+  xpath_predicate_t select;
+} select_xpath_children_t;
+
+static void
+node_select_xpath_children(gpointer node_as_gp, gpointer data_as_gp)
+{
+  node_t *node = node_as_gp;
+  select_xpath_children_t *data = data_as_gp;
+  int should_add = FALSE;
+
+  switch (node->type) {
+  case NODE_TYPE_ELEMENT:
+    should_add = data->select & XPATH_PREDICATE_ELEMENT;
+    break;
+  case NODE_TYPE_TEXT_NODE:
+    should_add = data->select & XPATH_PREDICATE_TEXT_NODE;
+    break;
+  }
+
+  if (should_add) {
+    nodeset_add(data->nodeset, node);
+  }
+}
+
+nodeset_t *
+node_select_xpath(node_t *node, xpath_predicate_t select)
+{
+  select_xpath_children_t data;
+
+  data.nodeset = nodeset_new();
+  data.select = select;
+
+  g_list_foreach(node->children, node_select_xpath_children, &data);
+
+  return data.nodeset;
+}
