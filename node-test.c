@@ -10,7 +10,7 @@ static node_t *
 test_helper_new_node(document_t *doc, const char * const name)
 {
   element_t *e;
-  e = document_element_new(doc, "parent");
+  e = document_element_new(doc, name);
   return element_cast_to_node(e);
 }
 
