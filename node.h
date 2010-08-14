@@ -2,6 +2,10 @@
 #define NODE_H
 
 typedef struct nodeS node_t;
+typedef enum {
+  NODE_TYPE_ELEMENT,
+  NODE_TYPE_TEXT_NODE
+} node_type_t;
 
 #include "document.h"
 

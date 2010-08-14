@@ -9,6 +9,7 @@ typedef void (*free_node_t)(node_t *node);
 typedef void (*change_document_t)(node_t *node, document_t *doc);
 
 struct nodeS {
+  node_type_t type;
   document_t *doc;
   struct nodeS *parent;
   GList *children;

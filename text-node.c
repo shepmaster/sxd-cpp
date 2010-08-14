@@ -42,6 +42,7 @@ text_node_new(document_t *doc, const char * const text)
   tn = calloc(1, sizeof(*tn));
 
   node_init(&tn->node, doc);
+  tn->node.type = NODE_TYPE_TEXT_NODE;
   tn->node.fn.free_node = text_node_free_node;
   tn->node.fn.change_document = text_node_change_document;
 

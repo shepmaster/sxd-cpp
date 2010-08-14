@@ -42,6 +42,7 @@ element_new(document_t *doc, const char * const name)
 
   e = calloc(1, sizeof(*e));
   node_init(&e->node, doc);
+  e->node.type = NODE_TYPE_ELEMENT;
   e->node.fn.free_node = element_free_node;
   e->node.fn.change_document = element_change_document;
   e->name = document_intern(e->node.doc, name);
