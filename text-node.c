@@ -21,6 +21,12 @@ text_node_free(text_node_t *tn)
   free(tn);
 }
 
+node_t *
+text_node_cast_to_node(text_node_t *tn)
+{
+  return (node_t *)tn;
+}
+
 static void
 text_node_free_node(node_t *node)
 {
