@@ -7,11 +7,11 @@ link_directories(/sw/lib)
 
 add_definitions(-ansi -Wall -pedantic -Werror)
 
-set(sxd_source document.c element.c exception.c intern.c nmtoken.c node.c text-node.c)
+set(sxd_source document.c element.c exception.c intern.c nmtoken.c node.c text-node.c nodeset.c)
 add_library (sxd SHARED ${sxd_source}) 
 target_link_libraries(sxd glib-2.0 intl)
 
-set(test_programs element document exception intern nmtoken node text-node)
+set(test_programs element document exception intern nmtoken node text-node nodeset)
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.c)
   target_link_libraries(${program}-test sxd)
