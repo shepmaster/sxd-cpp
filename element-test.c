@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <glib.h>
+
+#include "test-utilities.h"
 
 #include "document.h"
 #include "node.h"
@@ -105,34 +106,22 @@ test_mutated_attribute(void)
   free(attr_value);
 }
 
-static void
-test_output_fn(void *string_as_void, const char *format, ...)
-{
-  GString *string = string_as_void;
-  va_list params;
 
-  va_start(params, format);
-  g_string_append_vprintf(string, format, params);
-  va_end(params);
-}
 
 static void
 test_output_basic(void)
 {
   document_t *doc;
   element_t *element;
-  output_t out;
-  GString *string;
+  test_output_t to;
 
-  string = g_string_new(NULL);
-  out.fn = test_output_fn;
-  out.data = string;
+  test_output_init(&to);
 
   doc = document_new();
   element = document_element_new(doc, "one");
 
-  element_output(element, &out);
-  assert(strcmp("<one />", string->str) == 0);
+  element_output(element, &to.out);
+  assert(strcmp("<one />", to.string->str) == 0);
 
   element_free(element);
   document_free(doc);
@@ -143,19 +132,16 @@ test_output_attribute(void)
 {
   document_t *doc;
   element_t *element;
-  output_t out;
-  GString *string;
+  test_output_t to;
 
-  string = g_string_new(NULL);
-  out.fn = test_output_fn;
-  out.data = string;
+  test_output_init(&to);
 
   doc = document_new();
   element = document_element_new(doc, "one");
   element_set_attribute(element, "hi", "there");
 
-  element_output(element, &out);
-  assert(strcmp("<one hi=\"there\" />", string->str) == 0);
+  element_output(element, &to.out);
+  assert(strcmp("<one hi=\"there\" />", to.string->str) == 0);
 
   element_free(element);
   document_free(doc);
@@ -167,20 +153,17 @@ test_output_child(void)
   document_t *doc;
   element_t *element;
   element_t *child;
-  output_t out;
-  GString *string;
+  test_output_t to;
 
-  string = g_string_new(NULL);
-  out.fn = test_output_fn;
-  out.data = string;
+  test_output_init(&to);
 
   doc = document_new();
   element = document_element_new(doc, "one");
   child = document_element_new(doc, "two");
   node_append_child(element_cast_to_node(element), element_cast_to_node(child));
 
-  element_output(element, &out);
-  assert(strcmp("<one><two /></one>", string->str) == 0);
+  element_output(element, &to.out);
+  assert(strcmp("<one><two /></one>", to.string->str) == 0);
 
   element_free(element);
   document_free(doc);
