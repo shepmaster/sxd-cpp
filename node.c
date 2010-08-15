@@ -162,6 +162,7 @@ node_output(node_t *node, output_t *output)
     element_output((element_t *)node, output);
     break;
   case NODE_TYPE_TEXT_NODE:
+    text_node_output((text_node_t *)node, output);
     break;
  }
 }

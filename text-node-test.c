@@ -3,6 +3,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "test-utilities.h"
+
 #include "document.h"
 #include "text-node.h"
 
@@ -19,25 +21,30 @@ test_new_text_node(void)
   document_free(doc);
 }
 
-/* test_text_node_append_to_element(void) */
-/* { */
-/*   document_t *doc; */
-/*   node_t *node; */
-/*   text_node_t *tn; */
+static void
+test_output(void)
+{
+  document_t *doc;
+  text_node_t *tn;
+  test_output_t to;
 
-/*   doc = document_new(); */
-/*   node = document_new_node(doc);   */
-/*   tn = text_node_new("I am text"); */
+  test_output_init(&to);
 
-/*   node_append_node((node_t *)tn); */
+  doc = document_new();
+  tn = document_text_node_new(doc, "I am text");
 
-/*   text_node_free(tn); */
-/* } */
+  text_node_output(tn, &to.out);
+  assert(strcmp("I am text", to.string->str) == 0);
+
+  text_node_free(tn);
+  document_free(doc);
+}
 
 int
 main(int argc, char **argv)
 {
   test_new_text_node();
+  test_output();
 
   return EXIT_SUCCESS;
 }

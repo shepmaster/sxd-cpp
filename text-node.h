@@ -17,4 +17,7 @@ text_node_new(document_t *doc, const char * const text);
 const char *
 text_node_text(text_node_t *tn);
 
+void
+text_node_output(text_node_t *tn, output_t *output);
+
 #endif

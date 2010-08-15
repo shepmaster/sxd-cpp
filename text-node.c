@@ -61,3 +61,9 @@ text_node_text(text_node_t *tn)
 {
   return tn->text;
 }
+
+void
+text_node_output(text_node_t *tn, output_t *output)
+{
+  output->fn(output->data, "%s", tn->text);
+}
