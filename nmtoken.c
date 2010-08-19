@@ -12,6 +12,8 @@ struct nmtokenS {
 void
 nmtoken_free(nmtoken_t *nm)
 {
+  free(nm->namespace);
+  free(nm->name);
   free(nm);
 }
 
