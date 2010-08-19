@@ -4,6 +4,14 @@
 
 #include "xpath-internal.h"
 
+void
+xpath_tokens_free(xpath_tokens_t *tokens)
+{
+  free(tokens->xpath);
+  g_array_free(tokens->tokens, TRUE);
+  free(tokens);
+}
+
 xpath_tokens_t *
 xpath_tokenize(const char * const xpath)
 {

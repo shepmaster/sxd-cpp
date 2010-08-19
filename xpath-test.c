@@ -33,6 +33,8 @@ test_xpath_tokenize(void)
   assert_type(tokens, 2, TEXT);
   assert_type(tokens, 3, SLASH);
   assert_type(tokens, 4, TEXT);
+
+  xpath_tokens_free(tokens);
 }
 
 int

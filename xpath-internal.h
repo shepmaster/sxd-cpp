@@ -25,6 +25,9 @@ typedef struct {
   GArray *tokens;
 } xpath_tokens_t;
 
+void
+xpath_tokens_free(xpath_tokens_t *tokens);
+
 xpath_tokens_t *
 xpath_tokenize(const char * const xpath);
 
