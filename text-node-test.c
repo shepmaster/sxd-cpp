@@ -38,6 +38,7 @@ test_output(void)
 
   text_node_free(tn);
   document_free(doc);
+  test_output_destroy(&to);
 }
 
 int

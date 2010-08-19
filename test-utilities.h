@@ -13,4 +13,7 @@ typedef struct {
 void
 test_output_init(test_output_t *to);
 
+void
+test_output_destroy(test_output_t *to);
+
 #endif

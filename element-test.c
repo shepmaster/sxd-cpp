@@ -125,6 +125,7 @@ test_output_basic(void)
 
   element_free(element);
   document_free(doc);
+  test_output_destroy(&to);
 }
 
 static void
@@ -145,6 +146,7 @@ test_output_attribute(void)
 
   element_free(element);
   document_free(doc);
+  test_output_destroy(&to);
 }
 
 static void
@@ -167,6 +169,7 @@ test_output_child(void)
 
   element_free(element);
   document_free(doc);
+  test_output_destroy(&to);
 }
 
 int

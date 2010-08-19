@@ -22,3 +22,9 @@ test_output_init(test_output_t *to)
   to->out.fn = test_output_fn;
   to->out.data = to->string;
 }
+
+void
+test_output_destroy(test_output_t *to)
+{
+  g_string_free(to->string, TRUE);
+}
