@@ -56,6 +56,7 @@ void
 node_remove_child(node_t *node, node_t *child)
 {
   node->children = g_list_remove(node->children, child);
+  child->parent = NULL;
 }
 
 node_t *
