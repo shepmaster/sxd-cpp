@@ -21,6 +21,7 @@ test_new_element(void)
   assert(e != NULL);
   assert(strcmp(element_name(e), name) == 0);
   element_free(e);
+  document_free(doc);
 }
 
 static void
@@ -40,6 +41,7 @@ test_element_cast_to_node(void)
   assert(node_document(n) == doc);
 
   element_free(e);
+  document_free(doc);
 }
 
 static void

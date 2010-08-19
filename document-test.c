@@ -66,6 +66,10 @@ test_move_node_between_documents(void)
   assert(strcmp(element_get_attribute(n, "enabled"), "false") == 0);
   assert(element_name(n) != orig_name);
   assert(element_get_attribute(n, "enabled") != orig_attr_value);
+
+  element_free(n);
+  document_free(d1);
+  document_free(d2);
 }
 
 int
