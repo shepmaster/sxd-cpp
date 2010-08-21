@@ -36,6 +36,6 @@ document_t *
 node_document(node_t *node);
 
 nodeset_t *
-node_select_xpath(node_t *node, xpath_predicate_type_t select);
+node_select_xpath(node_t *node, xpath_predicate_type_t select, const char * const name);
 
 #endif

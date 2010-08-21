@@ -137,7 +137,7 @@ test_xpath_element(void)
 
   init_xpath_test(&d);
 
-  ns = node_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT);
+  ns = node_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT, NULL);
   assert(1 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
   assert(n == d.e);
@@ -155,7 +155,7 @@ test_xpath_text_node(void)
 
   init_xpath_test(&d);
 
-  ns = node_select_xpath(d.parent, XPATH_PREDICATE_TEXT_NODE);
+  ns = node_select_xpath(d.parent, XPATH_PREDICATE_TEXT_NODE, NULL);
   assert(1 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
   assert(n == d.tn);
@@ -173,7 +173,7 @@ test_xpath_element_and_text_node(void)
 
   init_xpath_test(&d);
 
-  ns = node_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT | XPATH_PREDICATE_TEXT_NODE);
+  ns = node_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT | XPATH_PREDICATE_TEXT_NODE, NULL);
   assert(2 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
   assert(n == d.e);
