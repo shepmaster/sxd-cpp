@@ -66,7 +66,7 @@ test_xpath_tokens_string(void)
 }
 
 static void
-test_xpath_compile_node(void)
+test_xpath_compile_element(void)
 {
   const char * const name = "one";
   xpath_compiled_t *compiled;
@@ -78,12 +78,51 @@ test_xpath_compile_node(void)
   assert(strcmp(name, g_array_index(compiled->predicates, xpath_predicate_t, 0).name) == 0);
 }
 
+#define assert_nodeset_element_name(_nodeset, _index, _name) \
+  {							     \
+    element_t *__e;					     \
+    node_t *__n;					     \
+    __n = nodeset_get(_nodeset, _index);		     \
+    assert(node_type(__n) == NODE_TYPE_ELEMENT);	     \
+    __e = (element_t *)__n;				     \
+    assert(strcmp(element_name(__e), _name) == 0);	     \
+  }
+
+static void
+test_xpath_apply_element(void)
+{
+  const char * const name = "one";
+
+  document_t *doc = document_new();
+  element_t *parent = document_element_new(doc, "parent");
+  element_t *children[4];
+  nodeset_t *res;
+
+  children[0] = document_element_new(doc, "one");
+  children[1] = document_element_new(doc, "two");
+  children[2] = document_element_new(doc, "one");
+  children[3] = document_element_new(doc, "four");
+
+  node_append_child((node_t *)parent, (node_t *)children[0]);
+  node_append_child((node_t *)parent, (node_t *)children[1]);
+  node_append_child((node_t *)parent, (node_t *)children[2]);
+  node_append_child((node_t *)parent, (node_t *)children[3]);
+
+  res = xpath_apply_xpath((node_t *)parent, name);
+
+  assert(2 == nodeset_count(res));
+
+  assert_nodeset_element_name(res, 0, name);
+  assert_nodeset_element_name(res, 1, name);
+}
+
 int
 main(int argc, char **argv)
 {
   test_xpath_tokenize();
   test_xpath_tokens_string();
-  test_xpath_compile_node();
+  test_xpath_compile_element();
+  test_xpath_apply_element();
 
   return EXIT_SUCCESS;
 }

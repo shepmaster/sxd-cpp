@@ -138,3 +138,11 @@ xpath_compile(const char * const xpath)
 
   return compiled;
 }
+
+nodeset_t *
+xpath_apply_xpath(node_t *node, const char * const xpath)
+{
+  xpath_compiled_t *compiled = xpath_compile(xpath);
+  xpath_predicate_t *pred = &g_array_index(compiled->predicates, xpath_predicate_t, 0);
+  return node_select_xpath(node, pred->type, pred->name);
+}

@@ -50,4 +50,7 @@ xpath_compiled_free(xpath_compiled_t *compiled);
 xpath_compiled_t *
 xpath_compile(const char * const xpath);
 
+nodeset_t *
+xpath_apply_xpath(node_t *node, const char * const xpath);
+
 #endif
