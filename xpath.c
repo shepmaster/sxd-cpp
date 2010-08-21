@@ -85,17 +85,12 @@ xpath_tokens_string(xpath_tokens_t *tokens, int index)
 
   if (index + 1 < tokens->tokens->len) {
     xpath_token_t *next_token;
-    char *res;
     int len;
 
     next_token = &g_array_index(tokens->tokens, xpath_token_t, index + 1);
     len = next_token->start - token->start;
 
-    /* Would be better to test for strndup */
-    res = malloc(len + 1);
-    memcpy(res, start_of_string, len);
-    res[len] = '\0';
-    return res;
+    return g_strndup(start_of_string, len);
   } else {
     return strdup(start_of_string);
   }
