@@ -99,6 +99,14 @@ xpath_tokens_string(xpath_tokens_t *tokens, int index)
 void
 xpath_compiled_free(xpath_compiled_t *compiled)
 {
+  int i;
+
+  for (i = 0; i < compiled->predicates->len; i++) {
+    xpath_predicate_t *predicate;
+    predicate = &g_array_index(compiled->predicates, xpath_predicate_t, i);
+    free(predicate->name);
+  }
+
   g_array_free(compiled->predicates, TRUE);
   free(compiled);
 }
@@ -120,7 +128,7 @@ xpath_compile(const char * const xpath)
     switch (token->type) {
     case TEXT:
       predicate.type = XPATH_PREDICATE_ELEMENT;
-      predicate.name = "one";
+      predicate.name = xpath_tokens_string(tokens, i);
       g_array_append_val(compiled->predicates, predicate);
       break;
     default:
