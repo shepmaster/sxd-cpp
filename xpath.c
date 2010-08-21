@@ -24,41 +24,41 @@ xpath_tokenize(const char * const xpath)
   tokens->xpath = strdup(xpath);
   tokens->tokens = g_array_new(FALSE, FALSE, sizeof(xpath_token_t));
 
-#define ADD_TOKEN(_type)			\
+#define ADD_TOKEN(_type, _start)		\
   {						\
     token.type = _type;				\
-    token.offset = current - xpath;		\
+    token.start = _start - xpath;		\
     g_array_append_val(tokens->tokens, token);	\
   }
 
 #define FINISH_TEXT()				\
   if (token_start) {				\
-    ADD_TOKEN(TEXT);				\
+    ADD_TOKEN(TEXT, token_start);		\
     token_start = NULL;				\
   }
 
   for (current = xpath; *current; current++) {
     if (*current == '/') {
       FINISH_TEXT();
-      ADD_TOKEN(SLASH);
+      ADD_TOKEN(SLASH, current);
     } else if (*current == '[') {
       FINISH_TEXT();
-      ADD_TOKEN(LBRACKET);
+      ADD_TOKEN(LBRACKET, current);
     } else if (*current == ']') {
       FINISH_TEXT();
-      ADD_TOKEN(RBRACKET);
+      ADD_TOKEN(RBRACKET, current);
     } else if (*current == '(') {
       FINISH_TEXT();
-      ADD_TOKEN(LPAREN);
+      ADD_TOKEN(LPAREN, current);
     } else if (*current == ')') {
       FINISH_TEXT();
-      ADD_TOKEN(RPAREN);
+      ADD_TOKEN(RPAREN, current);
     } else if (*current == '"') {
       FINISH_TEXT();
-      ADD_TOKEN(QUOTE);
+      ADD_TOKEN(QUOTE, current);
     } else if (*current == '\'') {
       FINISH_TEXT();
-      ADD_TOKEN(APOS);
+      ADD_TOKEN(APOS, current);
     } else {
       if (token_start == NULL) {
 	token_start = current;

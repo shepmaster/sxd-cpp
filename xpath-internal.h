@@ -17,7 +17,7 @@ typedef enum {
 
 typedef struct {
   xpath_token_type_t type;
-  unsigned int offset;
+  unsigned int start;
 } xpath_token_t;
 
 typedef struct {
