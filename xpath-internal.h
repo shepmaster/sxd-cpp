@@ -41,6 +41,9 @@ xpath_tokens_free(xpath_tokens_t *tokens);
 xpath_tokens_t *
 xpath_tokenize(const char * const xpath);
 
+char *
+xpath_tokens_string(xpath_tokens_t *tokens, int index);
+
 void
 xpath_compiled_free(xpath_compiled_t *compiled);
 

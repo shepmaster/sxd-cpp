@@ -42,6 +42,29 @@ test_xpath_tokenize(void)
   xpath_tokens_free(tokens);
 }
 
+#define assert_str(_tokens, _index, _str)		\
+  {							\
+    char *__str = xpath_tokens_string(_tokens, _index);	\
+    assert(strcmp(__str, _str) == 0);			\
+    free(__str);					\
+  }							\
+
+static void
+test_xpath_tokens_string(void)
+{
+  xpath_tokens_t *tokens;
+  const char * const xpath = "//one/two";
+
+  tokens = xpath_tokenize(xpath);
+  assert_str(tokens, 0, "/");
+  assert_str(tokens, 1, "/");
+  assert_str(tokens, 2, "one");
+  assert_str(tokens, 3, "/");
+  assert_str(tokens, 4, "two");
+
+  xpath_tokens_free(tokens);
+}
+
 static void
 test_xpath_compile_node(void)
 {
@@ -59,6 +82,7 @@ int
 main(int argc, char **argv)
 {
   test_xpath_tokenize();
+  test_xpath_tokens_string();
   test_xpath_compile_node();
 
   return EXIT_SUCCESS;
