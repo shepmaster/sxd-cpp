@@ -73,3 +73,38 @@ xpath_tokenize(const char * const xpath)
 
   return tokens;
 }
+
+void
+xpath_compiled_free(xpath_compiled_t *compiled)
+{
+  g_array_free(compiled->predicates, TRUE);
+  free(compiled);
+}
+
+xpath_compiled_t *
+xpath_compile(const char * const xpath)
+{
+  xpath_tokens_t *tokens;
+  xpath_compiled_t *compiled;
+  xpath_predicate_t predicate;
+  int i;
+
+  compiled = malloc(sizeof(*compiled));
+  compiled->predicates = g_array_new(FALSE, FALSE, sizeof(xpath_predicate_t));
+
+  tokens = xpath_tokenize(xpath);
+  for (i = 0; i < tokens->tokens->len; i++) {
+    xpath_token_t *token = &g_array_index(tokens->tokens, xpath_token_t, i);
+    switch (token->type) {
+    case TEXT:
+      predicate.type = XPATH_PREDICATE_ELEMENT;
+      predicate.name = "one";
+      g_array_append_val(compiled->predicates, predicate);
+      break;
+    default:
+      break;
+    }
+  }
+
+  return compiled;
+}

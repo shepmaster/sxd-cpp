@@ -42,10 +42,24 @@ test_xpath_tokenize(void)
   xpath_tokens_free(tokens);
 }
 
+static void
+test_xpath_compile_node(void)
+{
+  const char * const name = "one";
+  xpath_compiled_t *compiled;
+
+  compiled = xpath_compile(name);
+
+  assert(1 == compiled->predicates->len);
+  assert(XPATH_PREDICATE_ELEMENT == g_array_index(compiled->predicates, xpath_predicate_t, 0).type);
+  assert(strcmp(name, g_array_index(compiled->predicates, xpath_predicate_t, 0).name) == 0);
+}
+
 int
 main(int argc, char **argv)
 {
   test_xpath_tokenize();
+  test_xpath_compile_node();
 
   return EXIT_SUCCESS;
 }

@@ -3,6 +3,7 @@
 
 #include <glib.h>
 #include "xpath.h"
+#include "node.h"
 
 typedef enum {
   SLASH,
@@ -25,10 +26,25 @@ typedef struct {
   GArray *tokens;
 } xpath_tokens_t;
 
+typedef struct {
+  xpath_predicate_type_t type;
+  char *name;
+} xpath_predicate_t;
+
+typedef struct {
+  GArray *predicates;
+} xpath_compiled_t;
+
 void
 xpath_tokens_free(xpath_tokens_t *tokens);
 
 xpath_tokens_t *
 xpath_tokenize(const char * const xpath);
+
+void
+xpath_compiled_free(xpath_compiled_t *compiled);
+
+xpath_compiled_t *
+xpath_compile(const char * const xpath);
 
 #endif
