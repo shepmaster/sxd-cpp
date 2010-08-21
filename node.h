@@ -17,6 +17,9 @@ typedef enum {
 void
 node_free(node_t *node);
 
+node_type_t
+node_type(node_t *node);
+
 void
 node_append_child(node_t *node, node_t *child);
 

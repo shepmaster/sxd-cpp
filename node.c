@@ -40,6 +40,12 @@ node_init(node_t * node, document_t *doc)
   node->doc = doc;
 }
 
+node_type_t
+node_type(node_t *node)
+{
+  return node->type;
+}
+
 node_t *
 node_cast_to_node(node_t *n)
 {
