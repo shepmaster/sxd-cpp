@@ -9,7 +9,7 @@ typedef enum {
 typedef enum {
   XPATH_PREDICATE_ELEMENT = 1 << 0,
   XPATH_PREDICATE_TEXT_NODE = 1 << 1
-} xpath_predicate_t;
+} xpath_predicate_type_t;
 
 #include "document.h"
 #include "nodeset.h"
@@ -36,6 +36,6 @@ document_t *
 node_document(node_t *node);
 
 nodeset_t *
-node_select_xpath(node_t *node, xpath_predicate_t select);
+node_select_xpath(node_t *node, xpath_predicate_type_t select);
 
 #endif

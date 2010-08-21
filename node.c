@@ -118,7 +118,7 @@ node_change_document(node_t *node, document_t *doc)
 
 typedef struct {
   nodeset_t *nodeset;
-  xpath_predicate_t select;
+  xpath_predicate_type_t select;
 } select_xpath_children_t;
 
 static void
@@ -143,7 +143,7 @@ node_select_xpath_children(gpointer node_as_gp, gpointer data_as_gp)
 }
 
 nodeset_t *
-node_select_xpath(node_t *node, xpath_predicate_t select)
+node_select_xpath(node_t *node, xpath_predicate_type_t select)
 {
   select_xpath_children_t data;
 
