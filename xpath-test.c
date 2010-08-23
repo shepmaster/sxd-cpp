@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "xpath-internal.h"
+#include "test-utilities.h"
 
 void
 dump_xpath_tokens(xpath_tokens_t *tokens)
@@ -78,6 +79,88 @@ test_xpath_compile_element(void)
   assert(strcmp(name, g_array_index(compiled->predicates, xpath_predicate_t, 0).name) == 0);
 }
 
+typedef struct {
+  document_t *doc;
+  node_t *parent;
+  node_t *e;
+  node_t *tn;
+} xpath_test_data_t;
+
+static void
+init_xpath_test(xpath_test_data_t *d)
+{
+  d->doc = document_new();
+  d->parent = test_helper_new_node(d->doc, "parent");
+  d->e = test_helper_new_node(d->doc, "child1");
+  d->tn = test_helper_new_text_node(d->doc, "child2");
+
+  node_append_child(d->parent, d->e);
+  node_append_child(d->parent, d->tn);
+}
+
+static void
+destroy_xpath_test(xpath_test_data_t *d)
+{
+  node_free(d->parent);
+  document_free(d->doc);
+}
+
+static void
+test_xpath_element(void)
+{
+  xpath_test_data_t d;
+  nodeset_t *ns;
+  const node_t *n;
+
+  init_xpath_test(&d);
+
+  ns = xpath_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT, NULL);
+  assert(1 == nodeset_count(ns));
+  n = nodeset_get(ns, 0);
+  assert(n == d.e);
+
+  nodeset_free(ns);
+  destroy_xpath_test(&d);
+}
+
+static void
+test_xpath_text_node(void)
+{
+  xpath_test_data_t d;
+  nodeset_t *ns;
+  const node_t *n;
+
+  init_xpath_test(&d);
+
+  ns = xpath_select_xpath(d.parent, XPATH_PREDICATE_TEXT_NODE, NULL);
+  assert(1 == nodeset_count(ns));
+  n = nodeset_get(ns, 0);
+  assert(n == d.tn);
+
+  nodeset_free(ns);
+  destroy_xpath_test(&d);
+}
+
+static void
+test_xpath_element_and_text_node(void)
+{
+  xpath_test_data_t d;
+  nodeset_t *ns;
+  const node_t *n;
+
+  init_xpath_test(&d);
+
+  ns = xpath_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT | XPATH_PREDICATE_TEXT_NODE, NULL);
+  assert(2 == nodeset_count(ns));
+  n = nodeset_get(ns, 0);
+  assert(n == d.e);
+  n = nodeset_get(ns, 1);
+  assert(n == d.tn);
+
+  nodeset_free(ns);
+  destroy_xpath_test(&d);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -122,6 +205,9 @@ main(int argc, char **argv)
   test_xpath_tokenize();
   test_xpath_tokens_string();
   test_xpath_compile_element();
+  test_xpath_element();
+  test_xpath_text_node();
+  test_xpath_element_and_text_node();
   test_xpath_apply_element();
 
   return EXIT_SUCCESS;

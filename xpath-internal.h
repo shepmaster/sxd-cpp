@@ -26,6 +26,11 @@ typedef struct {
   GArray *tokens;
 } xpath_tokens_t;
 
+typedef enum {
+  XPATH_PREDICATE_ELEMENT = 1 << 0,
+  XPATH_PREDICATE_TEXT_NODE = 1 << 1
+} xpath_predicate_type_t;
+
 typedef struct {
   xpath_predicate_type_t type;
   char *name;
@@ -49,6 +54,9 @@ xpath_compiled_free(xpath_compiled_t *compiled);
 
 xpath_compiled_t *
 xpath_compile(const char * const xpath);
+
+nodeset_t *
+xpath_select_xpath(node_t *node, xpath_predicate_type_t select, const char * const name);
 
 nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);

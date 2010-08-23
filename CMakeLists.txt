@@ -12,7 +12,7 @@ add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd glib-2.0 intl)
 
 add_library(test-utilities SHARED test-utilities.c)
-target_link_libraries(test-utilities glib-2.0 intl)
+target_link_libraries(test-utilities glib-2.0 intl sxd)
 
 set(test_programs element document exception intern nmtoken node text-node nodeset xpath)
 foreach(program ${test_programs})

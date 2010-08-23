@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "node-internal.h"
 #include "xpath-internal.h"
 
 void
@@ -139,10 +140,55 @@ xpath_compile(const char * const xpath)
   return compiled;
 }
 
+typedef struct {
+  nodeset_t *nodeset;
+  xpath_predicate_type_t select;
+  const char * name;
+} select_xpath_children_t;
+
+static void
+xpath_select_xpath_children(gpointer node_as_gp, gpointer data_as_gp)
+{
+  node_t *node = node_as_gp;
+  select_xpath_children_t *data = data_as_gp;
+  int should_add = FALSE;
+
+  switch (node->type) {
+  case NODE_TYPE_ELEMENT:
+    should_add = data->select & XPATH_PREDICATE_ELEMENT;
+    if (should_add && data->name) {
+      element_t *element = (element_t *)node;
+      should_add = strcmp(data->name, element_name(element)) == 0;
+    }
+    break;
+  case NODE_TYPE_TEXT_NODE:
+    should_add = data->select & XPATH_PREDICATE_TEXT_NODE;
+    break;
+  }
+
+  if (should_add) {
+    nodeset_add(data->nodeset, node);
+  }
+}
+
+nodeset_t *
+xpath_select_xpath(node_t *node, xpath_predicate_type_t select, const char * const name)
+{
+  select_xpath_children_t data;
+
+  data.nodeset = nodeset_new();
+  data.select = select;
+  data.name = name;
+
+  g_list_foreach(node->children, xpath_select_xpath_children, &data);
+
+  return data.nodeset;
+}
+
 nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath)
 {
   xpath_compiled_t *compiled = xpath_compile(xpath);
   xpath_predicate_t *pred = &g_array_index(compiled->predicates, xpath_predicate_t, 0);
-  return node_select_xpath(node, pred->type, pred->name);
+  return xpath_select_xpath(node, pred->type, pred->name);
 }

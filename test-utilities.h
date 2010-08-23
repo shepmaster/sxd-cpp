@@ -5,6 +5,12 @@
 
 #include "element.h"
 
+node_t *
+test_helper_new_node(document_t *doc, const char * const name);
+
+node_t *
+test_helper_new_text_node(document_t *doc, const char * const text);
+
 typedef struct {
   output_t out;
   GString *string;
