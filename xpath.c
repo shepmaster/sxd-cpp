@@ -193,6 +193,9 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
   case XPATH_AXIS_CHILD:
     node_foreach_child(node, xpath_select_xpath_children, &data);
     break;
+  case XPATH_AXIS_PARENT:
+    xpath_test_step(node->parent, &data);
+    break;
   case XPATH_AXIS_FOLLOWING_SIBLING:
     {
       node_t *sibling;

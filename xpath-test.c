@@ -179,6 +179,7 @@ test_xpath_element_and_text_node(void)
 
 typedef struct {
   document_t *doc;
+  node_t *one;
   node_t *a;
   node_t *b;
   node_t *c;
@@ -189,23 +190,22 @@ static void
 init_xpath_sibling_test(xpath_sibling_test_t *d)
 {
   d->doc = document_new();
+  d->one = test_helper_new_node(d->doc, "one");
   d->a = test_helper_new_node(d->doc, "a");
   d->b = test_helper_new_node(d->doc, "b");
   d->c = test_helper_new_node(d->doc, "c");
   d->d = test_helper_new_node(d->doc, "d");
 
-  node_insert_next_sibling(d->a, d->b);
-  node_insert_next_sibling(d->b, d->c);
-  node_insert_next_sibling(d->c, d->d);
+  node_append_child(d->one, d->a);
+  node_append_child(d->one, d->b);
+  node_append_child(d->one, d->c);
+  node_append_child(d->one, d->d);
 }
 
 static void
 destroy_xpath_sibling_test(xpath_sibling_test_t *d)
 {
-  node_free(d->a);
-  node_free(d->b);
-  node_free(d->c);
-  node_free(d->d);
+  node_free(d->one);
   document_free(d->doc);
 }
 
@@ -227,6 +227,29 @@ test_xpath_axis_self(void)
   assert(1 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
   assert(n == d.b);
+
+  nodeset_free(ns);
+  destroy_xpath_sibling_test(&d);
+}
+
+static void
+test_xpath_axis_parent(void)
+{
+  nodeset_t *ns;
+  const node_t *n;
+  xpath_step_t step;
+  xpath_sibling_test_t d;
+
+  init_xpath_sibling_test(&d);
+
+  step.axis = XPATH_AXIS_PARENT;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.b, &step);
+  assert(1 == nodeset_count(ns));
+  n = nodeset_get(ns, 0);
+  assert(n == d.one);
 
   nodeset_free(ns);
   destroy_xpath_sibling_test(&d);
@@ -332,6 +355,7 @@ main(int argc, char **argv)
   test_xpath_text_node();
   test_xpath_element_and_text_node();
   test_xpath_axis_self();
+  test_xpath_axis_parent();
   test_xpath_axis_following_sibling();
   test_xpath_axis_preceding_sibling();
   test_xpath_apply_element();
