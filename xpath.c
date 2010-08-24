@@ -147,9 +147,8 @@ typedef struct {
 } select_xpath_children_t;
 
 static void
-xpath_select_xpath_children(gpointer node_as_gp, gpointer data_as_gp)
+xpath_select_xpath_children(node_t *node, gpointer data_as_gp)
 {
-  node_t *node = node_as_gp;
   select_xpath_children_t *data = data_as_gp;
   int should_add = FALSE;
 
@@ -181,7 +180,7 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
   data.nodeset = nodeset_new();
   data.step = step;
 
-  g_list_foreach(node->children, xpath_select_xpath_children, &data);
+  node_foreach_child(node, xpath_select_xpath_children, &data);
 
   return data.nodeset;
 }

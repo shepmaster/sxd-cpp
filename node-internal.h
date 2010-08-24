@@ -8,17 +8,24 @@
 typedef void (*free_node_t)(node_t *node);
 typedef void (*change_document_t)(node_t *node, document_t *doc);
 
+typedef void (*node_foreach_child_t)(node_t *node, gpointer user_data);
+
 struct nodeS {
   node_type_t type;
   document_t *doc;
-  struct nodeS *parent;
-  GList *children;
+  node_t *parent;
+  node_t *first_child;
+  node_t *prev_sibling;
+  node_t *next_sibling;
 
   struct {
     free_node_t free_node;
     change_document_t change_document;
   } fn;
 };
+
+void
+node_foreach_child(node_t *node, node_foreach_child_t fn, gpointer user_data);
 
 void
 node_destroy(node_t *node);

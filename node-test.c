@@ -87,6 +87,21 @@ test_sibling(void)
   document_free(doc);
 }
 
+static void
+test_insert_next_sibling(void)
+{
+  document_t *doc = document_new();
+  node_t *a = test_helper_new_node(doc, "a");
+  node_t *b = test_helper_new_node(doc, "b");
+
+  node_insert_next_sibling(a, b);
+  assert(b == node_next_sibling(a));
+
+  node_free(a);
+  node_free(b);
+  document_free(doc);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -94,6 +109,7 @@ main(int argc, char **argv)
   test_remove_child();
   test_free_child();
   test_sibling();
+  test_insert_next_sibling();
 
   return EXIT_SUCCESS;
 }

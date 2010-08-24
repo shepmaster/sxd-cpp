@@ -31,6 +31,9 @@ node_parent(node_t *node);
 node_t *
 node_next_sibling(node_t *node);
 
+void
+node_insert_next_sibling(node_t *node, node_t *sibling);
+
 document_t *
 node_document(node_t *node);
 

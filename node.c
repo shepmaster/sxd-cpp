@@ -6,10 +6,18 @@
 #include "node-internal.h"
 #include "document-internal.h"
 
-static void
-node_free_children(gpointer node_as_gp, gpointer user_data_unused)
+void
+node_foreach_child(node_t *node, node_foreach_child_t fn, gpointer user_data)
 {
-  node_t *node = node_as_gp;
+  node_t *child;
+  for (child = node->first_child; child; child = child->next_sibling) {
+    fn(child, user_data);
+  }
+}
+
+static void
+node_free_children(node_t *node, gpointer user_data_unused)
+{
   node_free(node);
 }
 
@@ -22,10 +30,9 @@ node_destroy(node_t *node)
     node_remove_child(node->parent, node);
   }
 
-  g_list_foreach(node->children, node_free_children, NULL);
+  node_foreach_child(node, node_free_children, NULL);
 
   document_stop_managing_node(node->doc, node);
-  g_list_free(node->children);
 }
 
 void
@@ -55,25 +62,41 @@ node_cast_to_node(node_t *n)
 void
 node_append_child(node_t *node, node_t *child)
 {
-  node->children = g_list_append(node->children, child);
+  node_t *my_child;
+
+  my_child = node->first_child;
+  if (my_child) {
+    while (my_child->next_sibling) {
+      my_child = my_child->next_sibling;
+    }
+    my_child->next_sibling = child;
+  } else {
+    node->first_child = child;
+  }
   child->parent = node;
 }
 
 void
 node_remove_child(node_t *node, node_t *child)
 {
-  node->children = g_list_remove(node->children, child);
+  if (child->prev_sibling) {
+    child->prev_sibling->next_sibling = child->next_sibling;
+  }
+
+  if (child->next_sibling) {
+    child->next_sibling->prev_sibling = child->prev_sibling;
+  }
+
+  if (child->parent && child->parent->first_child == child) {
+    child->parent->first_child = child->next_sibling;
+  }
   child->parent = NULL;
 }
 
 node_t *
 node_first_child(node_t *node)
 {
-  GList *item;
-
-  item = g_list_first(node->children);
-  if (item) return item->data;
-  return NULL;
+  return node->first_child;
 }
 
 node_t *
@@ -85,15 +108,14 @@ node_parent(node_t *node)
 node_t *
 node_next_sibling(node_t *node)
 {
-  GList *self = g_list_find(node->parent->children, node);
-  if (self) {
-    GList *next = g_list_next(self);
-    if (next) {
-      return next->data;
-    }
-  }
+  return node->next_sibling;
+}
 
-  return NULL;
+void
+node_insert_next_sibling(node_t *node, node_t *sibling)
+{
+  sibling->next_sibling = node->next_sibling;
+  node->next_sibling = sibling;
 }
 
 document_t *
@@ -103,9 +125,8 @@ node_document(node_t *node)
 }
 
 static void
-node_change_document_children(gpointer node_as_gp, gpointer doc_as_gp)
+node_change_document_children(node_t *node, gpointer doc_as_gp)
 {
-  node_t *node = node_as_gp;
   document_t *doc = doc_as_gp;
 
   node_change_document(node, doc);
@@ -120,7 +141,7 @@ node_change_document(node_t *node, document_t *doc)
 
   node->fn.change_document(node, doc);
 
-  g_list_foreach(node->children, node_change_document_children, node->doc);
+  node_foreach_child(node, node_change_document_children, node->doc);
 }
 
 void
@@ -137,13 +158,13 @@ node_output(node_t *node, output_t *output)
 }
 
 static void
-node_output_wrapper(gpointer node_as_gp, gpointer output_as_gp)
+node_output_wrapper(node_t *node, gpointer output_as_gp)
 {
-  node_output(node_as_gp, output_as_gp);
+  node_output(node, output_as_gp);
 }
 
 void
 node_output_children(node_t *node, output_t *output)
 {
-  g_list_foreach(node->children, node_output_wrapper, output);
+  node_foreach_child(node, node_output_wrapper, output);
 }
