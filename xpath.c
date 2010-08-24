@@ -187,6 +187,9 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
   data.step = step;
 
   switch (step->axis) {
+  case XPATH_AXIS_SELF:
+    xpath_test_step(node, &data);
+    break;
   case XPATH_AXIS_CHILD:
     node_foreach_child(node, xpath_select_xpath_children, &data);
     break;

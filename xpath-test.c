@@ -210,6 +210,29 @@ destroy_xpath_sibling_test(xpath_sibling_test_t *d)
 }
 
 static void
+test_xpath_axis_self(void)
+{
+  nodeset_t *ns;
+  const node_t *n;
+  xpath_step_t step;
+  xpath_sibling_test_t d;
+
+  init_xpath_sibling_test(&d);
+
+  step.axis = XPATH_AXIS_SELF;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.b, &step);
+  assert(1 == nodeset_count(ns));
+  n = nodeset_get(ns, 0);
+  assert(n == d.b);
+
+  nodeset_free(ns);
+  destroy_xpath_sibling_test(&d);
+}
+
+static void
 test_xpath_axis_following_sibling(void)
 {
   nodeset_t *ns;
@@ -308,6 +331,7 @@ main(int argc, char **argv)
   test_xpath_element();
   test_xpath_text_node();
   test_xpath_element_and_text_node();
+  test_xpath_axis_self();
   test_xpath_axis_following_sibling();
   test_xpath_axis_preceding_sibling();
   test_xpath_apply_element();
