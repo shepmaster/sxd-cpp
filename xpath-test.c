@@ -177,35 +177,88 @@ test_xpath_element_and_text_node(void)
   destroy_xpath_test(&d);
 }
 
+typedef struct {
+  document_t *doc;
+  node_t *a;
+  node_t *b;
+  node_t *c;
+  node_t *d;
+} xpath_sibling_test_t;
+
+static void
+init_xpath_sibling_test(xpath_sibling_test_t *d)
+{
+  d->doc = document_new();
+  d->a = test_helper_new_node(d->doc, "a");
+  d->b = test_helper_new_node(d->doc, "b");
+  d->c = test_helper_new_node(d->doc, "c");
+  d->d = test_helper_new_node(d->doc, "d");
+
+  node_insert_next_sibling(d->a, d->b);
+  node_insert_next_sibling(d->b, d->c);
+  node_insert_next_sibling(d->c, d->d);
+}
+
+static void
+destroy_xpath_sibling_test(xpath_sibling_test_t *d)
+{
+  node_free(d->a);
+  node_free(d->b);
+  node_free(d->c);
+  node_free(d->d);
+  document_free(d->doc);
+}
+
 static void
 test_xpath_axis_following_sibling(void)
 {
   nodeset_t *ns;
   const node_t *n;
   xpath_step_t step;
+  xpath_sibling_test_t d;
 
-  document_t *doc = document_new();
-  element_t *a = document_element_new(doc, "a");
-  element_t *b = document_element_new(doc, "b");
-  element_t *c = document_element_new(doc, "c");
-  element_t *d = document_element_new(doc, "d");
-
-  node_insert_next_sibling((node_t *)a, (node_t *)b);
-  node_insert_next_sibling((node_t *)b, (node_t *)c);
-  node_insert_next_sibling((node_t *)c, (node_t *)d);
+  init_xpath_sibling_test(&d);
 
   step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
   step.type = XPATH_NODE_TYPE_ELEMENT;
   step.name = NULL;
 
-  ns = xpath_select_xpath((node_t *)b, &step);
+  ns = xpath_select_xpath(d.b, &step);
   assert(2 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
-  assert(n == (node_t *)c);
+  assert(n == d.c);
   n = nodeset_get(ns, 1);
-  assert(n == (node_t *)d);
+  assert(n == d.d);
 
   nodeset_free(ns);
+  destroy_xpath_sibling_test(&d);
+}
+
+static void
+test_xpath_axis_preceding_sibling(void)
+{
+  nodeset_t *ns;
+  const node_t *n;
+  xpath_step_t step;
+  xpath_sibling_test_t d;
+
+  init_xpath_sibling_test(&d);
+
+  step.axis = XPATH_AXIS_PRECEDING_SIBLING;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.d, &step);
+  assert(3 == nodeset_count(ns));
+  n = nodeset_get(ns, 0);
+  assert(n == d.c);
+  n = nodeset_get(ns, 1);
+  assert(n == d.b);
+  n = nodeset_get(ns, 2);
+  assert(n == d.a);
+
+  nodeset_free(ns);
+  destroy_xpath_sibling_test(&d);
 }
 
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
@@ -256,6 +309,7 @@ main(int argc, char **argv)
   test_xpath_text_node();
   test_xpath_element_and_text_node();
   test_xpath_axis_following_sibling();
+  test_xpath_axis_preceding_sibling();
   test_xpath_apply_element();
 
   return EXIT_SUCCESS;

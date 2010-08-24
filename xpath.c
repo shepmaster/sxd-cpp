@@ -198,6 +198,14 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
       }
     }
     break;
+  case XPATH_AXIS_PRECEDING_SIBLING:
+    {
+      node_t *sibling;
+      for (sibling = node->prev_sibling; sibling; sibling = sibling->prev_sibling) {
+	xpath_test_step(sibling, &data);
+      }
+    }
+    break;
   default:
     abort();
   }
