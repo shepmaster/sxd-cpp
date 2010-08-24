@@ -142,14 +142,13 @@ xpath_compile(const char * const xpath)
 }
 
 typedef struct {
-  nodeset_t *nodeset;
   xpath_step_t *step;
-} select_xpath_children_t;
+  nodeset_t *nodeset;
+} xpath_test_step_t;
 
 static void
-xpath_select_xpath_children(node_t *node, gpointer data_as_gp)
+xpath_test_step(node_t *node, xpath_test_step_t *data)
 {
-  select_xpath_children_t *data = data_as_gp;
   int should_add = FALSE;
 
   switch (node->type) {
@@ -172,16 +171,36 @@ xpath_select_xpath_children(node_t *node, gpointer data_as_gp)
   }
 }
 
+static void
+xpath_select_xpath_children(node_t *node, gpointer data_as_gp)
+{
+  xpath_test_step_t *data = data_as_gp;
+  xpath_test_step(node, data);
+}
+
 nodeset_t *
 xpath_select_xpath(node_t *node, xpath_step_t *step)
 {
-  select_xpath_children_t data;
+  xpath_test_step_t data;
 
   data.nodeset = nodeset_new();
   data.step = step;
 
-  node_foreach_child(node, xpath_select_xpath_children, &data);
-
+  switch (step->axis) {
+  case XPATH_AXIS_CHILD:
+    node_foreach_child(node, xpath_select_xpath_children, &data);
+    break;
+  case XPATH_AXIS_FOLLOWING_SIBLING:
+    {
+      node_t *sibling;
+      for (sibling = node->next_sibling; sibling; sibling = sibling->next_sibling) {
+	xpath_test_step(sibling, &data);
+      }
+    }
+    break;
+  default:
+    abort();
+  }
   return data.nodeset;
 }
 

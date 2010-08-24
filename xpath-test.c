@@ -177,6 +177,37 @@ test_xpath_element_and_text_node(void)
   destroy_xpath_test(&d);
 }
 
+static void
+test_xpath_axis_following_sibling(void)
+{
+  nodeset_t *ns;
+  const node_t *n;
+  xpath_step_t step;
+
+  document_t *doc = document_new();
+  element_t *a = document_element_new(doc, "a");
+  element_t *b = document_element_new(doc, "b");
+  element_t *c = document_element_new(doc, "c");
+  element_t *d = document_element_new(doc, "d");
+
+  node_insert_next_sibling((node_t *)a, (node_t *)b);
+  node_insert_next_sibling((node_t *)b, (node_t *)c);
+  node_insert_next_sibling((node_t *)c, (node_t *)d);
+
+  step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = NULL;
+
+  ns = xpath_select_xpath((node_t *)b, &step);
+  assert(2 == nodeset_count(ns));
+  n = nodeset_get(ns, 0);
+  assert(n == (node_t *)c);
+  n = nodeset_get(ns, 1);
+  assert(n == (node_t *)d);
+
+  nodeset_free(ns);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -224,6 +255,7 @@ main(int argc, char **argv)
   test_xpath_element();
   test_xpath_text_node();
   test_xpath_element_and_text_node();
+  test_xpath_axis_following_sibling();
   test_xpath_apply_element();
 
   return EXIT_SUCCESS;
