@@ -29,6 +29,9 @@ node_t *
 node_parent(node_t *node);
 
 node_t *
+node_prev_sibling(node_t *node);
+
+node_t *
 node_next_sibling(node_t *node);
 
 void

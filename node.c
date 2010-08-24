@@ -106,16 +106,28 @@ node_parent(node_t *node)
 }
 
 node_t *
+node_prev_sibling(node_t *node)
+{
+  return node->prev_sibling;
+}
+
+node_t *
 node_next_sibling(node_t *node)
 {
   return node->next_sibling;
 }
 
 void
-node_insert_next_sibling(node_t *node, node_t *sibling)
+node_insert_next_sibling(node_t *node, node_t *new_sibling)
 {
-  sibling->next_sibling = node->next_sibling;
-  node->next_sibling = sibling;
+  if (node->next_sibling) {
+    node->next_sibling->prev_sibling = new_sibling;
+  }
+
+  new_sibling->prev_sibling = node;
+  new_sibling->next_sibling = node->next_sibling;
+
+  node->next_sibling = new_sibling;
 }
 
 document_t *

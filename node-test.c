@@ -93,12 +93,25 @@ test_insert_next_sibling(void)
   document_t *doc = document_new();
   node_t *a = test_helper_new_node(doc, "a");
   node_t *b = test_helper_new_node(doc, "b");
+  node_t *c = test_helper_new_node(doc, "c");
+
+  node_insert_next_sibling(a, c);
+  assert(NULL == node_prev_sibling(a));
+  assert(c == node_next_sibling(a));
+  assert(a == node_prev_sibling(c));
+  assert(NULL == node_next_sibling(c));
 
   node_insert_next_sibling(a, b);
+  assert(NULL == node_prev_sibling(a));
   assert(b == node_next_sibling(a));
+  assert(a == node_prev_sibling(b));
+  assert(c == node_next_sibling(b));
+  assert(b == node_prev_sibling(c));
+  assert(NULL == node_next_sibling(c));
 
   node_free(a);
   node_free(b);
+  node_free(c);
   document_free(doc);
 }
 
