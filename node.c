@@ -69,7 +69,7 @@ node_append_child(node_t *node, node_t *child)
     while (my_child->next_sibling) {
       my_child = my_child->next_sibling;
     }
-    my_child->next_sibling = child;
+    node_insert_next_sibling(my_child, child);
   } else {
     node->first_child = child;
   }
