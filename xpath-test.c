@@ -74,9 +74,10 @@ test_xpath_compile_element(void)
 
   compiled = xpath_compile(name);
 
-  assert(1 == compiled->predicates->len);
-  assert(XPATH_PREDICATE_ELEMENT == g_array_index(compiled->predicates, xpath_predicate_t, 0).type);
-  assert(strcmp(name, g_array_index(compiled->predicates, xpath_predicate_t, 0).name) == 0);
+  assert(1 == compiled->steps->len);
+  assert(XPATH_AXIS_CHILD == g_array_index(compiled->steps, xpath_step_t, 0).axis);
+  assert(XPATH_NODE_TYPE_ELEMENT == g_array_index(compiled->steps, xpath_step_t, 0).type);
+  assert(strcmp(name, g_array_index(compiled->steps, xpath_step_t, 0).name) == 0);
 }
 
 typedef struct {
@@ -111,10 +112,15 @@ test_xpath_element(void)
   xpath_test_data_t d;
   nodeset_t *ns;
   const node_t *n;
+  xpath_step_t step;
 
   init_xpath_test(&d);
 
-  ns = xpath_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT, NULL);
+  step.axis = XPATH_AXIS_CHILD;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.parent, &step);
   assert(1 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
   assert(n == d.e);
@@ -129,10 +135,15 @@ test_xpath_text_node(void)
   xpath_test_data_t d;
   nodeset_t *ns;
   const node_t *n;
+  xpath_step_t step;
 
   init_xpath_test(&d);
 
-  ns = xpath_select_xpath(d.parent, XPATH_PREDICATE_TEXT_NODE, NULL);
+  step.axis = XPATH_AXIS_CHILD;
+  step.type = XPATH_NODE_TYPE_TEXT_NODE;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.parent, &step);
   assert(1 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
   assert(n == d.tn);
@@ -147,10 +158,15 @@ test_xpath_element_and_text_node(void)
   xpath_test_data_t d;
   nodeset_t *ns;
   const node_t *n;
+  xpath_step_t step;
 
   init_xpath_test(&d);
 
-  ns = xpath_select_xpath(d.parent, XPATH_PREDICATE_ELEMENT | XPATH_PREDICATE_TEXT_NODE, NULL);
+  step.axis = XPATH_AXIS_CHILD;
+  step.type = XPATH_NODE_TYPE_ELEMENT | XPATH_NODE_TYPE_TEXT_NODE;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.parent, &step);
   assert(2 == nodeset_count(ns));
   n = nodeset_get(ns, 0);
   assert(n == d.e);

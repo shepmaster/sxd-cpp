@@ -27,17 +27,34 @@ typedef struct {
 } xpath_tokens_t;
 
 typedef enum {
-  XPATH_PREDICATE_ELEMENT = 1 << 0,
-  XPATH_PREDICATE_TEXT_NODE = 1 << 1
-} xpath_predicate_type_t;
+  XPATH_AXIS_ANCESTOR,
+  XPATH_AXIS_ANCESTOR_OR_SELF,
+  XPATH_AXIS_ATTRIBUTE,
+  XPATH_AXIS_CHILD,
+  XPATH_AXIS_DESCENDANT,
+  XPATH_AXIS_DESCENDANT_OR_SELF,
+  XPATH_AXIS_FOLLOWING,
+  XPATH_AXIS_FOLLOWING_SIBLING,
+  XPATH_AXIS_NAMESPACE,
+  XPATH_AXIS_PARENT,
+  XPATH_AXIS_PRECEDING,
+  XPATH_AXIS_PRECEDING_SIBLING,
+  XPATH_AXIS_SELF
+} xpath_axis_t;
+
+typedef enum {
+  XPATH_NODE_TYPE_ELEMENT = 1 << 0,
+  XPATH_NODE_TYPE_TEXT_NODE = 1 << 1
+} xpath_node_type_t;
 
 typedef struct {
-  xpath_predicate_type_t type;
+  xpath_axis_t axis;
+  xpath_node_type_t type;
   char *name;
-} xpath_predicate_t;
+} xpath_step_t;
 
 typedef struct {
-  GArray *predicates;
+  GArray *steps;
 } xpath_compiled_t;
 
 void
@@ -56,7 +73,7 @@ xpath_compiled_t *
 xpath_compile(const char * const xpath);
 
 nodeset_t *
-xpath_select_xpath(node_t *node, xpath_predicate_type_t select, const char * const name);
+xpath_select_xpath(node_t *node, xpath_step_t *step);
 
 nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);

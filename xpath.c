@@ -102,13 +102,13 @@ xpath_compiled_free(xpath_compiled_t *compiled)
 {
   int i;
 
-  for (i = 0; i < compiled->predicates->len; i++) {
-    xpath_predicate_t *predicate;
-    predicate = &g_array_index(compiled->predicates, xpath_predicate_t, i);
-    free(predicate->name);
+  for (i = 0; i < compiled->steps->len; i++) {
+    xpath_step_t *step;
+    step = &g_array_index(compiled->steps, xpath_step_t, i);
+    free(step->name);
   }
 
-  g_array_free(compiled->predicates, TRUE);
+  g_array_free(compiled->steps, TRUE);
   free(compiled);
 }
 
@@ -117,20 +117,21 @@ xpath_compile(const char * const xpath)
 {
   xpath_tokens_t *tokens;
   xpath_compiled_t *compiled;
-  xpath_predicate_t predicate;
+  xpath_step_t step;
   int i;
 
   compiled = malloc(sizeof(*compiled));
-  compiled->predicates = g_array_new(FALSE, FALSE, sizeof(xpath_predicate_t));
+  compiled->steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
 
   tokens = xpath_tokenize(xpath);
   for (i = 0; i < tokens->tokens->len; i++) {
     xpath_token_t *token = &g_array_index(tokens->tokens, xpath_token_t, i);
     switch (token->type) {
     case TEXT:
-      predicate.type = XPATH_PREDICATE_ELEMENT;
-      predicate.name = xpath_tokens_string(tokens, i);
-      g_array_append_val(compiled->predicates, predicate);
+      step.axis = XPATH_AXIS_CHILD;
+      step.type = XPATH_NODE_TYPE_ELEMENT;
+      step.name = xpath_tokens_string(tokens, i);
+      g_array_append_val(compiled->steps, step);
       break;
     default:
       break;
@@ -142,8 +143,7 @@ xpath_compile(const char * const xpath)
 
 typedef struct {
   nodeset_t *nodeset;
-  xpath_predicate_type_t select;
-  const char * name;
+  xpath_step_t *step;
 } select_xpath_children_t;
 
 static void
@@ -155,15 +155,17 @@ xpath_select_xpath_children(gpointer node_as_gp, gpointer data_as_gp)
 
   switch (node->type) {
   case NODE_TYPE_ELEMENT:
-    should_add = data->select & XPATH_PREDICATE_ELEMENT;
-    if (should_add && data->name) {
+    should_add = (data->step->type & XPATH_NODE_TYPE_ELEMENT);
+    if (should_add && data->step->name) {
       element_t *element = (element_t *)node;
-      should_add = strcmp(data->name, element_name(element)) == 0;
+      should_add = strcmp(data->step->name, element_name(element)) == 0;
     }
     break;
   case NODE_TYPE_TEXT_NODE:
-    should_add = data->select & XPATH_PREDICATE_TEXT_NODE;
+    should_add = (data->step->type & XPATH_NODE_TYPE_TEXT_NODE);
     break;
+  default:
+    abort();
   }
 
   if (should_add) {
@@ -172,13 +174,12 @@ xpath_select_xpath_children(gpointer node_as_gp, gpointer data_as_gp)
 }
 
 nodeset_t *
-xpath_select_xpath(node_t *node, xpath_predicate_type_t select, const char * const name)
+xpath_select_xpath(node_t *node, xpath_step_t *step)
 {
   select_xpath_children_t data;
 
   data.nodeset = nodeset_new();
-  data.select = select;
-  data.name = name;
+  data.step = step;
 
   g_list_foreach(node->children, xpath_select_xpath_children, &data);
 
@@ -189,6 +190,6 @@ nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath)
 {
   xpath_compiled_t *compiled = xpath_compile(xpath);
-  xpath_predicate_t *pred = &g_array_index(compiled->predicates, xpath_predicate_t, 0);
-  return xpath_select_xpath(node, pred->type, pred->name);
+  xpath_step_t *step = &g_array_index(compiled->steps, xpath_step_t, 0);
+  return xpath_select_xpath(node, step);
 }
