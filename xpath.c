@@ -227,6 +227,14 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
     xpath_test_step(node, &data);
     node_foreach_child(node, xpath_test_and_recur_down, &data);
     break;
+  case XPATH_AXIS_ANCESTOR:
+    {
+      node_t *parent;
+      for (parent = node->parent; parent; parent = parent->parent) {
+	xpath_test_step(parent, &data);
+      }
+    }
+    break;
   default:
     abort();
   }
