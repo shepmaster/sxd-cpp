@@ -375,6 +375,29 @@ test_xpath_axis_ancestor(void)
   destroy_xpath_sibling_test(&d);
 }
 
+static void
+test_xpath_axis_ancestor_or_self(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_sibling_test_t d;
+
+  init_xpath_sibling_test(&d);
+
+  step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.c, &step);
+  assert(3 == nodeset_count(ns));
+  assert_nodeset_item(d.c, ns, 0);
+  assert_nodeset_item(d.one, ns, 1);
+  assert_nodeset_item(d.alpha, ns, 2);
+
+  nodeset_free(ns);
+  destroy_xpath_sibling_test(&d);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -429,6 +452,7 @@ main(int argc, char **argv)
   test_xpath_axis_descendant();
   test_xpath_axis_descendant_or_self();
   test_xpath_axis_ancestor();
+  test_xpath_axis_ancestor_or_self();
   test_xpath_apply_element();
 
   return EXIT_SUCCESS;

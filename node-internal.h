@@ -8,7 +8,7 @@
 typedef void (*free_node_t)(node_t *node);
 typedef void (*change_document_t)(node_t *node, document_t *doc);
 
-typedef void (*node_foreach_child_t)(node_t *node, gpointer user_data);
+typedef void (*node_foreach_fn_t)(node_t *node, gpointer user_data);
 
 struct nodeS {
   node_type_t type;
@@ -25,7 +25,10 @@ struct nodeS {
 };
 
 void
-node_foreach_child(node_t *node, node_foreach_child_t fn, gpointer user_data);
+node_foreach_child(node_t *node, node_foreach_fn_t fn, gpointer user_data);
+
+void
+node_foreach_ancestor(node_t *node, node_foreach_fn_t fn, gpointer user_data);
 
 void
 node_destroy(node_t *node);

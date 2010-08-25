@@ -228,12 +228,11 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
     node_foreach_child(node, xpath_test_and_recur_down, &data);
     break;
   case XPATH_AXIS_ANCESTOR:
-    {
-      node_t *parent;
-      for (parent = node->parent; parent; parent = parent->parent) {
-	xpath_test_step(parent, &data);
-      }
-    }
+    node_foreach_ancestor(node, xpath_select_xpath_children, &data);
+    break;
+  case XPATH_AXIS_ANCESTOR_OR_SELF:
+    xpath_test_step(node, &data);
+    node_foreach_ancestor(node, xpath_select_xpath_children, &data);
     break;
   default:
     abort();

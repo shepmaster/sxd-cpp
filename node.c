@@ -7,11 +7,20 @@
 #include "document-internal.h"
 
 void
-node_foreach_child(node_t *node, node_foreach_child_t fn, gpointer user_data)
+node_foreach_child(node_t *node, node_foreach_fn_t fn, gpointer user_data)
 {
   node_t *child;
   for (child = node->first_child; child; child = child->next_sibling) {
     fn(child, user_data);
+  }
+}
+
+void
+node_foreach_ancestor(node_t *node, node_foreach_fn_t fn, gpointer user_data)
+{
+  node_t *parent;
+  for (parent = node->parent; parent; parent = parent->parent) {
+    fn(parent, user_data);
   }
 }
 
