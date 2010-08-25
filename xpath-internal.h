@@ -65,12 +65,14 @@ typedef struct {
 typedef xpath_result_t (*xpath_fn_t)(void);
 
 typedef enum {
+  XPATH_PREDICATE_OP_VALUE,
   XPATH_PREDICATE_OP_FUNCTION
 } xpath_predicate_op_t;
 
 typedef struct {
   xpath_predicate_op_t op;
   union {
+    xpath_result_t value;
     xpath_fn_t fn;
   } info;
 } xpath_predicate_t;

@@ -153,7 +153,17 @@ xpath_test_predicates(node_t *node, GList *predicates)
   GList *item;
   for (item = predicates; item; item = g_list_next(item)) {
     xpath_predicate_t *predicate = item->data;
-    xpath_result_t result = predicate->info.fn();
+    xpath_result_t result;
+
+    switch (predicate->op) {
+    case XPATH_PREDICATE_OP_VALUE:
+      result = predicate->info.value;
+      break;
+    case XPATH_PREDICATE_OP_FUNCTION:
+      result = predicate->info.fn();
+      break;
+    }
+
     if (result.boolean == FALSE) {
       return FALSE;
     }
