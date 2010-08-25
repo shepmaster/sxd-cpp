@@ -191,10 +191,10 @@ typedef struct {
   node_t *x;
   node_t *y;
   node_t *z;
-} xpath_sibling_test_t;
+} xpath_axis_test_t;
 
 static void
-init_xpath_sibling_test(xpath_sibling_test_t *d)
+init_xpath_axis_test(xpath_axis_test_t *d)
 {
   d->doc = document_new();
   d->alpha = test_helper_new_node(d->doc, "alpha");
@@ -222,7 +222,7 @@ init_xpath_sibling_test(xpath_sibling_test_t *d)
 }
 
 static void
-destroy_xpath_sibling_test(xpath_sibling_test_t *d)
+destroy_xpath_axis_test(xpath_axis_test_t *d)
 {
   node_free(d->alpha);
   document_free(d->doc);
@@ -236,9 +236,9 @@ test_xpath_axis_self(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_SELF;
 
@@ -247,7 +247,7 @@ test_xpath_axis_self(void)
   assert_nodeset_item(d.b, ns, 0);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -255,9 +255,9 @@ test_xpath_axis_parent(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_PARENT;
 
@@ -266,7 +266,7 @@ test_xpath_axis_parent(void)
   assert_nodeset_item(d.one, ns, 0);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -274,9 +274,9 @@ test_xpath_axis_following_sibling(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
 
@@ -286,7 +286,7 @@ test_xpath_axis_following_sibling(void)
   assert_nodeset_item(d.d, ns, 1);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -294,9 +294,9 @@ test_xpath_axis_preceding_sibling(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_PRECEDING_SIBLING;
 
@@ -307,7 +307,7 @@ test_xpath_axis_preceding_sibling(void)
   assert_nodeset_item(d.a, ns, 2);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -315,9 +315,9 @@ test_xpath_axis_descendant(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_DESCENDANT;
 
@@ -335,7 +335,7 @@ test_xpath_axis_descendant(void)
   assert_nodeset_item(d.z, ns, 9);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -343,9 +343,9 @@ test_xpath_axis_descendant_or_self(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_DESCENDANT_OR_SELF;
 
@@ -364,7 +364,7 @@ test_xpath_axis_descendant_or_self(void)
   assert_nodeset_item(d.z, ns, 10);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -372,9 +372,9 @@ test_xpath_axis_ancestor(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_ANCESTOR;
 
@@ -384,7 +384,7 @@ test_xpath_axis_ancestor(void)
   assert_nodeset_item(d.alpha, ns, 1);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -392,9 +392,9 @@ test_xpath_axis_ancestor_or_self(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
 
@@ -405,7 +405,7 @@ test_xpath_axis_ancestor_or_self(void)
   assert_nodeset_item(d.alpha, ns, 2);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -413,9 +413,9 @@ test_xpath_axis_following(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_FOLLOWING;
 
@@ -429,7 +429,7 @@ test_xpath_axis_following(void)
   assert_nodeset_item(d.z, ns, 5);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -437,9 +437,9 @@ test_xpath_axis_preceding(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   init_step(&step);
   step.axis = XPATH_AXIS_PRECEDING;
 
@@ -453,7 +453,7 @@ test_xpath_axis_preceding(void)
   assert_nodeset_item(d.d, ns, 5);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
@@ -462,9 +462,9 @@ test_xpath_two_step(void)
   nodeset_t *ns;
   xpath_step_t step;
   GArray *steps;
-  xpath_sibling_test_t d;
+  xpath_axis_test_t d;
 
-  init_xpath_sibling_test(&d);
+  init_xpath_axis_test(&d);
   steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
 
   init_step(&step);
@@ -478,7 +478,7 @@ test_xpath_two_step(void)
   assert_nodeset_item(d.c, ns, 0);
 
   nodeset_free(ns);
-  destroy_xpath_sibling_test(&d);
+  destroy_xpath_axis_test(&d);
 }
 
 static void
