@@ -57,6 +57,10 @@ typedef struct {
   GArray *steps;
 } xpath_compiled_t;
 
+typedef struct {
+  unsigned int boolean:1;
+} xpath_result_t;
+
 void
 xpath_tokens_free(xpath_tokens_t *tokens);
 
@@ -80,5 +84,8 @@ xpath_select_xpath_steps(node_t *node, GArray *steps);
 
 nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);
+
+xpath_result_t
+xpath_fn_true(void);
 
 #endif

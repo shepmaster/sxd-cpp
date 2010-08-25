@@ -301,3 +301,11 @@ xpath_apply_xpath(node_t *node, const char * const xpath)
 
   return nodes;
 }
+
+xpath_result_t
+xpath_fn_true(void)
+{
+  xpath_result_t result;
+  result.boolean = TRUE;
+  return result;
+}

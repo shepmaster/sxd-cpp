@@ -503,6 +503,14 @@ test_xpath_two_step(void)
   destroy_xpath_sibling_test(&d);
 }
 
+static void
+test_xpath_fn_true(void)
+{
+  xpath_result_t res;
+  res = xpath_fn_true();
+  assert(res.boolean == TRUE);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -565,6 +573,7 @@ main(int argc, char **argv)
   test_xpath_axis_preceding();
   test_xpath_two_step();
   test_xpath_apply_element();
+  test_xpath_fn_true();
 
   return EXIT_SUCCESS;
 }
