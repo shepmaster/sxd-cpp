@@ -194,6 +194,14 @@ xpath_test_following_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
   node_foreach_ancestor(node, xpath_test_following_siblings_and_recur_up, data);
 }
 
+static void
+xpath_test_preceding_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
+{
+  xpath_test_step_t *data = data_as_gp;
+  node_foreach_preceding_sibling(node, xpath_test_and_recur_down, data);
+  node_foreach_ancestor(node, xpath_test_preceding_siblings_and_recur_up, data);
+}
+
 nodeset_t *
 xpath_select_xpath(node_t *node, xpath_step_t *step)
 {
@@ -237,6 +245,9 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
     node_foreach_ancestor(node, xpath_test_following_siblings_and_recur_up, &data);
     break;
   case XPATH_AXIS_PRECEDING:
+    node_foreach_preceding_sibling(node, xpath_test_and_recur_down, &data);
+    node_foreach_ancestor(node, xpath_test_preceding_siblings_and_recur_up, &data);
+    break;
   case XPATH_AXIS_ATTRIBUTE:
   case XPATH_AXIS_NAMESPACE:
     abort();
