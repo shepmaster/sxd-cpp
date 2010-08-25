@@ -185,6 +185,11 @@ typedef struct {
   node_t *b;
   node_t *c;
   node_t *d;
+  node_t *two;
+  node_t *w;
+  node_t *x;
+  node_t *y;
+  node_t *z;
 } xpath_sibling_test_t;
 
 static void
@@ -197,12 +202,22 @@ init_xpath_sibling_test(xpath_sibling_test_t *d)
   d->b = test_helper_new_node(d->doc, "b");
   d->c = test_helper_new_node(d->doc, "c");
   d->d = test_helper_new_node(d->doc, "d");
+  d->two = test_helper_new_node(d->doc, "two");
+  d->w = test_helper_new_node(d->doc, "w");
+  d->x = test_helper_new_node(d->doc, "x");
+  d->y = test_helper_new_node(d->doc, "y");
+  d->z = test_helper_new_node(d->doc, "z");
 
   node_append_child(d->alpha, d->one);
   node_append_child(d->one, d->a);
   node_append_child(d->one, d->b);
   node_append_child(d->one, d->c);
   node_append_child(d->one, d->d);
+  node_append_child(d->alpha, d->two);
+  node_append_child(d->two, d->w);
+  node_append_child(d->two, d->x);
+  node_append_child(d->two, d->y);
+  node_append_child(d->two, d->z);
 }
 
 static void
@@ -316,12 +331,17 @@ test_xpath_axis_descendant(void)
   step.name = NULL;
 
   ns = xpath_select_xpath(d.alpha, &step);
-  assert(5 == nodeset_count(ns));
+  assert(10 == nodeset_count(ns));
   assert_nodeset_item(d.one, ns, 0);
   assert_nodeset_item(d.a, ns, 1);
   assert_nodeset_item(d.b, ns, 2);
   assert_nodeset_item(d.c, ns, 3);
   assert_nodeset_item(d.d, ns, 4);
+  assert_nodeset_item(d.two, ns, 5);
+  assert_nodeset_item(d.w, ns, 6);
+  assert_nodeset_item(d.x, ns, 7);
+  assert_nodeset_item(d.y, ns, 8);
+  assert_nodeset_item(d.z, ns, 9);
 
   nodeset_free(ns);
   destroy_xpath_sibling_test(&d);
@@ -341,13 +361,18 @@ test_xpath_axis_descendant_or_self(void)
   step.name = NULL;
 
   ns = xpath_select_xpath(d.alpha, &step);
-  assert(6 == nodeset_count(ns));
+  assert(11 == nodeset_count(ns));
   assert_nodeset_item(d.alpha, ns, 0);
   assert_nodeset_item(d.one, ns, 1);
   assert_nodeset_item(d.a, ns, 2);
   assert_nodeset_item(d.b, ns, 3);
   assert_nodeset_item(d.c, ns, 4);
   assert_nodeset_item(d.d, ns, 5);
+  assert_nodeset_item(d.two, ns, 6);
+  assert_nodeset_item(d.w, ns, 7);
+  assert_nodeset_item(d.x, ns, 8);
+  assert_nodeset_item(d.y, ns, 9);
+  assert_nodeset_item(d.z, ns, 10);
 
   nodeset_free(ns);
   destroy_xpath_sibling_test(&d);
@@ -393,6 +418,32 @@ test_xpath_axis_ancestor_or_self(void)
   assert_nodeset_item(d.c, ns, 0);
   assert_nodeset_item(d.one, ns, 1);
   assert_nodeset_item(d.alpha, ns, 2);
+
+  nodeset_free(ns);
+  destroy_xpath_sibling_test(&d);
+}
+
+static void
+test_xpath_axis_following(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_sibling_test_t d;
+
+  init_xpath_sibling_test(&d);
+
+  step.axis = XPATH_AXIS_FOLLOWING;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = NULL;
+
+  ns = xpath_select_xpath(d.c, &step);
+  assert(6 == nodeset_count(ns));
+  assert_nodeset_item(d.d, ns, 0);
+  assert_nodeset_item(d.two, ns, 1);
+  assert_nodeset_item(d.w, ns, 2);
+  assert_nodeset_item(d.x, ns, 3);
+  assert_nodeset_item(d.y, ns, 4);
+  assert_nodeset_item(d.z, ns, 5);
 
   nodeset_free(ns);
   destroy_xpath_sibling_test(&d);
@@ -453,6 +504,7 @@ main(int argc, char **argv)
   test_xpath_axis_descendant_or_self();
   test_xpath_axis_ancestor();
   test_xpath_axis_ancestor_or_self();
+  test_xpath_axis_following();
   test_xpath_apply_element();
 
   return EXIT_SUCCESS;
