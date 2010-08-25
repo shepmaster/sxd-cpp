@@ -131,6 +131,7 @@ xpath_compile(const char * const xpath)
       step.axis = XPATH_AXIS_CHILD;
       step.type = XPATH_NODE_TYPE_ELEMENT;
       step.name = xpath_tokens_string(tokens, i);
+      step.predicates = NULL;
       g_array_append_val(compiled->steps, step);
       break;
     default:
@@ -146,6 +147,20 @@ typedef struct {
   nodeset_t *nodeset;
 } xpath_test_step_t;
 
+static int
+xpath_test_predicates(node_t *node, GList *predicates)
+{
+  GList *item;
+  for (item = predicates; item; item = g_list_next(item)) {
+    xpath_predicate_t *predicate = item->data;
+    if (predicate->result.boolean == FALSE) {
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}
+
 static void
 xpath_test_step(node_t *node, xpath_test_step_t *data)
 {
@@ -157,6 +172,9 @@ xpath_test_step(node_t *node, xpath_test_step_t *data)
     if (should_add && data->step->name) {
       element_t *element = (element_t *)node;
       should_add = strcmp(data->step->name, element_name(element)) == 0;
+    }
+    if (should_add) {
+      should_add = xpath_test_predicates(node, data->step->predicates);
     }
     break;
   case NODE_TYPE_TEXT_NODE:

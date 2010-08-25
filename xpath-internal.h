@@ -51,6 +51,7 @@ typedef struct {
   xpath_axis_t axis;
   xpath_node_type_t type;
   char *name;
+  GList *predicates;
 } xpath_step_t;
 
 typedef struct {
@@ -60,6 +61,10 @@ typedef struct {
 typedef struct {
   unsigned int boolean:1;
 } xpath_result_t;
+
+typedef struct {
+  xpath_result_t result;
+} xpath_predicate_t;
 
 void
 xpath_tokens_free(xpath_tokens_t *tokens);

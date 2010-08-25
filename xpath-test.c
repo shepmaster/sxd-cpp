@@ -112,6 +112,7 @@ init_step(xpath_step_t *step)
   step->axis = XPATH_AXIS_CHILD;
   step->type = XPATH_NODE_TYPE_ELEMENT;
   step->name = NULL;
+  step->predicates = NULL;
 }
 
 static void
@@ -497,6 +498,46 @@ test_xpath_fn_false(void)
   assert(res.boolean == FALSE);
 }
 
+static void
+test_xpath_predicate_true(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_axis_test_t d;
+  xpath_predicate_t pred;
+
+  init_xpath_axis_test(&d);
+  init_step(&step);
+  pred.result.boolean = TRUE;
+  step.predicates = g_list_append(step.predicates, &pred);
+
+  ns = xpath_select_xpath(d.alpha, &step);
+  assert(2 == nodeset_count(ns));
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
+static void
+test_xpath_predicate_false(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_axis_test_t d;
+  xpath_predicate_t pred;
+
+  init_xpath_axis_test(&d);
+  init_step(&step);
+  pred.result.boolean = FALSE;
+  step.predicates = g_list_append(step.predicates, &pred);
+
+  ns = xpath_select_xpath(d.alpha, &step);
+  assert(0 == nodeset_count(ns));
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -561,6 +602,8 @@ main(int argc, char **argv)
   test_xpath_apply_element();
   test_xpath_fn_true();
   test_xpath_fn_false();
+  test_xpath_predicate_true();
+  test_xpath_predicate_false();
 
   return EXIT_SUCCESS;
 }
