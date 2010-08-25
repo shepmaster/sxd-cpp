@@ -292,7 +292,12 @@ xpath_select_xpath_steps(node_t *node, GArray *steps)
 nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath)
 {
-  xpath_compiled_t *compiled = xpath_compile(xpath);
-  xpath_step_t *step = &g_array_index(compiled->steps, xpath_step_t, 0);
-  return xpath_select_xpath(node, step);
+  xpath_compiled_t *compiled;
+  nodeset_t *nodes;
+
+  compiled = xpath_compile(xpath);
+  nodes = xpath_select_xpath_steps(node, compiled->steps);
+  xpath_compiled_free(compiled);
+
+  return nodes;
 }

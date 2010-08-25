@@ -519,26 +519,29 @@ test_xpath_apply_element(void)
   const char * const name = "one";
 
   document_t *doc = document_new();
-  element_t *parent = document_element_new(doc, "parent");
-  element_t *children[4];
-  nodeset_t *res;
+  node_t *parent = test_helper_new_node(doc, "parent");
+  node_t *children[4];
+  nodeset_t *nodes;
 
-  children[0] = document_element_new(doc, "one");
-  children[1] = document_element_new(doc, "two");
-  children[2] = document_element_new(doc, "one");
-  children[3] = document_element_new(doc, "four");
+  children[0] = test_helper_new_node(doc, "one");
+  children[1] = test_helper_new_node(doc, "two");
+  children[2] = test_helper_new_node(doc, "one");
+  children[3] = test_helper_new_node(doc, "four");
 
-  node_append_child((node_t *)parent, (node_t *)children[0]);
-  node_append_child((node_t *)parent, (node_t *)children[1]);
-  node_append_child((node_t *)parent, (node_t *)children[2]);
-  node_append_child((node_t *)parent, (node_t *)children[3]);
+  node_append_child(parent, children[0]);
+  node_append_child(parent, children[1]);
+  node_append_child(parent, children[2]);
+  node_append_child(parent, children[3]);
 
-  res = xpath_apply_xpath((node_t *)parent, name);
+  nodes = xpath_apply_xpath(parent, name);
 
-  assert(2 == nodeset_count(res));
+  assert(2 == nodeset_count(nodes));
+  assert_nodeset_element_name(nodes, 0, name);
+  assert_nodeset_element_name(nodes, 1, name);
 
-  assert_nodeset_element_name(res, 0, name);
-  assert_nodeset_element_name(res, 1, name);
+  nodeset_free(nodes);
+  node_free(parent);
+  document_free(doc);
 }
 
 int
