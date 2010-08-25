@@ -178,6 +178,14 @@ xpath_select_xpath_children(node_t *node, gpointer data_as_gp)
   xpath_test_step(node, data);
 }
 
+static void
+xpath_test_and_recur_down(node_t *node, gpointer data_as_gp)
+{
+  xpath_test_step_t *data = data_as_gp;
+  xpath_test_step(node, data);
+  node_foreach_child(node, xpath_test_and_recur_down, data);
+}
+
 nodeset_t *
 xpath_select_xpath(node_t *node, xpath_step_t *step)
 {
@@ -211,6 +219,9 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
 	xpath_test_step(sibling, &data);
       }
     }
+    break;
+  case XPATH_AXIS_DESCENDANT:
+    node_foreach_child(node, xpath_test_and_recur_down, &data);
     break;
   default:
     abort();
