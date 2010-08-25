@@ -17,6 +17,9 @@ nodeset_count(nodeset_t *nodeset);
 void
 nodeset_add(nodeset_t *nodeset, node_t *node);
 
+void
+nodeset_add_nodeset(nodeset_t *nodeset, nodeset_t *to_add);
+
 node_t *
 nodeset_get(nodeset_t *nodeset, unsigned int i);
 

@@ -31,6 +31,18 @@ nodeset_add(nodeset_t *nodeset, node_t *node)
   g_ptr_array_add((GPtrArray *)nodeset, node);
 }
 
+void
+nodeset_add_nodeset(nodeset_t *nodeset, nodeset_t *to_add)
+{
+  GPtrArray *g_nodeset = (GPtrArray *)nodeset;
+  GPtrArray *g_to_add = (GPtrArray *)to_add;
+  int i;
+
+  for (i = 0; i < g_to_add->len; i++) {
+    g_ptr_array_add(g_nodeset, g_ptr_array_index(g_to_add, i));
+  }
+}
+
 node_t *
 nodeset_get(nodeset_t *nodeset, unsigned int i)
 {
