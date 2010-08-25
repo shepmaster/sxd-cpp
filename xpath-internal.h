@@ -62,8 +62,10 @@ typedef struct {
   unsigned int boolean:1;
 } xpath_result_t;
 
+typedef xpath_result_t (*xpath_fn_t)(void);
+
 typedef struct {
-  xpath_result_t result;
+  xpath_fn_t fn;
 } xpath_predicate_t;
 
 void

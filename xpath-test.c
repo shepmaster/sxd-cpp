@@ -508,7 +508,7 @@ test_xpath_predicate_true(void)
 
   init_xpath_axis_test(&d);
   init_step(&step);
-  pred.result.boolean = TRUE;
+  pred.fn = xpath_fn_true;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = xpath_select_xpath(d.alpha, &step);
@@ -528,7 +528,7 @@ test_xpath_predicate_false(void)
 
   init_xpath_axis_test(&d);
   init_step(&step);
-  pred.result.boolean = FALSE;
+  pred.fn = xpath_fn_false;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = xpath_select_xpath(d.alpha, &step);
