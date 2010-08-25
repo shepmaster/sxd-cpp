@@ -28,6 +28,12 @@ void
 node_foreach_child(node_t *node, node_foreach_fn_t fn, gpointer user_data);
 
 void
+node_foreach_preceding_sibling(node_t *node, node_foreach_fn_t fn, gpointer user_data);
+
+void
+node_foreach_following_sibling(node_t *node, node_foreach_fn_t fn, gpointer user_data);
+
+void
 node_foreach_ancestor(node_t *node, node_foreach_fn_t fn, gpointer user_data);
 
 void

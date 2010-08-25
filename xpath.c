@@ -172,7 +172,7 @@ xpath_test_step(node_t *node, xpath_test_step_t *data)
 }
 
 static void
-xpath_select_xpath_children(node_t *node, gpointer data_as_gp)
+xpath_test_step_wrapper(node_t *node, gpointer data_as_gp)
 {
   xpath_test_step_t *data = data_as_gp;
   xpath_test_step(node, data);
@@ -199,26 +199,16 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
     xpath_test_step(node, &data);
     break;
   case XPATH_AXIS_CHILD:
-    node_foreach_child(node, xpath_select_xpath_children, &data);
+    node_foreach_child(node, xpath_test_step_wrapper, &data);
     break;
   case XPATH_AXIS_PARENT:
     xpath_test_step(node->parent, &data);
     break;
   case XPATH_AXIS_FOLLOWING_SIBLING:
-    {
-      node_t *sibling;
-      for (sibling = node->next_sibling; sibling; sibling = sibling->next_sibling) {
-	xpath_test_step(sibling, &data);
-      }
-    }
+    node_foreach_following_sibling(node, xpath_test_step_wrapper, &data);
     break;
   case XPATH_AXIS_PRECEDING_SIBLING:
-    {
-      node_t *sibling;
-      for (sibling = node->prev_sibling; sibling; sibling = sibling->prev_sibling) {
-	xpath_test_step(sibling, &data);
-      }
-    }
+    node_foreach_preceding_sibling(node, xpath_test_step_wrapper, &data);
     break;
   case XPATH_AXIS_DESCENDANT:
     node_foreach_child(node, xpath_test_and_recur_down, &data);
@@ -228,13 +218,17 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
     node_foreach_child(node, xpath_test_and_recur_down, &data);
     break;
   case XPATH_AXIS_ANCESTOR:
-    node_foreach_ancestor(node, xpath_select_xpath_children, &data);
+    node_foreach_ancestor(node, xpath_test_step_wrapper, &data);
     break;
   case XPATH_AXIS_ANCESTOR_OR_SELF:
     xpath_test_step(node, &data);
-    node_foreach_ancestor(node, xpath_select_xpath_children, &data);
+    node_foreach_ancestor(node, xpath_test_step_wrapper, &data);
     break;
-  default:
+  case XPATH_AXIS_FOLLOWING:
+    break;
+  case XPATH_AXIS_PRECEDING:
+  case XPATH_AXIS_ATTRIBUTE:
+  case XPATH_AXIS_NAMESPACE:
     abort();
   }
   return data.nodeset;
