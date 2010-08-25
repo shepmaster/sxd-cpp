@@ -256,6 +256,40 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
 }
 
 nodeset_t *
+xpath_select_xpath_steps(node_t *node, GArray *steps)
+{
+  nodeset_t *result_nodes;
+  int i;
+
+  result_nodes = nodeset_new();
+  nodeset_add(result_nodes, node);
+
+  for (i = 0; i < steps->len; i++) {
+    xpath_step_t *step;
+    nodeset_t *current_nodes;
+    int j;
+
+    current_nodes = nodeset_new();
+    step = &g_array_index(steps, xpath_step_t, i);
+
+    for (j = 0; j < nodeset_count(result_nodes); j++) {
+      node_t *current_node;
+      nodeset_t *selected_nodes;
+
+      current_node = nodeset_get(result_nodes, j);
+      selected_nodes = xpath_select_xpath(current_node, step);
+      nodeset_add_nodeset(current_nodes, selected_nodes);
+      nodeset_free(selected_nodes);
+    }
+
+    nodeset_free(result_nodes);
+    result_nodes = current_nodes;
+  }
+
+  return result_nodes;
+}
+
+nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath)
 {
   xpath_compiled_t *compiled = xpath_compile(xpath);

@@ -475,6 +475,34 @@ test_xpath_axis_preceding(void)
   destroy_xpath_sibling_test(&d);
 }
 
+static void
+test_xpath_two_step(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  GArray *steps;
+  xpath_sibling_test_t d;
+
+  init_xpath_sibling_test(&d);
+  steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
+
+  step.axis = XPATH_AXIS_CHILD;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = "one";
+  g_array_append_val(steps, step);
+  step.axis = XPATH_AXIS_CHILD;
+  step.type = XPATH_NODE_TYPE_ELEMENT;
+  step.name = "c";
+  g_array_append_val(steps, step);
+
+  ns = xpath_select_xpath_steps(d.alpha, steps);
+  assert(1 == nodeset_count(ns));
+  assert_nodeset_item(d.c, ns, 0);
+
+  nodeset_free(ns);
+  destroy_xpath_sibling_test(&d);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -532,6 +560,7 @@ main(int argc, char **argv)
   test_xpath_axis_ancestor_or_self();
   test_xpath_axis_following();
   test_xpath_axis_preceding();
+  test_xpath_two_step();
   test_xpath_apply_element();
 
   return EXIT_SUCCESS;

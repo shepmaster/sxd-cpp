@@ -76,6 +76,9 @@ nodeset_t *
 xpath_select_xpath(node_t *node, xpath_step_t *step);
 
 nodeset_t *
+xpath_select_xpath_steps(node_t *node, GArray *steps);
+
+nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);
 
 #endif
