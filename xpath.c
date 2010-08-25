@@ -309,3 +309,11 @@ xpath_fn_true(void)
   result.boolean = TRUE;
   return result;
 }
+
+xpath_result_t
+xpath_fn_false(void)
+{
+  xpath_result_t result;
+  result.boolean = FALSE;
+  return result;
+}

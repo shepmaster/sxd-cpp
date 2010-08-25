@@ -88,4 +88,7 @@ xpath_apply_xpath(node_t *node, const char * const xpath);
 xpath_result_t
 xpath_fn_true(void);
 
+xpath_result_t
+xpath_fn_false(void);
+
 #endif

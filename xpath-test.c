@@ -511,6 +511,14 @@ test_xpath_fn_true(void)
   assert(res.boolean == TRUE);
 }
 
+static void
+test_xpath_fn_false(void)
+{
+  xpath_result_t res;
+  res = xpath_fn_false();
+  assert(res.boolean == FALSE);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -574,6 +582,7 @@ main(int argc, char **argv)
   test_xpath_two_step();
   test_xpath_apply_element();
   test_xpath_fn_true();
+  test_xpath_fn_false();
 
   return EXIT_SUCCESS;
 }
