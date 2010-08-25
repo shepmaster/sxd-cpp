@@ -499,7 +499,7 @@ test_xpath_fn_false(void)
 }
 
 static void
-test_xpath_predicate_true(void)
+test_xpath_predicate_fn_true(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -508,7 +508,8 @@ test_xpath_predicate_true(void)
 
   init_xpath_axis_test(&d);
   init_step(&step);
-  pred.fn = xpath_fn_true;
+  pred.op = XPATH_PREDICATE_OP_FUNCTION;
+  pred.info.fn = xpath_fn_true;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = xpath_select_xpath(d.alpha, &step);
@@ -519,7 +520,7 @@ test_xpath_predicate_true(void)
 }
 
 static void
-test_xpath_predicate_false(void)
+test_xpath_predicate_fn_false(void)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -528,7 +529,8 @@ test_xpath_predicate_false(void)
 
   init_xpath_axis_test(&d);
   init_step(&step);
-  pred.fn = xpath_fn_false;
+  pred.op = XPATH_PREDICATE_OP_FUNCTION;
+  pred.info.fn = xpath_fn_false;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = xpath_select_xpath(d.alpha, &step);
@@ -602,8 +604,8 @@ main(int argc, char **argv)
   test_xpath_apply_element();
   test_xpath_fn_true();
   test_xpath_fn_false();
-  test_xpath_predicate_true();
-  test_xpath_predicate_false();
+  test_xpath_predicate_fn_true();
+  test_xpath_predicate_fn_false();
 
   return EXIT_SUCCESS;
 }
