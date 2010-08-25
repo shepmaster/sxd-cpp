@@ -223,6 +223,10 @@ xpath_select_xpath(node_t *node, xpath_step_t *step)
   case XPATH_AXIS_DESCENDANT:
     node_foreach_child(node, xpath_test_and_recur_down, &data);
     break;
+  case XPATH_AXIS_DESCENDANT_OR_SELF:
+    xpath_test_step(node, &data);
+    node_foreach_child(node, xpath_test_and_recur_down, &data);
+    break;
   default:
     abort();
   }
