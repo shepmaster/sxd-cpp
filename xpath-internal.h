@@ -66,16 +66,23 @@ typedef xpath_result_t (*xpath_fn_t)(void);
 
 typedef enum {
   XPATH_PREDICATE_OP_VALUE,
-  XPATH_PREDICATE_OP_FUNCTION
+  XPATH_PREDICATE_OP_FUNCTION,
+  XPATH_PREDICATE_OP_EQUAL
 } xpath_predicate_op_t;
 
-typedef struct {
+struct xpath_predicateS {
   xpath_predicate_op_t op;
   union {
     xpath_result_t value;
     xpath_fn_t fn;
+    struct {
+      struct xpath_predicateS *left;
+      struct xpath_predicateS *right;
+    } child;
   } info;
-} xpath_predicate_t;
+};
+
+typedef struct xpath_predicateS xpath_predicate_t;
 
 void
 xpath_tokens_free(xpath_tokens_t *tokens);

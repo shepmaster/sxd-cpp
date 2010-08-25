@@ -581,6 +581,68 @@ test_xpath_predicate_fn_false(void)
   destroy_xpath_axis_test(&d);
 }
 
+static void
+test_xpath_predicate_equal_true(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_axis_test_t d;
+  xpath_predicate_t pred;
+  xpath_predicate_t pred_val_true;
+  xpath_predicate_t pred_val_true2;
+
+  init_xpath_axis_test(&d);
+  init_step(&step);
+
+  pred_val_true.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_true.info.value.boolean = TRUE;
+
+  pred_val_true2.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_true2.info.value.boolean = TRUE;
+
+  pred.op = XPATH_PREDICATE_OP_EQUAL;
+  pred.info.child.left = &pred_val_true;
+  pred.info.child.right = &pred_val_true2;
+  step.predicates = g_list_append(step.predicates, &pred);
+
+  ns = xpath_select_xpath(d.alpha, &step);
+  assert(2 == nodeset_count(ns));
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
+static void
+test_xpath_predicate_equal_false(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_axis_test_t d;
+  xpath_predicate_t pred;
+  xpath_predicate_t pred_val_true;
+  xpath_predicate_t pred_val_false;
+
+  init_xpath_axis_test(&d);
+  init_step(&step);
+
+  pred_val_true.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_true.info.value.boolean = TRUE;
+
+  pred_val_false.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_false.info.value.boolean = FALSE;
+
+  pred.op = XPATH_PREDICATE_OP_EQUAL;
+  pred.info.child.left = &pred_val_true;
+  pred.info.child.right = &pred_val_false;
+  step.predicates = g_list_append(step.predicates, &pred);
+
+  ns = xpath_select_xpath(d.alpha, &step);
+  assert(0 == nodeset_count(ns));
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
 #define assert_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
@@ -649,6 +711,8 @@ main(int argc, char **argv)
   test_xpath_predicate_false();
   test_xpath_predicate_fn_true();
   test_xpath_predicate_fn_false();
+  test_xpath_predicate_equal_true();
+  test_xpath_predicate_equal_false();
 
   return EXIT_SUCCESS;
 }

@@ -147,22 +147,38 @@ typedef struct {
   nodeset_t *nodeset;
 } xpath_test_step_t;
 
+static xpath_result_t
+eval_predicate(xpath_predicate_t *predicate)
+{
+  xpath_result_t result;
+
+  switch (predicate->op) {
+  case XPATH_PREDICATE_OP_VALUE:
+    result = predicate->info.value;
+    break;
+  case XPATH_PREDICATE_OP_FUNCTION:
+    result = predicate->info.fn();
+    break;
+  case XPATH_PREDICATE_OP_EQUAL:
+    {
+      xpath_result_t lresult = eval_predicate(predicate->info.child.left);
+      xpath_result_t rresult = eval_predicate(predicate->info.child.right);
+
+      result.boolean = lresult.boolean == rresult.boolean;
+    }
+    break;
+  }
+
+  return result;
+}
+
 static int
 xpath_test_predicates(node_t *node, GList *predicates)
 {
   GList *item;
   for (item = predicates; item; item = g_list_next(item)) {
     xpath_predicate_t *predicate = item->data;
-    xpath_result_t result;
-
-    switch (predicate->op) {
-    case XPATH_PREDICATE_OP_VALUE:
-      result = predicate->info.value;
-      break;
-    case XPATH_PREDICATE_OP_FUNCTION:
-      result = predicate->info.fn();
-      break;
-    }
+    xpath_result_t result = eval_predicate(predicate);
 
     if (result.boolean == FALSE) {
       return FALSE;
