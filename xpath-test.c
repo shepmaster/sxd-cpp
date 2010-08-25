@@ -107,6 +107,14 @@ destroy_xpath_test(xpath_test_data_t *d)
 }
 
 static void
+init_step(xpath_step_t *step)
+{
+  step->axis = XPATH_AXIS_CHILD;
+  step->type = XPATH_NODE_TYPE_ELEMENT;
+  step->name = NULL;
+}
+
+static void
 test_xpath_element(void)
 {
   xpath_test_data_t d;
@@ -115,10 +123,7 @@ test_xpath_element(void)
   xpath_step_t step;
 
   init_xpath_test(&d);
-
-  step.axis = XPATH_AXIS_CHILD;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
+  init_step(&step);
 
   ns = xpath_select_xpath(d.parent, &step);
   assert(1 == nodeset_count(ns));
@@ -138,10 +143,8 @@ test_xpath_text_node(void)
   xpath_step_t step;
 
   init_xpath_test(&d);
-
-  step.axis = XPATH_AXIS_CHILD;
+  init_step(&step);
   step.type = XPATH_NODE_TYPE_TEXT_NODE;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.parent, &step);
   assert(1 == nodeset_count(ns));
@@ -161,10 +164,8 @@ test_xpath_element_and_text_node(void)
   xpath_step_t step;
 
   init_xpath_test(&d);
-
-  step.axis = XPATH_AXIS_CHILD;
+  init_step(&step);
   step.type = XPATH_NODE_TYPE_ELEMENT | XPATH_NODE_TYPE_TEXT_NODE;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.parent, &step);
   assert(2 == nodeset_count(ns));
@@ -238,10 +239,8 @@ test_xpath_axis_self(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_SELF;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.b, &step);
   assert(1 == nodeset_count(ns));
@@ -259,10 +258,8 @@ test_xpath_axis_parent(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_PARENT;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.b, &step);
   assert(1 == nodeset_count(ns));
@@ -280,10 +277,8 @@ test_xpath_axis_following_sibling(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.b, &step);
   assert(2 == nodeset_count(ns));
@@ -302,10 +297,8 @@ test_xpath_axis_preceding_sibling(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_PRECEDING_SIBLING;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.d, &step);
   assert(3 == nodeset_count(ns));
@@ -325,10 +318,8 @@ test_xpath_axis_descendant(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_DESCENDANT;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.alpha, &step);
   assert(10 == nodeset_count(ns));
@@ -355,10 +346,8 @@ test_xpath_axis_descendant_or_self(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_DESCENDANT_OR_SELF;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.alpha, &step);
   assert(11 == nodeset_count(ns));
@@ -386,10 +375,8 @@ test_xpath_axis_ancestor(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_ANCESTOR;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.b, &step);
   assert(2 == nodeset_count(ns));
@@ -408,10 +395,8 @@ test_xpath_axis_ancestor_or_self(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.c, &step);
   assert(3 == nodeset_count(ns));
@@ -431,10 +416,8 @@ test_xpath_axis_following(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_FOLLOWING;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.c, &step);
   assert(6 == nodeset_count(ns));
@@ -457,10 +440,8 @@ test_xpath_axis_preceding(void)
   xpath_sibling_test_t d;
 
   init_xpath_sibling_test(&d);
-
+  init_step(&step);
   step.axis = XPATH_AXIS_PRECEDING;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
-  step.name = NULL;
 
   ns = xpath_select_xpath(d.x, &step);
   assert(6 == nodeset_count(ns));
@@ -486,12 +467,9 @@ test_xpath_two_step(void)
   init_xpath_sibling_test(&d);
   steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
 
-  step.axis = XPATH_AXIS_CHILD;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
+  init_step(&step);
   step.name = "one";
   g_array_append_val(steps, step);
-  step.axis = XPATH_AXIS_CHILD;
-  step.type = XPATH_NODE_TYPE_ELEMENT;
   step.name = "c";
   g_array_append_val(steps, step);
 
