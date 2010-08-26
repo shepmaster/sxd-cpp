@@ -375,3 +375,23 @@ xpath_fn_false(void)
   result.boolean = FALSE;
   return result;
 }
+
+xpath_result_t
+xpath_fn_position(nodeset_t *nodeset, node_t *current_node)
+{
+  xpath_result_t result;
+  int i;
+
+  result.type = XPATH_RESULT_TYPE_INTEGER;
+  result.integer = 0;
+
+  for (i = 0; i < nodeset_count(nodeset); i++) {
+    if (current_node == nodeset_get(nodeset, i)) {
+      /* Position is one-indexed, not zero */
+      result.integer = i + 1;
+      break;
+    }
+  }
+
+  return result;
+}

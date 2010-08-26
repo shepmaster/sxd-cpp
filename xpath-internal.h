@@ -121,4 +121,7 @@ xpath_fn_true(void);
 xpath_result_t
 xpath_fn_false(void);
 
+xpath_result_t
+xpath_fn_position(nodeset_t *nodeset, node_t *current_node);
+
 #endif
