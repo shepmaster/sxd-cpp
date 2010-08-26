@@ -487,6 +487,7 @@ test_xpath_fn_true(void)
 {
   xpath_result_t res;
   res = xpath_fn_true();
+  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
   assert(res.boolean == TRUE);
 }
 
@@ -495,6 +496,7 @@ test_xpath_fn_false(void)
 {
   xpath_result_t res;
   res = xpath_fn_false();
+  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
   assert(res.boolean == FALSE);
 }
 
@@ -509,6 +511,7 @@ test_xpath_predicate_true(void)
   init_xpath_axis_test(&d);
   init_step(&step);
   pred.op = XPATH_PREDICATE_OP_VALUE;
+  pred.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
   pred.info.value.boolean = TRUE;
   step.predicates = g_list_append(step.predicates, &pred);
 
@@ -530,6 +533,7 @@ test_xpath_predicate_false(void)
   init_xpath_axis_test(&d);
   init_step(&step);
   pred.op = XPATH_PREDICATE_OP_VALUE;
+  pred.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
   pred.info.value.boolean = FALSE;
   step.predicates = g_list_append(step.predicates, &pred);
 
@@ -595,9 +599,11 @@ test_xpath_predicate_equal_true(void)
   init_step(&step);
 
   pred_val_true.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_true.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
   pred_val_true.info.value.boolean = TRUE;
 
   pred_val_true2.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_true2.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
   pred_val_true2.info.value.boolean = TRUE;
 
   pred.op = XPATH_PREDICATE_OP_EQUAL;
@@ -626,9 +632,11 @@ test_xpath_predicate_equal_false(void)
   init_step(&step);
 
   pred_val_true.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_true.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
   pred_val_true.info.value.boolean = TRUE;
 
   pred_val_false.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_false.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
   pred_val_false.info.value.boolean = FALSE;
 
   pred.op = XPATH_PREDICATE_OP_EQUAL;

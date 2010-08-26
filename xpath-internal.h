@@ -58,8 +58,15 @@ typedef struct {
   GArray *steps;
 } xpath_compiled_t;
 
+typedef enum {
+  XPATH_RESULT_TYPE_BOOLEAN,
+  XPATH_RESULT_TYPE_INTEGER
+} xpath_result_type_t;
+
 typedef struct {
+  xpath_result_type_t type;
   unsigned int boolean:1;
+  int integer;
 } xpath_result_t;
 
 typedef xpath_result_t (*xpath_fn_t)(void);

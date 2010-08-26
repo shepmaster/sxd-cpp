@@ -164,7 +164,18 @@ eval_predicate(xpath_predicate_t *predicate)
       xpath_result_t lresult = eval_predicate(predicate->info.child.left);
       xpath_result_t rresult = eval_predicate(predicate->info.child.right);
 
-      result.boolean = lresult.boolean == rresult.boolean;
+      result.type = XPATH_RESULT_TYPE_BOOLEAN;
+      if (lresult.type != rresult.type) {
+	abort();
+      }
+      switch (lresult.type) {
+      case XPATH_RESULT_TYPE_BOOLEAN:
+	result.boolean = lresult.boolean == rresult.boolean;
+	break;
+      case XPATH_RESULT_TYPE_INTEGER:
+	result.boolean = lresult.integer == rresult.integer;
+	break;
+      }
     }
     break;
   }
@@ -351,6 +362,7 @@ xpath_result_t
 xpath_fn_true(void)
 {
   xpath_result_t result;
+  result.type = XPATH_RESULT_TYPE_BOOLEAN;
   result.boolean = TRUE;
   return result;
 }
@@ -359,6 +371,7 @@ xpath_result_t
 xpath_fn_false(void)
 {
   xpath_result_t result;
+  result.type = XPATH_RESULT_TYPE_BOOLEAN;
   result.boolean = FALSE;
   return result;
 }
