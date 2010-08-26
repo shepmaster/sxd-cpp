@@ -6,6 +6,9 @@
 #include "xpath-internal.h"
 #include "test-utilities.h"
 
+static xpath_predicate_t g_predicate_value_true;
+static xpath_predicate_t g_predicate_value_false;
+
 void
 dump_xpath_tokens(xpath_tokens_t *tokens)
 {
@@ -542,15 +545,11 @@ test_xpath_predicate_true(void)
   nodeset_t *ns;
   xpath_step_t step;
   xpath_axis_test_t d;
-  xpath_predicate_t pred;
 
   init_xpath_axis_test(&d);
   init_step(&step);
 
-  pred.op = XPATH_PREDICATE_OP_VALUE;
-  pred.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  pred.info.value.boolean = TRUE;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates = g_list_append(step.predicates, &g_predicate_value_true);
 
   ns = nodeset_new();
   nodeset_add(ns, d.alpha);
@@ -567,15 +566,11 @@ test_xpath_predicate_false(void)
   nodeset_t *ns;
   xpath_step_t step;
   xpath_axis_test_t d;
-  xpath_predicate_t pred;
 
   init_xpath_axis_test(&d);
   init_step(&step);
 
-  pred.op = XPATH_PREDICATE_OP_VALUE;
-  pred.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  pred.info.value.boolean = FALSE;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates = g_list_append(step.predicates, &g_predicate_value_false);
 
   ns = nodeset_new();
   nodeset_add(ns, d.alpha);
@@ -640,23 +635,13 @@ test_xpath_predicate_equal_true(void)
   xpath_step_t step;
   xpath_axis_test_t d;
   xpath_predicate_t pred;
-  xpath_predicate_t pred_val_true;
-  xpath_predicate_t pred_val_true2;
 
   init_xpath_axis_test(&d);
   init_step(&step);
 
-  pred_val_true.op = XPATH_PREDICATE_OP_VALUE;
-  pred_val_true.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  pred_val_true.info.value.boolean = TRUE;
-
-  pred_val_true2.op = XPATH_PREDICATE_OP_VALUE;
-  pred_val_true2.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  pred_val_true2.info.value.boolean = TRUE;
-
   pred.op = XPATH_PREDICATE_OP_EQUAL;
-  pred.info.child.left = &pred_val_true;
-  pred.info.child.right = &pred_val_true2;
+  pred.info.child.left = &g_predicate_value_true;
+  pred.info.child.right = &g_predicate_value_true;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = nodeset_new();
@@ -675,23 +660,13 @@ test_xpath_predicate_equal_false(void)
   xpath_step_t step;
   xpath_axis_test_t d;
   xpath_predicate_t pred;
-  xpath_predicate_t pred_val_true;
-  xpath_predicate_t pred_val_false;
 
   init_xpath_axis_test(&d);
   init_step(&step);
 
-  pred_val_true.op = XPATH_PREDICATE_OP_VALUE;
-  pred_val_true.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  pred_val_true.info.value.boolean = TRUE;
-
-  pred_val_false.op = XPATH_PREDICATE_OP_VALUE;
-  pred_val_false.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  pred_val_false.info.value.boolean = FALSE;
-
   pred.op = XPATH_PREDICATE_OP_EQUAL;
-  pred.info.child.left = &pred_val_true;
-  pred.info.child.right = &pred_val_false;
+  pred.info.child.left = &g_predicate_value_true;
+  pred.info.child.right = &g_predicate_value_false;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = nodeset_new();
@@ -778,9 +753,23 @@ test_xpath_apply_element(void)
   document_free(doc);
 }
 
+static void
+initialize_globals(void)
+{
+  g_predicate_value_true.op = XPATH_PREDICATE_OP_VALUE;
+  g_predicate_value_true.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
+  g_predicate_value_true.info.value.boolean = TRUE;
+
+  g_predicate_value_false.op = XPATH_PREDICATE_OP_VALUE;
+  g_predicate_value_false.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
+  g_predicate_value_false.info.value.boolean = FALSE;
+}
+
 int
 main(int argc, char **argv)
 {
+  initialize_globals();
+
   test_xpath_tokenize();
   test_xpath_tokens_string();
   test_xpath_compile_element();
