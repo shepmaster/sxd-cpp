@@ -148,7 +148,7 @@ typedef struct {
 } xpath_test_step_t;
 
 static xpath_result_t
-eval_predicate(xpath_predicate_t *predicate)
+eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context)
 {
   xpath_result_t result;
 
@@ -157,12 +157,12 @@ eval_predicate(xpath_predicate_t *predicate)
     result = predicate->info.value;
     break;
   case XPATH_PREDICATE_OP_FUNCTION:
-    result = predicate->info.fn();
+    result = predicate->info.fn(context);
     break;
   case XPATH_PREDICATE_OP_EQUAL:
     {
-      xpath_result_t lresult = eval_predicate(predicate->info.child.left);
-      xpath_result_t rresult = eval_predicate(predicate->info.child.right);
+      xpath_result_t lresult = eval_predicate(predicate->info.child.left, context);
+      xpath_result_t rresult = eval_predicate(predicate->info.child.right, context);
 
       result.type = XPATH_RESULT_TYPE_BOOLEAN;
       if (lresult.type != rresult.type) {
@@ -183,20 +183,38 @@ eval_predicate(xpath_predicate_t *predicate)
   return result;
 }
 
-static int
-xpath_test_predicates(node_t *node, GList *predicates)
+nodeset_t *
+xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
 {
+  nodeset_t *current_nodes;
   GList *item;
-  for (item = predicates; item; item = g_list_next(item)) {
-    xpath_predicate_t *predicate = item->data;
-    xpath_result_t result = eval_predicate(predicate);
 
-    if (result.boolean == FALSE) {
-      return FALSE;
+  current_nodes = nodeset;
+
+  for (item = step->predicates; item; item = g_list_next(item)) {
+    xpath_predicate_t *predicate;
+    xpath_evaluation_context_t context;
+    xpath_result_t result;
+    nodeset_t *selected_nodes;
+    int i;
+
+    predicate = item->data;
+    context.nodeset = current_nodes;
+    selected_nodes = nodeset_new();
+
+    for (i = 0; i < nodeset_count(current_nodes); i++) {
+      context.node = nodeset_get(current_nodes, i);
+      result = eval_predicate(predicate, &context);
+      if (result.boolean == TRUE) {
+	nodeset_add(selected_nodes, context.node);
+      }
     }
+
+    nodeset_free(current_nodes);
+    current_nodes = selected_nodes;
   }
 
-  return TRUE;
+  return current_nodes;
 }
 
 static void
@@ -210,9 +228,6 @@ xpath_test_step(node_t *node, xpath_test_step_t *data)
     if (should_add && data->step->name) {
       element_t *element = (element_t *)node;
       should_add = strcmp(data->step->name, element_name(element)) == 0;
-    }
-    if (should_add) {
-      should_add = xpath_test_predicates(node, data->step->predicates);
     }
     break;
   case NODE_TYPE_TEXT_NODE:
@@ -259,7 +274,7 @@ xpath_test_preceding_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
 }
 
 nodeset_t *
-xpath_select_xpath(node_t *node, xpath_step_t *step)
+xpath_select_xpath_no_predicates(node_t *node, xpath_step_t *step)
 {
   xpath_test_step_t data;
 
@@ -333,13 +348,13 @@ xpath_select_xpath_steps(node_t *node, GArray *steps)
       nodeset_t *selected_nodes;
 
       current_node = nodeset_get(result_nodes, j);
-      selected_nodes = xpath_select_xpath(current_node, step);
+      selected_nodes = xpath_select_xpath_no_predicates(current_node, step);
       nodeset_add_nodeset(current_nodes, selected_nodes);
       nodeset_free(selected_nodes);
     }
 
     nodeset_free(result_nodes);
-    result_nodes = current_nodes;
+    result_nodes = xpath_apply_predicates(current_nodes, step);
   }
 
   return result_nodes;
@@ -359,7 +374,7 @@ xpath_apply_xpath(node_t *node, const char * const xpath)
 }
 
 xpath_result_t
-xpath_fn_true(void)
+xpath_fn_true(xpath_evaluation_context_t *context_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -368,7 +383,7 @@ xpath_fn_true(void)
 }
 
 xpath_result_t
-xpath_fn_false(void)
+xpath_fn_false(xpath_evaluation_context_t *context_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -377,7 +392,7 @@ xpath_fn_false(void)
 }
 
 xpath_result_t
-xpath_fn_position(nodeset_t *nodeset, node_t *current_node)
+xpath_fn_position(xpath_evaluation_context_t *context)
 {
   xpath_result_t result;
   int i;
@@ -385,8 +400,8 @@ xpath_fn_position(nodeset_t *nodeset, node_t *current_node)
   result.type = XPATH_RESULT_TYPE_INTEGER;
   result.integer = 0;
 
-  for (i = 0; i < nodeset_count(nodeset); i++) {
-    if (current_node == nodeset_get(nodeset, i)) {
+  for (i = 0; i < nodeset_count(context->nodeset); i++) {
+    if (context->node == nodeset_get(context->nodeset, i)) {
       /* Position is one-indexed, not zero */
       result.integer = i + 1;
       break;

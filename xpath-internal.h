@@ -69,7 +69,12 @@ typedef struct {
   int integer;
 } xpath_result_t;
 
-typedef xpath_result_t (*xpath_fn_t)(void);
+typedef struct {
+  node_t *node;
+  nodeset_t *nodeset;
+} xpath_evaluation_context_t;
+
+typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context);
 
 typedef enum {
   XPATH_PREDICATE_OP_VALUE,
@@ -107,7 +112,10 @@ xpath_compiled_t *
 xpath_compile(const char * const xpath);
 
 nodeset_t *
-xpath_select_xpath(node_t *node, xpath_step_t *step);
+xpath_select_xpath_no_predicates(node_t *node, xpath_step_t *step);
+
+nodeset_t *
+xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step);
 
 nodeset_t *
 xpath_select_xpath_steps(node_t *node, GArray *steps);
@@ -116,12 +124,12 @@ nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);
 
 xpath_result_t
-xpath_fn_true(void);
+xpath_fn_true(xpath_evaluation_context_t *context_unused);
 
 xpath_result_t
-xpath_fn_false(void);
+xpath_fn_false(xpath_evaluation_context_t *context_unused);
 
 xpath_result_t
-xpath_fn_position(nodeset_t *nodeset, node_t *current_node);
+xpath_fn_position(xpath_evaluation_context_t *context);
 
 #endif
