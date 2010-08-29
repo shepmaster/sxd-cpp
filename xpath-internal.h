@@ -132,4 +132,7 @@ xpath_fn_false(xpath_evaluation_context_t *context_unused);
 xpath_result_t
 xpath_fn_position(xpath_evaluation_context_t *context);
 
+xpath_result_t
+xpath_fn_last(xpath_evaluation_context_t *context);
+
 #endif

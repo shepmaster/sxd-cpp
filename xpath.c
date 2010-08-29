@@ -439,3 +439,14 @@ xpath_fn_position(xpath_evaluation_context_t *context)
 
   return result;
 }
+
+xpath_result_t
+xpath_fn_last(xpath_evaluation_context_t *context)
+{
+  xpath_result_t result;
+
+  result.type = XPATH_RESULT_TYPE_INTEGER;
+  result.integer = nodeset_count(context->nodeset);
+
+  return result;
+}

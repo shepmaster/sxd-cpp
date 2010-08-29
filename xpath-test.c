@@ -540,6 +540,42 @@ test_xpath_fn_position(void)
 }
 
 static void
+test_xpath_fn_last(void)
+{
+  xpath_axis_test_t d;
+  nodeset_t *ns;
+  xpath_result_t res;
+  xpath_evaluation_context_t context;
+
+  init_xpath_axis_test(&d);
+
+  ns = nodeset_new();
+  nodeset_add(ns, d.a);
+  nodeset_add(ns, d.b);
+  nodeset_add(ns, d.c);
+
+  context.nodeset = ns;
+
+  context.node = d.a;
+  res = xpath_fn_last(&context);
+  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
+  assert(res.integer == 3);
+
+  context.node = d.b;
+  res = xpath_fn_last(&context);
+  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
+  assert(res.integer == 3);
+
+  context.node = d.c;
+  res = xpath_fn_last(&context);
+  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
+  assert(res.integer == 3);
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
+static void
 test_xpath_predicate_true(void)
 {
   nodeset_t *ns;
@@ -822,6 +858,7 @@ main(int argc, char **argv)
   test_xpath_fn_true();
   test_xpath_fn_false();
   test_xpath_fn_position();
+  test_xpath_fn_last();
   test_xpath_predicate_true();
   test_xpath_predicate_false();
   test_xpath_predicate_value_3();
