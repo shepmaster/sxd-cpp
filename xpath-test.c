@@ -580,6 +580,37 @@ test_xpath_predicate_false(void)
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
+
+static void
+test_xpath_predicate_value_3(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_axis_test_t d;
+  xpath_predicate_t pred_val_3;
+
+  init_xpath_axis_test(&d);
+  init_step(&step);
+
+  pred_val_3.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val_3.info.value.type = XPATH_RESULT_TYPE_INTEGER;
+  pred_val_3.info.value.integer = 3;
+  step.predicates = g_list_append(step.predicates, &pred_val_3);
+
+  ns = nodeset_new();
+  nodeset_add(ns, d.a);
+  nodeset_add(ns, d.b);
+  nodeset_add(ns, d.c);
+  nodeset_add(ns, d.d);
+
+  ns = xpath_apply_predicates(ns, &step);
+  assert(1 == nodeset_count(ns));
+  assert_nodeset_item(d.c, ns, 0);
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
 static void
 test_xpath_predicate_fn_true(void)
 {
@@ -793,6 +824,7 @@ main(int argc, char **argv)
   test_xpath_fn_position();
   test_xpath_predicate_true();
   test_xpath_predicate_false();
+  test_xpath_predicate_value_3();
   test_xpath_predicate_fn_true();
   test_xpath_predicate_fn_false();
   test_xpath_predicate_equal_true();

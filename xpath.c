@@ -183,6 +183,26 @@ eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context
   return result;
 }
 
+static xpath_result_t
+evaluate_as_position(xpath_result_t result_value, xpath_evaluation_context_t *context)
+{
+  xpath_predicate_t pred_val;
+  xpath_predicate_t pred_fn_position;
+  xpath_predicate_t pred_eq;
+
+  pred_val.op = XPATH_PREDICATE_OP_VALUE;
+  pred_val.info.value = result_value;
+
+  pred_fn_position.op = XPATH_PREDICATE_OP_FUNCTION;
+  pred_fn_position.info.fn = xpath_fn_position;
+
+  pred_eq.op = XPATH_PREDICATE_OP_EQUAL;
+  pred_eq.info.child.left = &pred_val;
+  pred_eq.info.child.right = &pred_fn_position;
+
+  return eval_predicate(&pred_eq, context);
+}
+
 nodeset_t *
 xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
 {
@@ -205,6 +225,15 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
     for (i = 0; i < nodeset_count(current_nodes); i++) {
       context.node = nodeset_get(current_nodes, i);
       result = eval_predicate(predicate, &context);
+
+      if (result.type == XPATH_RESULT_TYPE_INTEGER) {
+	result = evaluate_as_position(result, &context);
+      }
+
+      if (result.type != XPATH_RESULT_TYPE_BOOLEAN) {
+	abort();
+      }
+
       if (result.boolean == TRUE) {
 	nodeset_add(selected_nodes, context.node);
       }
