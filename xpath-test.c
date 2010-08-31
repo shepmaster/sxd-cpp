@@ -579,6 +579,37 @@ test_xpath_fn_last(void)
 }
 
 static void
+test_xpath_fn_floor(void)
+{
+  GArray *parameters;
+  xpath_result_t *value;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(*value));
+  g_array_set_size(parameters, 1);
+  value = &g_array_index(parameters, xpath_result_t, 0);
+
+  value->type = XPATH_RESULT_TYPE_NUMERIC;
+
+  value->value.numeric = 3.5;
+  res = xpath_fn_floor(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 3);
+
+  value->value.numeric = 0;
+  res = xpath_fn_floor(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 0);
+
+  value->value.numeric = -9.9;
+  res = xpath_fn_floor(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == -10);
+
+  g_array_free(parameters, TRUE);
+}
+
+static void
 test_xpath_predicate_true(void)
 {
   nodeset_t *ns;
@@ -870,6 +901,7 @@ main(int argc, char **argv)
   test_xpath_fn_false();
   test_xpath_fn_position();
   test_xpath_fn_last();
+  test_xpath_fn_floor();
   test_xpath_predicate_true();
   test_xpath_predicate_false();
   test_xpath_predicate_value_3();

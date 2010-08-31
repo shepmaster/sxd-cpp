@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "node-internal.h"
 #include "xpath-internal.h"
@@ -448,6 +449,27 @@ xpath_fn_last(xpath_evaluation_context_t *context)
 
   result.type = XPATH_RESULT_TYPE_NUMERIC;
   result.value.numeric = nodeset_count(context->nodeset);
+
+  return result;
+}
+
+xpath_result_t
+xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *value;
+  xpath_result_t result;
+
+  if (parameters->len != 1) {
+    abort();
+  }
+
+  value = &g_array_index(parameters, xpath_result_t, 0);
+  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  result.value.numeric = floor(value->value.numeric);
 
   return result;
 }
