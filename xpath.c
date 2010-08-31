@@ -171,10 +171,10 @@ eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context
       }
       switch (lresult.type) {
       case XPATH_RESULT_TYPE_BOOLEAN:
-	result.boolean = lresult.boolean == rresult.boolean;
+	result.value.boolean = lresult.value.boolean == rresult.value.boolean;
 	break;
-      case XPATH_RESULT_TYPE_INTEGER:
-	result.boolean = lresult.integer == rresult.integer;
+      case XPATH_RESULT_TYPE_NUMERIC:
+	result.value.boolean = lresult.value.numeric == rresult.value.numeric;
 	break;
       }
     }
@@ -227,7 +227,7 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
       context.node = nodeset_get(current_nodes, i);
       result = eval_predicate(predicate, &context);
 
-      if (result.type == XPATH_RESULT_TYPE_INTEGER) {
+      if (result.type == XPATH_RESULT_TYPE_NUMERIC) {
 	result = evaluate_as_position(result, &context);
       }
 
@@ -235,7 +235,7 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
 	abort();
       }
 
-      if (result.boolean == TRUE) {
+      if (result.value.boolean == TRUE) {
 	nodeset_add(selected_nodes, context.node);
       }
     }
@@ -408,7 +408,7 @@ xpath_fn_true(xpath_evaluation_context_t *context_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
-  result.boolean = TRUE;
+  result.value.boolean = TRUE;
   return result;
 }
 
@@ -417,7 +417,7 @@ xpath_fn_false(xpath_evaluation_context_t *context_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
-  result.boolean = FALSE;
+  result.value.boolean = FALSE;
   return result;
 }
 
@@ -427,13 +427,13 @@ xpath_fn_position(xpath_evaluation_context_t *context)
   xpath_result_t result;
   int i;
 
-  result.type = XPATH_RESULT_TYPE_INTEGER;
-  result.integer = 0;
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  result.value.numeric = 0;
 
   for (i = 0; i < nodeset_count(context->nodeset); i++) {
     if (context->node == nodeset_get(context->nodeset, i)) {
       /* Position is one-indexed, not zero */
-      result.integer = i + 1;
+      result.value.numeric = i + 1;
       break;
     }
   }
@@ -446,8 +446,8 @@ xpath_fn_last(xpath_evaluation_context_t *context)
 {
   xpath_result_t result;
 
-  result.type = XPATH_RESULT_TYPE_INTEGER;
-  result.integer = nodeset_count(context->nodeset);
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  result.value.numeric = nodeset_count(context->nodeset);
 
   return result;
 }

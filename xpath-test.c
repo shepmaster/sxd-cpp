@@ -494,7 +494,7 @@ test_xpath_fn_true(void)
   xpath_result_t res;
   res = xpath_fn_true(NULL);
   assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.boolean == TRUE);
+  assert(res.value.boolean == TRUE);
 }
 
 static void
@@ -503,7 +503,7 @@ test_xpath_fn_false(void)
   xpath_result_t res;
   res = xpath_fn_false(NULL);
   assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.boolean == FALSE);
+  assert(res.value.boolean == FALSE);
 }
 
 static void
@@ -525,18 +525,18 @@ test_xpath_fn_position(void)
 
   context.node = d.a;
   res = xpath_fn_position(&context);
-  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
-  assert(res.integer == 1);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 1);
 
   context.node = d.b;
   res = xpath_fn_position(&context);
-  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
-  assert(res.integer == 2);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 2);
 
   context.node = d.c;
   res = xpath_fn_position(&context);
-  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
-  assert(res.integer == 3);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 3);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
@@ -561,18 +561,18 @@ test_xpath_fn_last(void)
 
   context.node = d.a;
   res = xpath_fn_last(&context);
-  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
-  assert(res.integer == 3);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 3);
 
   context.node = d.b;
   res = xpath_fn_last(&context);
-  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
-  assert(res.integer == 3);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 3);
 
   context.node = d.c;
   res = xpath_fn_last(&context);
-  assert(res.type == XPATH_RESULT_TYPE_INTEGER);
-  assert(res.integer == 3);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(res.value.numeric == 3);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
@@ -634,8 +634,8 @@ test_xpath_predicate_value_3(void)
   init_step(&step);
 
   pred_val_3.op = XPATH_PREDICATE_OP_VALUE;
-  pred_val_3.info.value.type = XPATH_RESULT_TYPE_INTEGER;
-  pred_val_3.info.value.integer = 3;
+  pred_val_3.info.value.type = XPATH_RESULT_TYPE_NUMERIC;
+  pred_val_3.info.value.value.numeric = 3;
   step.predicates = g_list_append(step.predicates, &pred_val_3);
 
   ns = nodeset_new();
@@ -769,8 +769,8 @@ test_xpath_predicate_position_1(void)
   init_step(&step);
 
   pred_val_1.op = XPATH_PREDICATE_OP_VALUE;
-  pred_val_1.info.value.type = XPATH_RESULT_TYPE_INTEGER;
-  pred_val_1.info.value.integer = 1;
+  pred_val_1.info.value.type = XPATH_RESULT_TYPE_NUMERIC;
+  pred_val_1.info.value.value.numeric = 1;
 
   pred_fn_position.op = XPATH_PREDICATE_OP_FUNCTION;
   pred_fn_position.info.fn = xpath_fn_position;
@@ -836,11 +836,11 @@ initialize_globals(void)
 {
   g_predicate_value_true.op = XPATH_PREDICATE_OP_VALUE;
   g_predicate_value_true.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  g_predicate_value_true.info.value.boolean = TRUE;
+  g_predicate_value_true.info.value.value.boolean = TRUE;
 
   g_predicate_value_false.op = XPATH_PREDICATE_OP_VALUE;
   g_predicate_value_false.info.value.type = XPATH_RESULT_TYPE_BOOLEAN;
-  g_predicate_value_false.info.value.boolean = FALSE;
+  g_predicate_value_false.info.value.value.boolean = FALSE;
 }
 
 int
