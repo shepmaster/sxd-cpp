@@ -138,6 +138,7 @@ xpath_compile(const char * const xpath)
       break;
     }
   }
+  xpath_tokens_free(tokens);
 
   return compiled;
 }
