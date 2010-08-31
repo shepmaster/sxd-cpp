@@ -768,6 +768,70 @@ test_xpath_predicate_fn_false(void)
 }
 
 static void
+test_xpath_predicate_fn_floor(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_axis_test_t d;
+  xpath_predicate_t pred;
+  xpath_result_t value;
+  GArray *parameters;
+
+  init_xpath_axis_test(&d);
+  init_step(&step);
+  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  value.type = XPATH_RESULT_TYPE_NUMERIC;
+  value.value.numeric = 1.3;
+  g_array_append_val(parameters, value);
+
+  pred.op = XPATH_PREDICATE_OP_FUNCTION;
+  pred.info.function.fn = xpath_fn_floor;
+  pred.info.function.parameters = parameters;
+  step.predicates = g_list_append(step.predicates, &pred);
+
+  ns = nodeset_new();
+  nodeset_add(ns, d.alpha);
+  ns = xpath_apply_predicates(ns, &step);
+  assert(1 == nodeset_count(ns));
+
+  g_list_free(step.predicates);
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
+static void
+test_xpath_predicate_fn_ceiling(void)
+{
+  nodeset_t *ns;
+  xpath_step_t step;
+  xpath_axis_test_t d;
+  xpath_predicate_t pred;
+  xpath_result_t value;
+  GArray *parameters;
+
+  init_xpath_axis_test(&d);
+  init_step(&step);
+  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  value.type = XPATH_RESULT_TYPE_NUMERIC;
+  value.value.numeric = 0.1;
+  g_array_append_val(parameters, value);
+
+  pred.op = XPATH_PREDICATE_OP_FUNCTION;
+  pred.info.function.fn = xpath_fn_ceiling;
+  pred.info.function.parameters = parameters;
+  step.predicates = g_list_append(step.predicates, &pred);
+
+  ns = nodeset_new();
+  nodeset_add(ns, d.alpha);
+  ns = xpath_apply_predicates(ns, &step);
+  assert(1 == nodeset_count(ns));
+
+  g_list_free(step.predicates);
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+}
+
+static void
 test_xpath_predicate_equal_true(void)
 {
   nodeset_t *ns;
@@ -942,6 +1006,8 @@ main(int argc, char **argv)
   test_xpath_predicate_value_3();
   test_xpath_predicate_fn_true();
   test_xpath_predicate_fn_false();
+  test_xpath_predicate_fn_floor();
+  test_xpath_predicate_fn_ceiling();
   test_xpath_predicate_equal_true();
   test_xpath_predicate_equal_false();
   test_xpath_predicate_position_1();
