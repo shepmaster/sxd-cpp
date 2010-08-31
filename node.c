@@ -10,8 +10,12 @@ void
 node_foreach_child(node_t *node, node_foreach_fn_t fn, gpointer user_data)
 {
   node_t *child;
-  for (child = node->first_child; child; child = child->next_sibling) {
+
+  child = node->first_child;
+  while (child) {
+    node_t *next = child->next_sibling;
     fn(child, user_data);
+    child = next;
   }
 }
 
@@ -19,8 +23,12 @@ void
 node_foreach_preceding_sibling(node_t *node, node_foreach_fn_t fn, gpointer user_data)
 {
   node_t *sibling;
-  for (sibling = node->prev_sibling; sibling; sibling = sibling->prev_sibling) {
+
+  sibling = node->prev_sibling;
+  while (sibling) {
+    node_t *next = sibling->prev_sibling;
     fn(sibling, user_data);
+    sibling = next;
   }
 }
 
@@ -28,8 +36,12 @@ void
 node_foreach_following_sibling(node_t *node, node_foreach_fn_t fn, gpointer user_data)
 {
   node_t *sibling;
-  for (sibling = node->next_sibling; sibling; sibling = sibling->next_sibling) {
+
+  sibling = node->next_sibling;
+  while (sibling) {
+    node_t *next = sibling->next_sibling;
     fn(sibling, user_data);
+    sibling = next;
   }
 }
 
