@@ -141,4 +141,7 @@ xpath_fn_last(xpath_evaluation_context_t *context);
 xpath_result_t
 xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters);
 
+xpath_result_t
+xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
 #endif
