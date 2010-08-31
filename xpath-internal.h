@@ -77,7 +77,7 @@ typedef struct {
   nodeset_t *nodeset;
 } xpath_evaluation_context_t;
 
-typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context);
+typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, GArray *parameters);
 
 typedef enum {
   XPATH_PREDICATE_OP_VALUE,
@@ -89,7 +89,10 @@ struct xpath_predicateS {
   xpath_predicate_op_t op;
   union {
     xpath_result_t value;
-    xpath_fn_t fn;
+    struct {
+      xpath_fn_t fn;
+      GArray *parameters;
+    } function;
     struct {
       struct xpath_predicateS *left;
       struct xpath_predicateS *right;
@@ -127,16 +130,16 @@ nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);
 
 xpath_result_t
-xpath_fn_true(xpath_evaluation_context_t *context_unused);
+xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused);
 
 xpath_result_t
-xpath_fn_false(xpath_evaluation_context_t *context_unused);
+xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_unused);
 
 xpath_result_t
-xpath_fn_position(xpath_evaluation_context_t *context);
+xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused);
 
 xpath_result_t
-xpath_fn_last(xpath_evaluation_context_t *context);
+xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused);
 
 xpath_result_t
 xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters);

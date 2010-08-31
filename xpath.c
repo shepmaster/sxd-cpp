@@ -159,7 +159,7 @@ eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context
     result = predicate->info.value;
     break;
   case XPATH_PREDICATE_OP_FUNCTION:
-    result = predicate->info.fn(context);
+    result = predicate->info.function.fn(context, predicate->info.function.parameters);
     break;
   case XPATH_PREDICATE_OP_EQUAL:
     {
@@ -196,7 +196,8 @@ evaluate_as_position(xpath_result_t result_value, xpath_evaluation_context_t *co
   pred_val.info.value = result_value;
 
   pred_fn_position.op = XPATH_PREDICATE_OP_FUNCTION;
-  pred_fn_position.info.fn = xpath_fn_position;
+  pred_fn_position.info.function.fn = xpath_fn_position;
+  pred_fn_position.info.function.parameters = NULL;
 
   pred_eq.op = XPATH_PREDICATE_OP_EQUAL;
   pred_eq.info.child.left = &pred_val;
@@ -405,7 +406,7 @@ xpath_apply_xpath(node_t *node, const char * const xpath)
 }
 
 xpath_result_t
-xpath_fn_true(xpath_evaluation_context_t *context_unused)
+xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -414,7 +415,7 @@ xpath_fn_true(xpath_evaluation_context_t *context_unused)
 }
 
 xpath_result_t
-xpath_fn_false(xpath_evaluation_context_t *context_unused)
+xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -423,7 +424,7 @@ xpath_fn_false(xpath_evaluation_context_t *context_unused)
 }
 
 xpath_result_t
-xpath_fn_position(xpath_evaluation_context_t *context)
+xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused)
 {
   xpath_result_t result;
   int i;
@@ -443,7 +444,7 @@ xpath_fn_position(xpath_evaluation_context_t *context)
 }
 
 xpath_result_t
-xpath_fn_last(xpath_evaluation_context_t *context)
+xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused)
 {
   xpath_result_t result;
 

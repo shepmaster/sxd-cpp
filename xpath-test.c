@@ -492,7 +492,7 @@ static void
 test_xpath_fn_true(void)
 {
   xpath_result_t res;
-  res = xpath_fn_true(NULL);
+  res = xpath_fn_true(NULL, NULL);
   assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
   assert(res.value.boolean == TRUE);
 }
@@ -501,7 +501,7 @@ static void
 test_xpath_fn_false(void)
 {
   xpath_result_t res;
-  res = xpath_fn_false(NULL);
+  res = xpath_fn_false(NULL, NULL);
   assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
   assert(res.value.boolean == FALSE);
 }
@@ -524,17 +524,17 @@ test_xpath_fn_position(void)
   context.nodeset = ns;
 
   context.node = d.a;
-  res = xpath_fn_position(&context);
+  res = xpath_fn_position(&context, NULL);
   assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
   assert(res.value.numeric == 1);
 
   context.node = d.b;
-  res = xpath_fn_position(&context);
+  res = xpath_fn_position(&context, NULL);
   assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
   assert(res.value.numeric == 2);
 
   context.node = d.c;
-  res = xpath_fn_position(&context);
+  res = xpath_fn_position(&context, NULL);
   assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
   assert(res.value.numeric == 3);
 
@@ -560,17 +560,17 @@ test_xpath_fn_last(void)
   context.nodeset = ns;
 
   context.node = d.a;
-  res = xpath_fn_last(&context);
+  res = xpath_fn_last(&context, NULL);
   assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
   assert(res.value.numeric == 3);
 
   context.node = d.b;
-  res = xpath_fn_last(&context);
+  res = xpath_fn_last(&context, NULL);
   assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
   assert(res.value.numeric == 3);
 
   context.node = d.c;
-  res = xpath_fn_last(&context);
+  res = xpath_fn_last(&context, NULL);
   assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
   assert(res.value.numeric == 3);
 
@@ -727,7 +727,8 @@ test_xpath_predicate_fn_true(void)
   init_step(&step);
 
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
-  pred.info.fn = xpath_fn_true;
+  pred.info.function.fn = xpath_fn_true;
+  pred.info.function.parameters = NULL;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = nodeset_new();
@@ -752,7 +753,8 @@ test_xpath_predicate_fn_false(void)
   init_step(&step);
 
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
-  pred.info.fn = xpath_fn_false;
+  pred.info.function.fn = xpath_fn_false;
+  pred.info.function.parameters = NULL;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = nodeset_new();
@@ -835,7 +837,8 @@ test_xpath_predicate_position_1(void)
   pred_val_1.info.value.value.numeric = 1;
 
   pred_fn_position.op = XPATH_PREDICATE_OP_FUNCTION;
-  pred_fn_position.info.fn = xpath_fn_position;
+  pred_fn_position.info.function.fn = xpath_fn_position;
+  pred_fn_position.info.function.parameters = NULL;
 
   pred.op = XPATH_PREDICATE_OP_EQUAL;
   pred.info.child.left = &pred_val_1;
