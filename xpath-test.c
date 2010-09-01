@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <assert.h>
 
 #include "xpath-internal.h"
@@ -641,6 +642,57 @@ test_xpath_fn_ceiling(void)
 }
 
 static void
+test_xpath_fn_round(void)
+{
+  GArray *parameters;
+  xpath_result_t *value;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(*value));
+  g_array_set_size(parameters, 1);
+  value = &g_array_index(parameters, xpath_result_t, 0);
+
+  value->type = XPATH_RESULT_TYPE_NUMERIC;
+
+#define assert_round(_in, _expected)			\
+  value->value.numeric = _in;				\
+  res = xpath_fn_round(NULL, parameters);		\
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);	\
+  assert(res.value.numeric == _expected);		\
+
+  assert_round(2.0, 2);
+  assert_round(1.9, 2);
+  assert_round(1.5, 2);
+  assert_round(1.1, 1);
+  assert_round(1.0, 1);
+  assert_round(0.9, 1);
+  assert_round(0.5, 1);
+  assert_round(0.1, 0);
+  assert_round(-0.1, -0);
+  assert_round(-0.5, -0);
+  assert_round(-0.9, -1);
+  assert_round(-1.0, -1);
+  assert_round(-1.1, -1);
+  assert_round(-1.5, -1);
+  assert_round(-1.9, -2);
+  assert_round(-2.0, -2);
+
+  assert_round(INFINITY, INFINITY);
+  assert_round(-INFINITY, -INFINITY);
+  assert_round(-0, -0);
+  assert_round(0, 0);
+
+#undef assert_round
+
+  value->value.numeric = NAN;
+  res = xpath_fn_round(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
+  assert(isnan(res.value.numeric));
+
+  g_array_free(parameters, TRUE);
+}
+
+static void
 test_xpath_predicate_true(void)
 {
   nodeset_t *ns;
@@ -1001,6 +1053,7 @@ main(int argc, char **argv)
   test_xpath_fn_last();
   test_xpath_fn_floor();
   test_xpath_fn_ceiling();
+  test_xpath_fn_round();
   test_xpath_predicate_true();
   test_xpath_predicate_false();
   test_xpath_predicate_value_3();

@@ -495,3 +495,43 @@ xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters)
 
   return result;
 }
+
+xpath_result_t
+xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *value;
+  xpath_result_t result;
+
+  if (parameters->len != 1) {
+    abort();
+  }
+
+  value = &g_array_index(parameters, xpath_result_t, 0);
+  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  if (isfinite(value->value.numeric)) {
+    /* The standard says we need to round towards positive infinity,
+     * but that is not the default. It seems as if we should be able to
+     * use fesetround(), but I can't determine the thread safety of that
+     * function.
+     */
+    double truncated = (int) value->value.numeric;
+
+    if (value->value.numeric < 0) {
+      if (value->value.numeric - truncated >= -0.5) {
+	result.value.numeric = truncated;
+      } else {
+	result.value.numeric = truncated - 1;
+      }
+    } else {
+      result.value.numeric = round(value->value.numeric);
+    }
+  } else {
+    result.value.numeric = value->value.numeric;
+  }
+
+  return result;
+}
