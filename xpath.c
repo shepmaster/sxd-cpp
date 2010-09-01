@@ -596,3 +596,30 @@ xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *paramet
   result.value.boolean = g_str_has_prefix(string->value.string, prefix->value.string);
   return result;
 }
+
+xpath_result_t
+xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *haystack;
+  xpath_result_t *needle;
+  xpath_result_t result;
+
+  if (parameters->len != 2) {
+    abort();
+  }
+
+  haystack = &g_array_index(parameters, xpath_result_t, 0);
+  needle = &g_array_index(parameters, xpath_result_t, 1);
+
+  if (haystack->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+
+  if (needle->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_BOOLEAN;
+  result.value.boolean = (g_strstr_len(haystack->value.string, -1, needle->value.string) != NULL);
+  return result;
+}

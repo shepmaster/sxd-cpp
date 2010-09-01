@@ -759,6 +759,30 @@ test_xpath_fn_starts_with(void)
 }
 
 static void
+test_xpath_fn_contains(void)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  g_array_set_size(parameters, 2);
+
+  set_string_parameter(parameters, 0, "hello world");
+
+  set_string_parameter(parameters, 1, "world");
+  res = xpath_fn_contains(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
+  assert(res.value.boolean == TRUE);
+
+  set_string_parameter(parameters, 1, "cow");
+  res = xpath_fn_contains(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
+  assert(res.value.boolean == FALSE);
+
+  g_array_free(parameters, TRUE);
+}
+
+static void
 test_xpath_predicate_true(void)
 {
   nodeset_t *ns;
@@ -1110,6 +1134,7 @@ main(int argc, char **argv)
   test_xpath_fn_concat_2();
   test_xpath_fn_concat_3();
   test_xpath_fn_starts_with();
+  test_xpath_fn_contains();
   test_xpath_predicate_true();
   test_xpath_predicate_false();
   test_xpath_predicate_value_3();
