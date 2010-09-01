@@ -22,4 +22,7 @@ test_output_init(test_output_t *to);
 void
 test_output_destroy(test_output_t *to);
 
+nodeset_t *
+nodeset_new_with_nodes(node_t *first, ...);
+
 #endif

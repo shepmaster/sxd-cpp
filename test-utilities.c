@@ -48,3 +48,22 @@ test_output_destroy(test_output_t *to)
 {
   g_string_free(to->string, TRUE);
 }
+
+nodeset_t *
+nodeset_new_with_nodes(node_t *first, ...)
+{
+  nodeset_t *ns;
+  node_t *node;
+  va_list ap;
+
+  ns = nodeset_new();
+  nodeset_add(ns, first);
+
+  va_start(ap, first);
+  while ((node = va_arg(ap, node_t *))) {
+    nodeset_add(ns, node);
+  }
+  va_end(ap);
+
+  return ns;
+}
