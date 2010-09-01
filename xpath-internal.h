@@ -60,7 +60,8 @@ typedef struct {
 
 typedef enum {
   XPATH_RESULT_TYPE_BOOLEAN,
-  XPATH_RESULT_TYPE_NUMERIC
+  XPATH_RESULT_TYPE_NUMERIC,
+  XPATH_RESULT_TYPE_STRING
 } xpath_result_type_t;
 
 typedef struct {
@@ -69,6 +70,7 @@ typedef struct {
   union {
     unsigned int boolean:1;
     double numeric;
+    char *string;
   } value;
 } xpath_result_t;
 

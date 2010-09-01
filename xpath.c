@@ -177,6 +177,9 @@ eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context
       case XPATH_RESULT_TYPE_NUMERIC:
 	result.value.boolean = lresult.value.numeric == rresult.value.numeric;
 	break;
+      case XPATH_RESULT_TYPE_STRING:
+	result.value.boolean = (strcmp(lresult.value.string, rresult.value.string) == 0);
+	break;
       }
     }
     break;
