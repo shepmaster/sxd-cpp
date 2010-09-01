@@ -155,4 +155,7 @@ xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters);
 xpath_result_t
 xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters);
 
+xpath_result_t
+xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
 #endif

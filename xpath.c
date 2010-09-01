@@ -569,3 +569,30 @@ xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters)
   result.value.string = g_string_free(str, FALSE);
   return result;
 }
+
+xpath_result_t
+xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *string;
+  xpath_result_t *prefix;
+  xpath_result_t result;
+
+  if (parameters->len != 2) {
+    abort();
+  }
+
+  string = &g_array_index(parameters, xpath_result_t, 0);
+  prefix = &g_array_index(parameters, xpath_result_t, 1);
+
+  if (string->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+
+  if (prefix->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_BOOLEAN;
+  result.value.boolean = g_str_has_prefix(string->value.string, prefix->value.string);
+  return result;
+}
