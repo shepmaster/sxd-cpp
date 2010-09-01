@@ -538,3 +538,34 @@ xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters)
 
   return result;
 }
+
+xpath_result_t
+xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  GString *str;
+  xpath_result_t *param;
+  xpath_result_t result;
+  int i;
+
+  if (parameters->len < 2) {
+    abort();
+  }
+
+  param = &g_array_index(parameters, xpath_result_t, 0);
+  if (param->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+  str = g_string_new(param->value.string);
+
+  for (i = 1; i < parameters->len; i++) {
+    param = &g_array_index(parameters, xpath_result_t, i);
+    if (param->type != XPATH_RESULT_TYPE_STRING) {
+      abort();
+    }
+    g_string_append(str, param->value.string);
+  }
+
+  result.type = XPATH_RESULT_TYPE_STRING;
+  result.value.string = g_string_free(str, FALSE);
+  return result;
+}

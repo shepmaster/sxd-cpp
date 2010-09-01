@@ -686,6 +686,54 @@ test_xpath_fn_round(void)
   g_array_free(parameters, TRUE);
 }
 
+#define set_string_parameter(_parameters, _index, _string)		\
+  {									\
+    xpath_result_t *__value;						\
+    __value = &g_array_index(_parameters, xpath_result_t, _index);	\
+    __value->type = XPATH_RESULT_TYPE_STRING;				\
+    __value->value.string = _string;					\
+  }
+
+static void
+test_xpath_fn_concat_2(void)
+{
+  GArray *parameters;
+  xpath_result_t *value;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(*value));
+  g_array_set_size(parameters, 2);
+
+  set_string_parameter(parameters, 0, "one");
+  set_string_parameter(parameters, 1, "two");
+
+  res = xpath_fn_concat(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_STRING);
+  assert(strcmp(res.value.string, "onetwo") == 0);
+
+  g_array_free(parameters, TRUE);
+}
+
+static void
+test_xpath_fn_concat_3(void)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  g_array_set_size(parameters, 3);
+
+  set_string_parameter(parameters, 0, "one");
+  set_string_parameter(parameters, 1, "two");
+  set_string_parameter(parameters, 2, "three");
+
+  res = xpath_fn_concat(NULL, parameters);
+  assert(res.type == XPATH_RESULT_TYPE_STRING);
+  assert(strcmp(res.value.string, "onetwothree") == 0);
+
+  g_array_free(parameters, TRUE);
+}
+
 static void
 test_xpath_predicate_true(void)
 {
@@ -1035,6 +1083,8 @@ main(int argc, char **argv)
   test_xpath_fn_floor();
   test_xpath_fn_ceiling();
   test_xpath_fn_round();
+  test_xpath_fn_concat_2();
+  test_xpath_fn_concat_3();
   test_xpath_predicate_true();
   test_xpath_predicate_false();
   test_xpath_predicate_value_3();
