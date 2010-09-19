@@ -42,10 +42,9 @@ typedef enum {
   XPATH_AXIS_SELF
 } xpath_axis_t;
 
-typedef enum {
-  XPATH_NODE_TYPE_ELEMENT = 1 << 0,
-  XPATH_NODE_TYPE_TEXT_NODE = 1 << 1
-} xpath_node_type_t;
+#define XPATH_NODE_TYPE_ELEMENT (1 << 0)
+#define XPATH_NODE_TYPE_TEXT_NODE (1 << 1)
+typedef unsigned char xpath_node_type_t;
 
 typedef struct {
   xpath_axis_t axis;
