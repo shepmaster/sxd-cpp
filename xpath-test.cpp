@@ -239,69 +239,55 @@ destroy_xpath_axis_test(xpath_axis_test_t *d)
 #define CHECK_nodeset_item(_node, _nodeset, _index) \
   POINTERS_EQUAL(_node, nodeset_get(_nodeset, _index))
 
-TEST(xpath, axis_self)
+TEST_GROUP(xpath_axis)
 {
   nodeset_t *ns;
   xpath_step_t step;
   xpath_axis_test_t d;
 
-  init_xpath_axis_test(&d);
-  init_step(&step);
+  void setup(void)
+  {
+    init_xpath_axis_test(&d);
+    init_step(&step);
+  }
+
+  void teardown(void)
+  {
+    nodeset_free(ns);
+    destroy_xpath_axis_test(&d);
+  }
+};
+
+TEST(xpath_axis, axis_self)
+{
   step.axis = XPATH_AXIS_SELF;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
   CHECK_nodeset_item(d.b, ns, 0);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_parent)
+TEST(xpath_axis, axis_parent)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_PARENT;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
   CHECK_nodeset_item(d.one, ns, 0);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_following_sibling)
+TEST(xpath_axis, axis_following_sibling)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
   CHECK_EQUAL(2, nodeset_count(ns));
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.d, ns, 1);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_preceding_sibling)
+TEST(xpath_axis, axis_preceding_sibling)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_PRECEDING_SIBLING;
 
   ns = xpath_select_xpath_no_predicates(d.d, &step);
@@ -309,19 +295,10 @@ TEST(xpath, axis_preceding_sibling)
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.b, ns, 1);
   CHECK_nodeset_item(d.a, ns, 2);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_descendant)
+TEST(xpath_axis, axis_descendant)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_DESCENDANT;
 
   ns = xpath_select_xpath_no_predicates(d.alpha, &step);
@@ -336,19 +313,10 @@ TEST(xpath, axis_descendant)
   CHECK_nodeset_item(d.x, ns, 7);
   CHECK_nodeset_item(d.y, ns, 8);
   CHECK_nodeset_item(d.z, ns, 9);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_descendant_or_self)
+TEST(xpath_axis, axis_descendant_or_self)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_DESCENDANT_OR_SELF;
 
   ns = xpath_select_xpath_no_predicates(d.alpha, &step);
@@ -364,38 +332,20 @@ TEST(xpath, axis_descendant_or_self)
   CHECK_nodeset_item(d.x, ns, 8);
   CHECK_nodeset_item(d.y, ns, 9);
   CHECK_nodeset_item(d.z, ns, 10);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_ancestor)
+TEST(xpath_axis, axis_ancestor)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_ANCESTOR;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
   CHECK_EQUAL(2, nodeset_count(ns));
   CHECK_nodeset_item(d.one, ns, 0);
   CHECK_nodeset_item(d.alpha, ns, 1);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_ancestor_or_self)
+TEST(xpath_axis, axis_ancestor_or_self)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
 
   ns = xpath_select_xpath_no_predicates(d.c, &step);
@@ -403,19 +353,10 @@ TEST(xpath, axis_ancestor_or_self)
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
   CHECK_nodeset_item(d.alpha, ns, 2);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_following)
+TEST(xpath_axis, axis_following)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_FOLLOWING;
 
   ns = xpath_select_xpath_no_predicates(d.c, &step);
@@ -426,19 +367,10 @@ TEST(xpath, axis_following)
   CHECK_nodeset_item(d.x, ns, 3);
   CHECK_nodeset_item(d.y, ns, 4);
   CHECK_nodeset_item(d.z, ns, 5);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, axis_preceding)
+TEST(xpath_axis, axis_preceding)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
   step.axis = XPATH_AXIS_PRECEDING;
 
   ns = xpath_select_xpath_no_predicates(d.x, &step);
@@ -449,9 +381,6 @@ TEST(xpath, axis_preceding)
   CHECK_nodeset_item(d.b, ns, 3);
   CHECK_nodeset_item(d.c, ns, 4);
   CHECK_nodeset_item(d.d, ns, 5);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
 TEST(xpath, two_step)
