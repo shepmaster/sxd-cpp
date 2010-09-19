@@ -1,28 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
-#include "test-utilities.h"
+#include <CppUTest/TestHarness.h>
+#include <CppUTest/CommandLineTestRunner.h>
 
+extern "C" {
 #include "document.h"
 #include "text-node.h"
 
-static void
-test_new_text_node(void)
+#include "test-utilities.h"
+}
+
+TEST_GROUP(text_node)
+{};
+
+TEST(text_node, new_text_node)
 {
   document_t *doc;
   text_node_t *tn;
 
   doc = document_new();
   tn = document_text_node_new(doc, "I am text");
-  assert(strcmp(text_node_text(tn), "I am text") == 0);
+  STRCMP_EQUAL("I am text", text_node_text(tn));
   text_node_free(tn);
   document_free(doc);
 }
 
-static void
-test_output(void)
+TEST(text_node, output)
 {
   document_t *doc;
   text_node_t *tn;
@@ -34,7 +39,7 @@ test_output(void)
   tn = document_text_node_new(doc, "I am text");
 
   text_node_output(tn, &to.out);
-  assert(strcmp("I am text", to.string->str) == 0);
+  STRCMP_EQUAL("I am text", to.string->str);
 
   text_node_free(tn);
   document_free(doc);
@@ -44,8 +49,5 @@ test_output(void)
 int
 main(int argc, char **argv)
 {
-  test_new_text_node();
-  test_output();
-
-  return EXIT_SUCCESS;
+  return CommandLineTestRunner::RunAllTests(argc, argv);
 }
