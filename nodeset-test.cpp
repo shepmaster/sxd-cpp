@@ -1,22 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
+#include <CppUTest/TestHarness.h>
+#include <CppUTest/CommandLineTestRunner.h>
+
+extern "C" {
 #include "test-utilities.h"
 #include "nodeset.h"
+}
 
-static void
-test_new_nodeset(void)
+TEST_GROUP(nodeset)
+{};
+
+TEST(nodeset, new_nodeset)
 {
   nodeset_t *ns;
   ns = nodeset_new();
-  assert(ns != NULL);
+  CHECK(ns != NULL);
   nodeset_free(ns);
 }
 
-static void
-test_add_node(void)
+TEST(nodeset, add_node)
 {
   document_t *doc;
   node_t *n;
@@ -27,15 +32,14 @@ test_add_node(void)
   ns = nodeset_new();
 
   nodeset_add(ns, n);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
 
   nodeset_free(ns);
   node_free(n);
   document_free(doc);
 }
 
-static void
-test_get_node(void)
+TEST(nodeset, get_node)
 {
   document_t *doc;
   node_t *n;
@@ -49,15 +53,14 @@ test_get_node(void)
   nodeset_add(ns, n);
   n2 = nodeset_get(ns, 0);
 
-  assert(n == n2);
+  POINTERS_EQUAL(n, n2);
 
   nodeset_free(ns);  
   node_free(n);
   document_free(doc);
 }
 
-static void
-test_add_nodeset(void)
+TEST(nodeset, add_nodeset)
 {
   document_t *doc;
   node_t *n;
@@ -75,9 +78,9 @@ test_add_nodeset(void)
   nodeset_add(ns2, n2);
 
   nodeset_add_nodeset(ns, ns2);
-  assert(2 == nodeset_count(ns));
-  assert(n == nodeset_get(ns, 0));
-  assert(n2 == nodeset_get(ns, 1));
+  CHECK_EQUAL(2, nodeset_count(ns));
+  POINTERS_EQUAL(n, nodeset_get(ns, 0));
+  POINTERS_EQUAL(n2, nodeset_get(ns, 1));
 
   nodeset_free(ns);
   nodeset_free(ns2);
@@ -89,10 +92,5 @@ test_add_nodeset(void)
 int
 main(int argc, char **argv)
 {
-  test_new_nodeset();
-  test_add_node();
-  test_get_node();
-  test_add_nodeset();
-
-  return EXIT_SUCCESS;
+  return CommandLineTestRunner::RunAllTests(argc, argv);
 }
