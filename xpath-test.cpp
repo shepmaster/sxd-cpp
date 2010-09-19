@@ -35,7 +35,7 @@ dump_xpath_tokens(xpath_tokens_t *tokens)
     CHECK_EQUAL(_start, __token->start);				\
 }
 
-TEST(xpath, xpath_tokenize)
+TEST(xpath, tokenize)
 {
   xpath_tokens_t *tokens;
   const char * const xpath = "//one/two";
@@ -60,7 +60,7 @@ TEST(xpath, xpath_tokenize)
     free(__str);					\
   }							\
 
-TEST(xpath, xpath_tokens_string)
+TEST(xpath, tokens_string)
 {
   xpath_tokens_t *tokens;
   const char * const xpath = "//one/two";
@@ -75,7 +75,7 @@ TEST(xpath, xpath_tokens_string)
   xpath_tokens_free(tokens);
 }
 
-TEST(xpath, xpath_compile_element)
+TEST(xpath, compile_element)
 {
   const char * const name = "one";
   xpath_compiled_t *compiled;
@@ -125,7 +125,7 @@ init_step(xpath_step_t *step)
   step->predicates = NULL;
 }
 
-TEST(xpath, xpath_element)
+TEST(xpath, element)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
@@ -144,7 +144,7 @@ TEST(xpath, xpath_element)
   destroy_xpath_test(&d);
 }
 
-TEST(xpath, xpath_text_node)
+TEST(xpath, text_node)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
@@ -164,7 +164,7 @@ TEST(xpath, xpath_text_node)
   destroy_xpath_test(&d);
 }
 
-TEST(xpath, xpath_element_and_text_node)
+TEST(xpath, element_and_text_node)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
@@ -239,7 +239,7 @@ destroy_xpath_axis_test(xpath_axis_test_t *d)
 #define CHECK_nodeset_item(_node, _nodeset, _index) \
   POINTERS_EQUAL(_node, nodeset_get(_nodeset, _index))
 
-TEST(xpath, xpath_axis_self)
+TEST(xpath, axis_self)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -257,7 +257,7 @@ TEST(xpath, xpath_axis_self)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_parent)
+TEST(xpath, axis_parent)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -275,7 +275,7 @@ TEST(xpath, xpath_axis_parent)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_following_sibling)
+TEST(xpath, axis_following_sibling)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -294,7 +294,7 @@ TEST(xpath, xpath_axis_following_sibling)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_preceding_sibling)
+TEST(xpath, axis_preceding_sibling)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -314,7 +314,7 @@ TEST(xpath, xpath_axis_preceding_sibling)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_descendant)
+TEST(xpath, axis_descendant)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -341,7 +341,7 @@ TEST(xpath, xpath_axis_descendant)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_descendant_or_self)
+TEST(xpath, axis_descendant_or_self)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -369,7 +369,7 @@ TEST(xpath, xpath_axis_descendant_or_self)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_ancestor)
+TEST(xpath, axis_ancestor)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -388,7 +388,7 @@ TEST(xpath, xpath_axis_ancestor)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_ancestor_or_self)
+TEST(xpath, axis_ancestor_or_self)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -408,7 +408,7 @@ TEST(xpath, xpath_axis_ancestor_or_self)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_following)
+TEST(xpath, axis_following)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -431,7 +431,7 @@ TEST(xpath, xpath_axis_following)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_axis_preceding)
+TEST(xpath, axis_preceding)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -454,7 +454,7 @@ TEST(xpath, xpath_axis_preceding)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_two_step)
+TEST(xpath, two_step)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -479,7 +479,7 @@ TEST(xpath, xpath_two_step)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_fn_true)
+TEST(xpath, fn_true)
 {
   xpath_result_t res;
   res = xpath_fn_true(NULL, NULL);
@@ -487,7 +487,7 @@ TEST(xpath, xpath_fn_true)
   CHECK_EQUAL(TRUE, res.value.boolean);
 }
 
-TEST(xpath, xpath_fn_false)
+TEST(xpath, fn_false)
 {
   xpath_result_t res;
   res = xpath_fn_false(NULL, NULL);
@@ -495,7 +495,7 @@ TEST(xpath, xpath_fn_false)
   CHECK_EQUAL(FALSE, res.value.boolean);
 }
 
-TEST(xpath, xpath_fn_position)
+TEST(xpath, fn_position)
 {
   xpath_axis_test_t d;
   nodeset_t *ns;
@@ -527,7 +527,7 @@ TEST(xpath, xpath_fn_position)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_fn_last)
+TEST(xpath, fn_last)
 {
   xpath_axis_test_t d;
   nodeset_t *ns;
@@ -559,7 +559,7 @@ TEST(xpath, xpath_fn_last)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_fn_floor)
+TEST(xpath, fn_floor)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -589,7 +589,7 @@ TEST(xpath, xpath_fn_floor)
   g_array_free(parameters, TRUE);
 }
 
-TEST(xpath, xpath_fn_ceiling)
+TEST(xpath, fn_ceiling)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -619,7 +619,7 @@ TEST(xpath, xpath_fn_ceiling)
   g_array_free(parameters, TRUE);
 }
 
-TEST(xpath, xpath_fn_round)
+TEST(xpath, fn_round)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -677,7 +677,7 @@ TEST(xpath, xpath_fn_round)
     __value->value.string = strdup(_string);				\
   }
 
-TEST(xpath, xpath_fn_concat_2)
+TEST(xpath, fn_concat_2)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -696,7 +696,7 @@ TEST(xpath, xpath_fn_concat_2)
   g_array_free(parameters, TRUE);
 }
 
-TEST(xpath, xpath_fn_concat_3)
+TEST(xpath, fn_concat_3)
 {
   GArray *parameters;
   xpath_result_t res;
@@ -715,7 +715,7 @@ TEST(xpath, xpath_fn_concat_3)
   g_array_free(parameters, TRUE);
 }
 
-TEST(xpath, xpath_fn_starts_with)
+TEST(xpath, fn_starts_with)
 {
   GArray *parameters;
   xpath_result_t res;
@@ -738,7 +738,7 @@ TEST(xpath, xpath_fn_starts_with)
   g_array_free(parameters, TRUE);
 }
 
-TEST(xpath, xpath_fn_contains)
+TEST(xpath, fn_contains)
 {
   GArray *parameters;
   xpath_result_t res;
@@ -761,55 +761,47 @@ TEST(xpath, xpath_fn_contains)
   g_array_free(parameters, TRUE);
 }
 
-TEST(xpath, xpath_predicate_true)
+TEST_GROUP(xpath_predicate)
 {
   nodeset_t *ns;
   xpath_step_t step;
   xpath_axis_test_t d;
 
-  init_xpath_axis_test(&d);
-  init_step(&step);
+  void setup(void)
+  {
+    init_xpath_axis_test(&d);
+    init_step(&step);
+  }
 
+  void teardown(void)
+  {
+    g_list_free(step.predicates);
+    nodeset_free(ns);
+    destroy_xpath_axis_test(&d);
+  }
+};
+
+TEST(xpath_predicate, predicate_true)
+{
   step.predicates = g_list_append(step.predicates, &g_predicate_value_true);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_false)
+TEST(xpath_predicate, predicate_false)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
-
   step.predicates = g_list_append(step.predicates, &g_predicate_value_false);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(0, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_value_3)
+TEST(xpath_predicate, predicate_value_3)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred_val_3;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
 
   pred_val_3.op = XPATH_PREDICATE_OP_VALUE;
   pred_val_3.info.value.type = XPATH_RESULT_TYPE_NUMERIC;
@@ -821,21 +813,11 @@ TEST(xpath, xpath_predicate_value_3)
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
   CHECK_nodeset_item(d.c, ns, 0);
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_fn_true)
+TEST(xpath_predicate, predicate_fn_true)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
 
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_true;
@@ -845,21 +827,11 @@ TEST(xpath, xpath_predicate_fn_true)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_fn_false)
+TEST(xpath_predicate, predicate_fn_false)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
 
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_false;
@@ -869,17 +841,10 @@ TEST(xpath, xpath_predicate_fn_false)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(0, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_fn_floor)
+TEST(xpath_predicate, predicate_fn_floor)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred;
   xpath_result_t value;
   GArray *parameters;
@@ -899,23 +864,14 @@ TEST(xpath, xpath_predicate_fn_floor)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_fn_ceiling)
+TEST(xpath_predicate, predicate_fn_ceiling)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred;
   xpath_result_t value;
   GArray *parameters;
 
-  init_xpath_axis_test(&d);
-  init_step(&step);
   parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
   value.type = XPATH_RESULT_TYPE_NUMERIC;
   value.value.numeric = 0.1;
@@ -929,21 +885,11 @@ TEST(xpath, xpath_predicate_fn_ceiling)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_equal_true)
+TEST(xpath_predicate, predicate_equal_true)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
 
   pred.op = XPATH_PREDICATE_OP_EQUAL;
   pred.info.child.left = &g_predicate_value_true;
@@ -953,21 +899,11 @@ TEST(xpath, xpath_predicate_equal_true)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_equal_false)
+TEST(xpath_predicate, predicate_equal_false)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
 
   pred.op = XPATH_PREDICATE_OP_EQUAL;
   pred.info.child.left = &g_predicate_value_true;
@@ -977,23 +913,13 @@ TEST(xpath, xpath_predicate_equal_false)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(0, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, xpath_predicate_position_1)
+TEST(xpath_predicate, predicate_position_1)
 {
-  nodeset_t *ns;
-  xpath_step_t step;
-  xpath_axis_test_t d;
   xpath_predicate_t pred;
   xpath_predicate_t pred_val_1;
   xpath_predicate_t pred_fn_position;
-
-  init_xpath_axis_test(&d);
-  init_step(&step);
 
   pred_val_1.op = XPATH_PREDICATE_OP_VALUE;
   pred_val_1.info.value.type = XPATH_RESULT_TYPE_NUMERIC;
@@ -1011,10 +937,6 @@ TEST(xpath, xpath_predicate_position_1)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_list_free(step.predicates);
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
 }
 
 #define CHECK_nodeset_element_name(_nodeset, _index, _name) \
@@ -1027,7 +949,7 @@ TEST(xpath, xpath_predicate_position_1)
     STRCMP_EQUAL(_name, element_name(__e));		     \
   }
 
-TEST(xpath, xpath_apply_element)
+TEST(xpath, apply_element)
 {
   const char * const name = "one";
 
