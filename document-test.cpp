@@ -1,22 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
+#include <CppUTest/TestHarness_c.h>
+#include <CppUTest/CommandLineTestRunner.h>
+
+extern "C" {
 #include "document.h"
+}
 
-static void
-test_new_document(void)
+TEST_GROUP(document)
+{};
+
+TEST(document, new_document)
 {
   document_t *doc;
   
   doc = document_new();
-  assert(doc != NULL);
+  CHECK(doc != NULL);
   document_free(doc);
 }
 
-static void
-test_document_managed_count(void)
+TEST(document, managed_count)
 {
   document_t *doc;
   element_t *n1, *n2, *n3;
@@ -24,25 +29,24 @@ test_document_managed_count(void)
   doc = document_new();
 
   n1 = document_element_new(doc, "alpha");
-  assert(document_managed_node_count(doc) == 1);
+  CHECK_EQUAL(1, document_managed_node_count(doc));
   n2 = document_element_new(doc, "beta");
-  assert(document_managed_node_count(doc) == 2);
+  CHECK_EQUAL(2, document_managed_node_count(doc));
   n3 = document_element_new(doc, "omega");
-  assert(document_managed_node_count(doc) == 3);
+  CHECK_EQUAL(3, document_managed_node_count(doc));
 
   node_append_child(element_cast_to_node(n1), element_cast_to_node(n2));
   node_append_child(element_cast_to_node(n2), element_cast_to_node(n3));
 
   element_free(n3);
-  assert(document_managed_node_count(doc) == 2);
+  CHECK_EQUAL(2, document_managed_node_count(doc));
   element_free(n1);
-  assert(document_managed_node_count(doc) == 0);
+  CHECK_EQUAL(0, document_managed_node_count(doc));
 
   document_free(doc);
 }
 
-static void
-test_move_node_between_documents(void)
+TEST(document, move_node_between_documents)
 {
   document_t *d1, *d2;
   element_t *n;
@@ -56,16 +60,16 @@ test_move_node_between_documents(void)
   orig_name = element_name(n);
   orig_attr_value = element_get_attribute(n, "enabled");
 
-  assert(document_managed_node_count(d1) == 1);
-  assert(document_managed_node_count(d2) == 0);
+  CHECK_EQUAL(1, document_managed_node_count(d1));
+  CHECK_EQUAL(0, document_managed_node_count(d2));
 
   document_manage_node(d2, element_cast_to_node(n));
-  assert(document_managed_node_count(d1) == 0);
-  assert(document_managed_node_count(d2) == 1);
-  assert(strcmp(element_name(n), "hello") == 0);
-  assert(strcmp(element_get_attribute(n, "enabled"), "false") == 0);
-  assert(element_name(n) != orig_name);
-  assert(element_get_attribute(n, "enabled") != orig_attr_value);
+  CHECK_EQUAL(0, document_managed_node_count(d1));
+  CHECK_EQUAL(1, document_managed_node_count(d2));
+  STRCMP_EQUAL(element_name(n), "hello");
+  STRCMP_EQUAL(element_get_attribute(n, "enabled"), "false");
+  CHECK(element_name(n) != orig_name);
+  CHECK(element_get_attribute(n, "enabled") != orig_attr_value);
 
   element_free(n);
   document_free(d1);
@@ -75,9 +79,7 @@ test_move_node_between_documents(void)
 int
 main(int argc, char **argv)
 {
-  test_new_document();
-  test_document_managed_count();
-  test_move_node_between_documents();
+  return CommandLineTestRunner::RunAllTests(argc, argv);
 
   return EXIT_SUCCESS;
 }
