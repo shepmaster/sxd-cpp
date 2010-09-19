@@ -1074,45 +1074,6 @@ main(int argc, char **argv)
 {
   initialize_globals();
   return CommandLineTestRunner::RunAllTests(argc, argv);
-//   test_xpath_tokenize();
-//   test_xpath_tokens_string();
-//   test_xpath_compile_element();
-//   test_xpath_element();
-//   test_xpath_text_node();
-//   test_xpath_element_and_text_node();
-//   test_xpath_axis_self();
-//   test_xpath_axis_parent();
-//   test_xpath_axis_following_sibling();
-//   test_xpath_axis_preceding_sibling();
-//   test_xpath_axis_descendant();
-//   test_xpath_axis_descendant_or_self();
-//   test_xpath_axis_ancestor();
-//   test_xpath_axis_ancestor_or_self();
-//   test_xpath_axis_following();
-//   test_xpath_axis_preceding();
-//   test_xpath_two_step();
-//   test_xpath_apply_element();
-//   test_xpath_fn_true();
-//   test_xpath_fn_false();
-//   test_xpath_fn_position();
-//   test_xpath_fn_last();
-//   test_xpath_fn_floor();
-//   test_xpath_fn_ceiling();
-//   test_xpath_fn_round();
-//   test_xpath_fn_concat_2();
-//   test_xpath_fn_concat_3();
-//   test_xpath_fn_starts_with();
-//   test_xpath_fn_contains();
-//   test_xpath_predicate_true();
-//   test_xpath_predicate_false();
-//   test_xpath_predicate_value_3();
-//   test_xpath_predicate_fn_true();
-//   test_xpath_predicate_fn_false();
-//   test_xpath_predicate_fn_floor();
-//   test_xpath_predicate_fn_ceiling();
-//   test_xpath_predicate_equal_true();
-//   test_xpath_predicate_equal_false();
-//   test_xpath_predicate_position_1();
 
   return EXIT_SUCCESS;
 }
