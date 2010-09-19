@@ -2,86 +2,90 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <assert.h>
 
+#include <CppUTest/TestHarness.h>
+#include <CppUTest/CommandLineTestRunner.h>
+
+extern "C" {
 #include "xpath-internal.h"
 #include "test-utilities.h"
+}
 
 static xpath_predicate_t g_predicate_value_true;
 static xpath_predicate_t g_predicate_value_false;
 
+TEST_GROUP(xpath)
+{};
+
 void
 dump_xpath_tokens(xpath_tokens_t *tokens)
 {
-  int i;
+  unsigned int i;
   for (i = 0; i < tokens->tokens->len; i++) {
     xpath_token_t *t = &g_array_index(tokens->tokens, xpath_token_t, i);
     printf("%d\n", t->start);
   }
 }
 
-#define assert_token(_tokens, _index, _type, _start)			\
+#define CHECK_token(_tokens, _index, _type, _start)			\
   {									\
     xpath_token_t *__token;						\
     __token = &g_array_index(_tokens->tokens, xpath_token_t, _index);	\
-    assert(_type == __token->type);					\
-    assert(_start == __token->start);					\
+    CHECK_EQUAL(_type, __token->type);					\
+    CHECK_EQUAL(_start, __token->start);				\
 }
 
-static void
-test_xpath_tokenize(void)
+TEST(xpath, xpath_tokenize)
 {
   xpath_tokens_t *tokens;
   const char * const xpath = "//one/two";
   tokens = xpath_tokenize(xpath);
 
-  assert(strcmp(xpath, tokens->xpath) == 0);
-  assert(5 == tokens->tokens->len);
+  STRCMP_EQUAL(xpath, tokens->xpath);
+  CHECK_EQUAL(5, tokens->tokens->len);
 
-  assert_token(tokens, 0, SLASH, 0);
-  assert_token(tokens, 1, SLASH, 1);
-  assert_token(tokens, 2, TEXT,  2);
-  assert_token(tokens, 3, SLASH, 5);
-  assert_token(tokens, 4, TEXT,  6);
+  CHECK_token(tokens, 0, SLASH, 0);
+  CHECK_token(tokens, 1, SLASH, 1);
+  CHECK_token(tokens, 2, TEXT,  2);
+  CHECK_token(tokens, 3, SLASH, 5);
+  CHECK_token(tokens, 4, TEXT,  6);
 
   xpath_tokens_free(tokens);
 }
 
-#define assert_str(_tokens, _index, _str)		\
+#define CHECK_str(_tokens, _index, _str)		\
   {							\
     char *__str = xpath_tokens_string(_tokens, _index);	\
-    assert(strcmp(__str, _str) == 0);			\
+    STRCMP_EQUAL(_str, __str);				\
     free(__str);					\
   }							\
 
-static void
-test_xpath_tokens_string(void)
+TEST(xpath, xpath_tokens_string)
 {
   xpath_tokens_t *tokens;
   const char * const xpath = "//one/two";
 
   tokens = xpath_tokenize(xpath);
-  assert_str(tokens, 0, "/");
-  assert_str(tokens, 1, "/");
-  assert_str(tokens, 2, "one");
-  assert_str(tokens, 3, "/");
-  assert_str(tokens, 4, "two");
+  CHECK_str(tokens, 0, "/");
+  CHECK_str(tokens, 1, "/");
+  CHECK_str(tokens, 2, "one");
+  CHECK_str(tokens, 3, "/");
+  CHECK_str(tokens, 4, "two");
 
   xpath_tokens_free(tokens);
 }
 
-static void
-test_xpath_compile_element(void)
+TEST(xpath, xpath_compile_element)
 {
   const char * const name = "one";
   xpath_compiled_t *compiled;
 
   compiled = xpath_compile(name);
 
-  assert(1 == compiled->steps->len);
-  assert(XPATH_AXIS_CHILD == g_array_index(compiled->steps, xpath_step_t, 0).axis);
-  assert(XPATH_NODE_TYPE_ELEMENT == g_array_index(compiled->steps, xpath_step_t, 0).type);
-  assert(strcmp(name, g_array_index(compiled->steps, xpath_step_t, 0).name) == 0);
+  CHECK_EQUAL(1, compiled->steps->len);
+  CHECK_EQUAL(XPATH_AXIS_CHILD, g_array_index(compiled->steps, xpath_step_t, 0).axis);
+  CHECK_EQUAL(XPATH_NODE_TYPE_ELEMENT, g_array_index(compiled->steps, xpath_step_t, 0).type);
+  STRCMP_EQUAL(name, g_array_index(compiled->steps, xpath_step_t, 0).name);
 
   xpath_compiled_free(compiled);
 }
@@ -121,8 +125,7 @@ init_step(xpath_step_t *step)
   step->predicates = NULL;
 }
 
-static void
-test_xpath_element(void)
+TEST(xpath, xpath_element)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
@@ -133,16 +136,15 @@ test_xpath_element(void)
   init_step(&step);
 
   ns = xpath_select_xpath_no_predicates(d.parent, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
   n = nodeset_get(ns, 0);
-  assert(n == d.e);
+  POINTERS_EQUAL(d.e, n);
 
   nodeset_free(ns);
   destroy_xpath_test(&d);
 }
 
-static void
-test_xpath_text_node(void)
+TEST(xpath, xpath_text_node)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
@@ -154,16 +156,15 @@ test_xpath_text_node(void)
   step.type = XPATH_NODE_TYPE_TEXT_NODE;
 
   ns = xpath_select_xpath_no_predicates(d.parent, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
   n = nodeset_get(ns, 0);
-  assert(n == d.tn);
+  POINTERS_EQUAL(d.tn, n);
 
   nodeset_free(ns);
   destroy_xpath_test(&d);
 }
 
-static void
-test_xpath_element_and_text_node(void)
+TEST(xpath, xpath_element_and_text_node)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
@@ -175,11 +176,11 @@ test_xpath_element_and_text_node(void)
   step.type = XPATH_NODE_TYPE_ELEMENT | XPATH_NODE_TYPE_TEXT_NODE;
 
   ns = xpath_select_xpath_no_predicates(d.parent, &step);
-  assert(2 == nodeset_count(ns));
+  CHECK_EQUAL(2, nodeset_count(ns));
   n = nodeset_get(ns, 0);
-  assert(n == d.e);
+  POINTERS_EQUAL(d.e, n);
   n = nodeset_get(ns, 1);
-  assert(n == d.tn);
+  POINTERS_EQUAL(d.tn, n);
 
   nodeset_free(ns);
   destroy_xpath_test(&d);
@@ -235,11 +236,10 @@ destroy_xpath_axis_test(xpath_axis_test_t *d)
   document_free(d->doc);
 }
 
-#define assert_nodeset_item(_node, _nodeset, _index) \
-  assert(_node == nodeset_get(_nodeset, _index))
+#define CHECK_nodeset_item(_node, _nodeset, _index) \
+  POINTERS_EQUAL(_node, nodeset_get(_nodeset, _index))
 
-static void
-test_xpath_axis_self(void)
+TEST(xpath, xpath_axis_self)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -250,15 +250,14 @@ test_xpath_axis_self(void)
   step.axis = XPATH_AXIS_SELF;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
-  assert(1 == nodeset_count(ns));
-  assert_nodeset_item(d.b, ns, 0);
+  CHECK_EQUAL(1, nodeset_count(ns));
+  CHECK_nodeset_item(d.b, ns, 0);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_parent(void)
+TEST(xpath, xpath_axis_parent)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -269,15 +268,14 @@ test_xpath_axis_parent(void)
   step.axis = XPATH_AXIS_PARENT;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
-  assert(1 == nodeset_count(ns));
-  assert_nodeset_item(d.one, ns, 0);
+  CHECK_EQUAL(1, nodeset_count(ns));
+  CHECK_nodeset_item(d.one, ns, 0);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_following_sibling(void)
+TEST(xpath, xpath_axis_following_sibling)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -288,16 +286,15 @@ test_xpath_axis_following_sibling(void)
   step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
-  assert(2 == nodeset_count(ns));
-  assert_nodeset_item(d.c, ns, 0);
-  assert_nodeset_item(d.d, ns, 1);
+  CHECK_EQUAL(2, nodeset_count(ns));
+  CHECK_nodeset_item(d.c, ns, 0);
+  CHECK_nodeset_item(d.d, ns, 1);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_preceding_sibling(void)
+TEST(xpath, xpath_axis_preceding_sibling)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -308,17 +305,16 @@ test_xpath_axis_preceding_sibling(void)
   step.axis = XPATH_AXIS_PRECEDING_SIBLING;
 
   ns = xpath_select_xpath_no_predicates(d.d, &step);
-  assert(3 == nodeset_count(ns));
-  assert_nodeset_item(d.c, ns, 0);
-  assert_nodeset_item(d.b, ns, 1);
-  assert_nodeset_item(d.a, ns, 2);
+  CHECK_EQUAL(3, nodeset_count(ns));
+  CHECK_nodeset_item(d.c, ns, 0);
+  CHECK_nodeset_item(d.b, ns, 1);
+  CHECK_nodeset_item(d.a, ns, 2);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_descendant(void)
+TEST(xpath, xpath_axis_descendant)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -329,24 +325,23 @@ test_xpath_axis_descendant(void)
   step.axis = XPATH_AXIS_DESCENDANT;
 
   ns = xpath_select_xpath_no_predicates(d.alpha, &step);
-  assert(10 == nodeset_count(ns));
-  assert_nodeset_item(d.one, ns, 0);
-  assert_nodeset_item(d.a, ns, 1);
-  assert_nodeset_item(d.b, ns, 2);
-  assert_nodeset_item(d.c, ns, 3);
-  assert_nodeset_item(d.d, ns, 4);
-  assert_nodeset_item(d.two, ns, 5);
-  assert_nodeset_item(d.w, ns, 6);
-  assert_nodeset_item(d.x, ns, 7);
-  assert_nodeset_item(d.y, ns, 8);
-  assert_nodeset_item(d.z, ns, 9);
+  CHECK_EQUAL(10, nodeset_count(ns));
+  CHECK_nodeset_item(d.one, ns, 0);
+  CHECK_nodeset_item(d.a, ns, 1);
+  CHECK_nodeset_item(d.b, ns, 2);
+  CHECK_nodeset_item(d.c, ns, 3);
+  CHECK_nodeset_item(d.d, ns, 4);
+  CHECK_nodeset_item(d.two, ns, 5);
+  CHECK_nodeset_item(d.w, ns, 6);
+  CHECK_nodeset_item(d.x, ns, 7);
+  CHECK_nodeset_item(d.y, ns, 8);
+  CHECK_nodeset_item(d.z, ns, 9);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_descendant_or_self(void)
+TEST(xpath, xpath_axis_descendant_or_self)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -357,25 +352,24 @@ test_xpath_axis_descendant_or_self(void)
   step.axis = XPATH_AXIS_DESCENDANT_OR_SELF;
 
   ns = xpath_select_xpath_no_predicates(d.alpha, &step);
-  assert(11 == nodeset_count(ns));
-  assert_nodeset_item(d.alpha, ns, 0);
-  assert_nodeset_item(d.one, ns, 1);
-  assert_nodeset_item(d.a, ns, 2);
-  assert_nodeset_item(d.b, ns, 3);
-  assert_nodeset_item(d.c, ns, 4);
-  assert_nodeset_item(d.d, ns, 5);
-  assert_nodeset_item(d.two, ns, 6);
-  assert_nodeset_item(d.w, ns, 7);
-  assert_nodeset_item(d.x, ns, 8);
-  assert_nodeset_item(d.y, ns, 9);
-  assert_nodeset_item(d.z, ns, 10);
+  CHECK_EQUAL(11, nodeset_count(ns));
+  CHECK_nodeset_item(d.alpha, ns, 0);
+  CHECK_nodeset_item(d.one, ns, 1);
+  CHECK_nodeset_item(d.a, ns, 2);
+  CHECK_nodeset_item(d.b, ns, 3);
+  CHECK_nodeset_item(d.c, ns, 4);
+  CHECK_nodeset_item(d.d, ns, 5);
+  CHECK_nodeset_item(d.two, ns, 6);
+  CHECK_nodeset_item(d.w, ns, 7);
+  CHECK_nodeset_item(d.x, ns, 8);
+  CHECK_nodeset_item(d.y, ns, 9);
+  CHECK_nodeset_item(d.z, ns, 10);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_ancestor(void)
+TEST(xpath, xpath_axis_ancestor)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -386,16 +380,15 @@ test_xpath_axis_ancestor(void)
   step.axis = XPATH_AXIS_ANCESTOR;
 
   ns = xpath_select_xpath_no_predicates(d.b, &step);
-  assert(2 == nodeset_count(ns));
-  assert_nodeset_item(d.one, ns, 0);
-  assert_nodeset_item(d.alpha, ns, 1);
+  CHECK_EQUAL(2, nodeset_count(ns));
+  CHECK_nodeset_item(d.one, ns, 0);
+  CHECK_nodeset_item(d.alpha, ns, 1);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_ancestor_or_self(void)
+TEST(xpath, xpath_axis_ancestor_or_self)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -406,17 +399,16 @@ test_xpath_axis_ancestor_or_self(void)
   step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
 
   ns = xpath_select_xpath_no_predicates(d.c, &step);
-  assert(3 == nodeset_count(ns));
-  assert_nodeset_item(d.c, ns, 0);
-  assert_nodeset_item(d.one, ns, 1);
-  assert_nodeset_item(d.alpha, ns, 2);
+  CHECK_EQUAL(3, nodeset_count(ns));
+  CHECK_nodeset_item(d.c, ns, 0);
+  CHECK_nodeset_item(d.one, ns, 1);
+  CHECK_nodeset_item(d.alpha, ns, 2);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_following(void)
+TEST(xpath, xpath_axis_following)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -427,20 +419,19 @@ test_xpath_axis_following(void)
   step.axis = XPATH_AXIS_FOLLOWING;
 
   ns = xpath_select_xpath_no_predicates(d.c, &step);
-  assert(6 == nodeset_count(ns));
-  assert_nodeset_item(d.d, ns, 0);
-  assert_nodeset_item(d.two, ns, 1);
-  assert_nodeset_item(d.w, ns, 2);
-  assert_nodeset_item(d.x, ns, 3);
-  assert_nodeset_item(d.y, ns, 4);
-  assert_nodeset_item(d.z, ns, 5);
+  CHECK_EQUAL(6, nodeset_count(ns));
+  CHECK_nodeset_item(d.d, ns, 0);
+  CHECK_nodeset_item(d.two, ns, 1);
+  CHECK_nodeset_item(d.w, ns, 2);
+  CHECK_nodeset_item(d.x, ns, 3);
+  CHECK_nodeset_item(d.y, ns, 4);
+  CHECK_nodeset_item(d.z, ns, 5);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_axis_preceding(void)
+TEST(xpath, xpath_axis_preceding)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -451,20 +442,19 @@ test_xpath_axis_preceding(void)
   step.axis = XPATH_AXIS_PRECEDING;
 
   ns = xpath_select_xpath_no_predicates(d.x, &step);
-  assert(6 == nodeset_count(ns));
-  assert_nodeset_item(d.w, ns, 0);
-  assert_nodeset_item(d.one, ns, 1);
-  assert_nodeset_item(d.a, ns, 2);
-  assert_nodeset_item(d.b, ns, 3);
-  assert_nodeset_item(d.c, ns, 4);
-  assert_nodeset_item(d.d, ns, 5);
+  CHECK_EQUAL(6, nodeset_count(ns));
+  CHECK_nodeset_item(d.w, ns, 0);
+  CHECK_nodeset_item(d.one, ns, 1);
+  CHECK_nodeset_item(d.a, ns, 2);
+  CHECK_nodeset_item(d.b, ns, 3);
+  CHECK_nodeset_item(d.c, ns, 4);
+  CHECK_nodeset_item(d.d, ns, 5);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_two_step(void)
+TEST(xpath, xpath_two_step)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -475,40 +465,37 @@ test_xpath_two_step(void)
   steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
 
   init_step(&step);
-  step.name = "one";
+  step.name = strdup("one");
   g_array_append_val(steps, step);
-  step.name = "c";
+  step.name = strdup("c");
   g_array_append_val(steps, step);
 
   ns = xpath_select_xpath_steps(d.alpha, steps);
-  assert(1 == nodeset_count(ns));
-  assert_nodeset_item(d.c, ns, 0);
+  CHECK_EQUAL(1, nodeset_count(ns));
+  CHECK_nodeset_item(d.c, ns, 0);
 
   g_array_free(steps, TRUE);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_fn_true(void)
+TEST(xpath, xpath_fn_true)
 {
   xpath_result_t res;
   res = xpath_fn_true(NULL, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.value.boolean == TRUE);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(TRUE, res.value.boolean);
 }
 
-static void
-test_xpath_fn_false(void)
+TEST(xpath, xpath_fn_false)
 {
   xpath_result_t res;
   res = xpath_fn_false(NULL, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.value.boolean == FALSE);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(FALSE, res.value.boolean);
 }
 
-static void
-test_xpath_fn_position(void)
+TEST(xpath, xpath_fn_position)
 {
   xpath_axis_test_t d;
   nodeset_t *ns;
@@ -523,25 +510,24 @@ test_xpath_fn_position(void)
 
   context.node = d.a;
   res = xpath_fn_position(&context, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 1);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(1, res.value.numeric);
 
   context.node = d.b;
   res = xpath_fn_position(&context, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 2);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(2, res.value.numeric);
 
   context.node = d.c;
   res = xpath_fn_position(&context, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 3);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_fn_last(void)
+TEST(xpath, xpath_fn_last)
 {
   xpath_axis_test_t d;
   nodeset_t *ns;
@@ -556,25 +542,24 @@ test_xpath_fn_last(void)
 
   context.node = d.a;
   res = xpath_fn_last(&context, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 3);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
 
   context.node = d.b;
   res = xpath_fn_last(&context, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 3);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
 
   context.node = d.c;
   res = xpath_fn_last(&context, NULL);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 3);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_fn_floor(void)
+TEST(xpath, xpath_fn_floor)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -588,24 +573,23 @@ test_xpath_fn_floor(void)
 
   value->value.numeric = 3.5;
   res = xpath_fn_floor(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 3);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
 
   value->value.numeric = 0;
   res = xpath_fn_floor(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 0);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(0, res.value.numeric);
 
   value->value.numeric = -9.9;
   res = xpath_fn_floor(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == -10);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(-10, res.value.numeric);
 
   g_array_free(parameters, TRUE);
 }
 
-static void
-test_xpath_fn_ceiling(void)
+TEST(xpath, xpath_fn_ceiling)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -619,24 +603,23 @@ test_xpath_fn_ceiling(void)
 
   value->value.numeric = 3.5;
   res = xpath_fn_ceiling(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 4);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(4, res.value.numeric);
 
   value->value.numeric = 0;
   res = xpath_fn_ceiling(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == 0);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(0, res.value.numeric);
 
   value->value.numeric = -9.9;
   res = xpath_fn_ceiling(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(res.value.numeric == -9);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(-9, res.value.numeric);
 
   g_array_free(parameters, TRUE);
 }
 
-static void
-test_xpath_fn_round(void)
+TEST(xpath, xpath_fn_round)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -648,40 +631,40 @@ test_xpath_fn_round(void)
 
   value->type = XPATH_RESULT_TYPE_NUMERIC;
 
-#define assert_round(_in, _expected)			\
+#define CHECK_round(_in, _expected)			\
   value->value.numeric = _in;				\
   res = xpath_fn_round(NULL, parameters);		\
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);	\
-  assert(res.value.numeric == _expected);		\
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);	\
+  CHECK_EQUAL(_expected, res.value.numeric);		\
 
-  assert_round(2.0, 2);
-  assert_round(1.9, 2);
-  assert_round(1.5, 2);
-  assert_round(1.1, 1);
-  assert_round(1.0, 1);
-  assert_round(0.9, 1);
-  assert_round(0.5, 1);
-  assert_round(0.1, 0);
-  assert_round(-0.1, -0);
-  assert_round(-0.5, -0);
-  assert_round(-0.9, -1);
-  assert_round(-1.0, -1);
-  assert_round(-1.1, -1);
-  assert_round(-1.5, -1);
-  assert_round(-1.9, -2);
-  assert_round(-2.0, -2);
+  CHECK_round(2.0, 2);
+  CHECK_round(1.9, 2);
+  CHECK_round(1.5, 2);
+  CHECK_round(1.1, 1);
+  CHECK_round(1.0, 1);
+  CHECK_round(0.9, 1);
+  CHECK_round(0.5, 1);
+  CHECK_round(0.1, 0);
+  CHECK_round(-0.1, -0);
+  CHECK_round(-0.5, -0);
+  CHECK_round(-0.9, -1);
+  CHECK_round(-1.0, -1);
+  CHECK_round(-1.1, -1);
+  CHECK_round(-1.5, -1);
+  CHECK_round(-1.9, -2);
+  CHECK_round(-2.0, -2);
 
-  assert_round(INFINITY, INFINITY);
-  assert_round(-INFINITY, -INFINITY);
-  assert_round(-0, -0);
-  assert_round(0, 0);
+  CHECK_round(INFINITY, INFINITY);
+  CHECK_round(-INFINITY, -INFINITY);
+  CHECK_round(-0, -0);
+  CHECK_round(0, 0);
 
-#undef assert_round
+#undef CHECK_round
 
   value->value.numeric = NAN;
   res = xpath_fn_round(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_NUMERIC);
-  assert(isnan(res.value.numeric));
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK(isnan(res.value.numeric));
 
   g_array_free(parameters, TRUE);
 }
@@ -691,11 +674,10 @@ test_xpath_fn_round(void)
     xpath_result_t *__value;						\
     __value = &g_array_index(_parameters, xpath_result_t, _index);	\
     __value->type = XPATH_RESULT_TYPE_STRING;				\
-    __value->value.string = _string;					\
+    __value->value.string = strdup(_string);				\
   }
 
-static void
-test_xpath_fn_concat_2(void)
+TEST(xpath, xpath_fn_concat_2)
 {
   GArray *parameters;
   xpath_result_t *value;
@@ -708,14 +690,13 @@ test_xpath_fn_concat_2(void)
   set_string_parameter(parameters, 1, "two");
 
   res = xpath_fn_concat(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_STRING);
-  assert(strcmp(res.value.string, "onetwo") == 0);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("onetwo", res.value.string);
 
   g_array_free(parameters, TRUE);
 }
 
-static void
-test_xpath_fn_concat_3(void)
+TEST(xpath, xpath_fn_concat_3)
 {
   GArray *parameters;
   xpath_result_t res;
@@ -728,14 +709,13 @@ test_xpath_fn_concat_3(void)
   set_string_parameter(parameters, 2, "three");
 
   res = xpath_fn_concat(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_STRING);
-  assert(strcmp(res.value.string, "onetwothree") == 0);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("onetwothree", res.value.string);
 
   g_array_free(parameters, TRUE);
 }
 
-static void
-test_xpath_fn_starts_with(void)
+TEST(xpath, xpath_fn_starts_with)
 {
   GArray *parameters;
   xpath_result_t res;
@@ -747,19 +727,18 @@ test_xpath_fn_starts_with(void)
 
   set_string_parameter(parameters, 1, "hello");
   res = xpath_fn_starts_with(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.value.boolean == TRUE);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(TRUE, res.value.boolean);
 
   set_string_parameter(parameters, 1, "cow");
   res = xpath_fn_starts_with(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.value.boolean == FALSE);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(FALSE, res.value.boolean);
 
   g_array_free(parameters, TRUE);
 }
 
-static void
-test_xpath_fn_contains(void)
+TEST(xpath, xpath_fn_contains)
 {
   GArray *parameters;
   xpath_result_t res;
@@ -771,19 +750,18 @@ test_xpath_fn_contains(void)
 
   set_string_parameter(parameters, 1, "world");
   res = xpath_fn_contains(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.value.boolean == TRUE);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(TRUE, res.value.boolean);
 
   set_string_parameter(parameters, 1, "cow");
   res = xpath_fn_contains(NULL, parameters);
-  assert(res.type == XPATH_RESULT_TYPE_BOOLEAN);
-  assert(res.value.boolean == FALSE);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(FALSE, res.value.boolean);
 
   g_array_free(parameters, TRUE);
 }
 
-static void
-test_xpath_predicate_true(void)
+TEST(xpath, xpath_predicate_true)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -796,15 +774,14 @@ test_xpath_predicate_true(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_false(void)
+TEST(xpath, xpath_predicate_false)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -817,15 +794,14 @@ test_xpath_predicate_false(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(0 == nodeset_count(ns));
+  CHECK_EQUAL(0, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_value_3(void)
+TEST(xpath, xpath_predicate_value_3)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -843,16 +819,15 @@ test_xpath_predicate_value_3(void)
   ns = nodeset_new_with_nodes(d.a, d.b, d.c, d.d, NULL);
 
   ns = xpath_apply_predicates(ns, &step);
-  assert(1 == nodeset_count(ns));
-  assert_nodeset_item(d.c, ns, 0);
+  CHECK_EQUAL(1, nodeset_count(ns));
+  CHECK_nodeset_item(d.c, ns, 0);
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_fn_true(void)
+TEST(xpath, xpath_predicate_fn_true)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -869,15 +844,14 @@ test_xpath_predicate_fn_true(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_fn_false(void)
+TEST(xpath, xpath_predicate_fn_false)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -894,15 +868,14 @@ test_xpath_predicate_fn_false(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(0 == nodeset_count(ns));
+  CHECK_EQUAL(0, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_fn_floor(void)
+TEST(xpath, xpath_predicate_fn_floor)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -925,15 +898,14 @@ test_xpath_predicate_fn_floor(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_fn_ceiling(void)
+TEST(xpath, xpath_predicate_fn_ceiling)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -956,15 +928,14 @@ test_xpath_predicate_fn_ceiling(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_equal_true(void)
+TEST(xpath, xpath_predicate_equal_true)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -981,15 +952,14 @@ test_xpath_predicate_equal_true(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_equal_false(void)
+TEST(xpath, xpath_predicate_equal_false)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -1006,15 +976,14 @@ test_xpath_predicate_equal_false(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(0 == nodeset_count(ns));
+  CHECK_EQUAL(0, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-static void
-test_xpath_predicate_position_1(void)
+TEST(xpath, xpath_predicate_position_1)
 {
   nodeset_t *ns;
   xpath_step_t step;
@@ -1041,25 +1010,24 @@ test_xpath_predicate_position_1(void)
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
-  assert(1 == nodeset_count(ns));
+  CHECK_EQUAL(1, nodeset_count(ns));
 
   g_list_free(step.predicates);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }
 
-#define assert_nodeset_element_name(_nodeset, _index, _name) \
+#define CHECK_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     element_t *__e;					     \
     node_t *__n;					     \
     __n = nodeset_get(_nodeset, _index);		     \
-    assert(node_type(__n) == NODE_TYPE_ELEMENT);	     \
+    CHECK_EQUAL(NODE_TYPE_ELEMENT, node_type(__n));		     \
     __e = (element_t *)__n;				     \
-    assert(strcmp(element_name(__e), _name) == 0);	     \
+    STRCMP_EQUAL(_name, element_name(__e));		     \
   }
 
-static void
-test_xpath_apply_element(void)
+TEST(xpath, xpath_apply_element)
 {
   const char * const name = "one";
 
@@ -1080,9 +1048,9 @@ test_xpath_apply_element(void)
 
   nodes = xpath_apply_xpath(parent, name);
 
-  assert(2 == nodeset_count(nodes));
-  assert_nodeset_element_name(nodes, 0, name);
-  assert_nodeset_element_name(nodes, 1, name);
+  CHECK_EQUAL(2, nodeset_count(nodes));
+  CHECK_nodeset_element_name(nodes, 0, name);
+  CHECK_nodeset_element_name(nodes, 1, name);
 
   nodeset_free(nodes);
   node_free(parent);
@@ -1105,46 +1073,46 @@ int
 main(int argc, char **argv)
 {
   initialize_globals();
-
-  test_xpath_tokenize();
-  test_xpath_tokens_string();
-  test_xpath_compile_element();
-  test_xpath_element();
-  test_xpath_text_node();
-  test_xpath_element_and_text_node();
-  test_xpath_axis_self();
-  test_xpath_axis_parent();
-  test_xpath_axis_following_sibling();
-  test_xpath_axis_preceding_sibling();
-  test_xpath_axis_descendant();
-  test_xpath_axis_descendant_or_self();
-  test_xpath_axis_ancestor();
-  test_xpath_axis_ancestor_or_self();
-  test_xpath_axis_following();
-  test_xpath_axis_preceding();
-  test_xpath_two_step();
-  test_xpath_apply_element();
-  test_xpath_fn_true();
-  test_xpath_fn_false();
-  test_xpath_fn_position();
-  test_xpath_fn_last();
-  test_xpath_fn_floor();
-  test_xpath_fn_ceiling();
-  test_xpath_fn_round();
-  test_xpath_fn_concat_2();
-  test_xpath_fn_concat_3();
-  test_xpath_fn_starts_with();
-  test_xpath_fn_contains();
-  test_xpath_predicate_true();
-  test_xpath_predicate_false();
-  test_xpath_predicate_value_3();
-  test_xpath_predicate_fn_true();
-  test_xpath_predicate_fn_false();
-  test_xpath_predicate_fn_floor();
-  test_xpath_predicate_fn_ceiling();
-  test_xpath_predicate_equal_true();
-  test_xpath_predicate_equal_false();
-  test_xpath_predicate_position_1();
+  return CommandLineTestRunner::RunAllTests(argc, argv);
+//   test_xpath_tokenize();
+//   test_xpath_tokens_string();
+//   test_xpath_compile_element();
+//   test_xpath_element();
+//   test_xpath_text_node();
+//   test_xpath_element_and_text_node();
+//   test_xpath_axis_self();
+//   test_xpath_axis_parent();
+//   test_xpath_axis_following_sibling();
+//   test_xpath_axis_preceding_sibling();
+//   test_xpath_axis_descendant();
+//   test_xpath_axis_descendant_or_self();
+//   test_xpath_axis_ancestor();
+//   test_xpath_axis_ancestor_or_self();
+//   test_xpath_axis_following();
+//   test_xpath_axis_preceding();
+//   test_xpath_two_step();
+//   test_xpath_apply_element();
+//   test_xpath_fn_true();
+//   test_xpath_fn_false();
+//   test_xpath_fn_position();
+//   test_xpath_fn_last();
+//   test_xpath_fn_floor();
+//   test_xpath_fn_ceiling();
+//   test_xpath_fn_round();
+//   test_xpath_fn_concat_2();
+//   test_xpath_fn_concat_3();
+//   test_xpath_fn_starts_with();
+//   test_xpath_fn_contains();
+//   test_xpath_predicate_true();
+//   test_xpath_predicate_false();
+//   test_xpath_predicate_value_3();
+//   test_xpath_predicate_fn_true();
+//   test_xpath_predicate_fn_false();
+//   test_xpath_predicate_fn_floor();
+//   test_xpath_predicate_fn_ceiling();
+//   test_xpath_predicate_equal_true();
+//   test_xpath_predicate_equal_false();
+//   test_xpath_predicate_position_1();
 
   return EXIT_SUCCESS;
 }
