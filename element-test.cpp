@@ -3,14 +3,22 @@
 #include <string.h>
 #include <assert.h>
 
+#include <CppUTest/TestHarness.h>
+#include <CppUTest/CommandLineTestRunner.h>
+
+extern "C" {
 #include "test-utilities.h"
 
 #include "document.h"
 #include "node.h"
 #include "element.h"
+}
 
-static void
-test_new_element(void)
+TEST_GROUP(element)
+{
+};
+
+TEST(element, new_element)
 {
   document_t *doc;
   element_t *e;
@@ -18,14 +26,13 @@ test_new_element(void)
 
   doc = document_new();
   e = document_element_new(doc, name);
-  assert(e != NULL);
-  assert(strcmp(element_name(e), name) == 0);
+  CHECK(e != NULL);
+  STRCMP_EQUAL(element_name(e), name);
   element_free(e);
   document_free(doc);
 }
 
-static void
-test_element_cast_to_node(void)
+TEST(element, cast_to_node)
 {
   document_t *doc;
   element_t *e;
@@ -36,16 +43,15 @@ test_element_cast_to_node(void)
   e = document_element_new(doc, name);
 
   n = element_cast_to_node(e);
-  assert((void *)e == (void *)n);
-  assert(n != NULL);
-  assert(node_document(n) == doc);
+  POINTERS_EQUAL(e, n);
+  CHECK(n != NULL);
+  POINTERS_EQUAL(node_document(n), doc);
 
   element_free(e);
   document_free(doc);
 }
 
-static void
-test_mutated_name(void)
+TEST(element, mutated_name)
 {
   document_t *doc;
   element_t *element;
@@ -56,15 +62,14 @@ test_mutated_name(void)
   element = document_element_new(doc, name);
 
   name[0] = 'y';
-  assert(strcmp(element_name(element), "hello") == 0);
+  STRCMP_EQUAL(element_name(element), "hello");
 
   element_free(element);
   document_free(doc);
   free(name);
 }
 
-static void
-test_set_attribute(void)
+TEST(element, set_attribute)
 {
   document_t *doc;
   element_t *element;
@@ -76,14 +81,13 @@ test_set_attribute(void)
   element = document_element_new(doc, element_name);
 
   element_set_attribute(element, attr_name, attr_value);
-  assert(strcmp(element_get_attribute(element, attr_name), attr_value) == 0);
+  STRCMP_EQUAL(element_get_attribute(element, attr_name), attr_value);
 
   element_free(element);
   document_free(doc);
 }
 
-static void
-test_mutated_attribute(void)
+TEST(element, mutated_attribute)
 {
   document_t *doc;
   element_t *element;
@@ -100,7 +104,7 @@ test_mutated_attribute(void)
   
   attr_name[0] = 'h';
   attr_value[0] = 'y';
-  assert(strcmp(element_get_attribute(element, "type"), "world") == 0);
+  STRCMP_EQUAL(element_get_attribute(element, "type"), "world");
 
   element_free(element);
   document_free(doc);
@@ -108,10 +112,7 @@ test_mutated_attribute(void)
   free(attr_value);
 }
 
-
-
-static void
-test_output_basic(void)
+TEST(element, output_basic)
 {
   document_t *doc;
   element_t *element;
@@ -123,15 +124,14 @@ test_output_basic(void)
   element = document_element_new(doc, "one");
 
   element_output(element, &to.out);
-  assert(strcmp("<one />", to.string->str) == 0);
+  STRCMP_EQUAL("<one />", to.string->str);
 
   element_free(element);
   document_free(doc);
   test_output_destroy(&to);
 }
 
-static void
-test_output_attribute(void)
+TEST(element, output_attribute)
 {
   document_t *doc;
   element_t *element;
@@ -144,15 +144,14 @@ test_output_attribute(void)
   element_set_attribute(element, "hi", "there");
 
   element_output(element, &to.out);
-  assert(strcmp("<one hi=\"there\" />", to.string->str) == 0);
+  STRCMP_EQUAL("<one hi=\"there\" />", to.string->str);
 
   element_free(element);
   document_free(doc);
   test_output_destroy(&to);
 }
 
-static void
-test_output_child(void)
+TEST(element, output_child)
 {
   document_t *doc;
   element_t *element;
@@ -167,7 +166,7 @@ test_output_child(void)
   node_append_child(element_cast_to_node(element), element_cast_to_node(child));
 
   element_output(element, &to.out);
-  assert(strcmp("<one><two /></one>", to.string->str) == 0);
+  STRCMP_EQUAL("<one><two /></one>", to.string->str);
 
   element_free(element);
   document_free(doc);
@@ -177,14 +176,5 @@ test_output_child(void)
 int
 main(int argc, char **argv)
 {
-  test_new_element();
-  test_element_cast_to_node();
-  test_mutated_name();
-  test_set_attribute();
-  test_mutated_attribute();
-  test_output_basic();
-  test_output_attribute();
-  test_output_child();
-
-  return EXIT_SUCCESS;
+  return CommandLineTestRunner::RunAllTests(argc, argv);
 }
