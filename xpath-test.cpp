@@ -613,6 +613,33 @@ TEST(xpath, fn_substring_before_failure)
   g_array_free(parameters, TRUE);
 }
 
+TEST(xpath, fn_substring_after)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("1999/04/01", "/", NULL);
+
+  res = xpath_fn_substring_after(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("04/01", res.value.string);
+
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_substring_after_failure)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("hello world", "cow", NULL);
+
+  res = xpath_fn_substring_after(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("", res.value.string);
+
+  g_array_free(parameters, TRUE);
+}
 
 /* 4.3 - Boolean functions */
 

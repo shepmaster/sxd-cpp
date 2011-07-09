@@ -559,6 +559,26 @@ xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, GArray *pa
   return result;
 }
 
+xpath_result_t
+xpath_fn_substring_after(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  find_substring_t find;
+  const char *location;
+  xpath_result_t result;
+
+  result.type = XPATH_RESULT_TYPE_STRING;
+
+  location = find_substring(&find, parameters);
+  if (location) {
+    const char *start = location + strlen(find.needle->value.string);
+    result.value.string = g_strdup(start);
+  } else {
+    result.value.string = g_strdup("");
+  }
+
+  return result;
+}
+
 /* 4.3 - Boolean Functions */
 
 xpath_result_t
