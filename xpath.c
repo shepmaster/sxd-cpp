@@ -6,6 +6,12 @@
 #include "node-internal.h"
 #include "xpath-internal.h"
 
+static void
+not_implemented(void)
+{
+  abort();
+}
+
 void
 xpath_tokens_free(xpath_tokens_t *tokens)
 {
@@ -168,7 +174,7 @@ eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context
 
       result.type = XPATH_RESULT_TYPE_BOOLEAN;
       if (lresult.type != rresult.type) {
-	abort();
+	not_implemented();
       }
       switch (lresult.type) {
       case XPATH_RESULT_TYPE_BOOLEAN:
@@ -237,7 +243,7 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
       }
 
       if (result.type != XPATH_RESULT_TYPE_BOOLEAN) {
-	abort();
+	not_implemented();
       }
 
       if (result.value.boolean == TRUE) {
@@ -269,7 +275,7 @@ xpath_test_step(node_t *node, xpath_test_step_t *data)
     should_add = (data->step->type & XPATH_NODE_TYPE_TEXT_NODE);
     break;
   default:
-    abort();
+    not_implemented();
   }
 
   if (should_add) {
@@ -356,7 +362,7 @@ xpath_select_xpath_no_predicates(node_t *node, xpath_step_t *step)
     break;
   case XPATH_AXIS_ATTRIBUTE:
   case XPATH_AXIS_NAMESPACE:
-    abort();
+    not_implemented();
   }
   return data.nodeset;
 }
@@ -453,19 +459,19 @@ xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters)
   int i;
 
   if (parameters->len < 2) {
-    abort();
+    not_implemented();
   }
 
   param = &g_array_index(parameters, xpath_result_t, 0);
   if (param->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
+    not_implemented();
   }
   str = g_string_new(param->value.string);
 
   for (i = 1; i < parameters->len; i++) {
     param = &g_array_index(parameters, xpath_result_t, i);
     if (param->type != XPATH_RESULT_TYPE_STRING) {
-      abort();
+      not_implemented();
     }
     g_string_append(str, param->value.string);
   }
@@ -483,18 +489,18 @@ xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *paramet
   xpath_result_t result;
 
   if (parameters->len != 2) {
-    abort();
+    not_implemented();
   }
 
   string = &g_array_index(parameters, xpath_result_t, 0);
   prefix = &g_array_index(parameters, xpath_result_t, 1);
 
   if (string->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
+    not_implemented();
   }
 
   if (prefix->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
+    not_implemented();
   }
 
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -511,18 +517,18 @@ static const char *
 find_substring(find_substring_t *find, GArray *parameters)
 {
   if (parameters->len != 2) {
-    abort();
+    not_implemented();
   }
 
   find->haystack = &g_array_index(parameters, xpath_result_t, 0);
   find->needle = &g_array_index(parameters, xpath_result_t, 1);
 
   if (find->haystack->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
+    not_implemented();
   }
 
   if (find->needle->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
+    not_implemented();
   }
 
   return g_strstr_len(find->haystack->value.string, -1, find->needle->value.string);
@@ -607,11 +613,11 @@ xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameter
   xpath_result_t result;
 
   if (parameters->len < 2) {
-    abort();
+    not_implemented();
   }
 
   if (parameters->len > 3) {
-    abort();
+    not_implemented();
   }
 
   string = &g_array_index(parameters, xpath_result_t, 0);
@@ -621,15 +627,15 @@ xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameter
   }
 
   if (string->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
+    not_implemented();
   }
 
   if (start->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
+    not_implemented();
   }
 
   if (end && end->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
+    not_implemented();
   }
 
   result.type = XPATH_RESULT_TYPE_STRING;
@@ -655,12 +661,12 @@ xpath_fn_not(xpath_evaluation_context_t *context_unused, GArray *parameters)
   xpath_result_t result;
 
   if (parameters->len != 1) {
-    abort();
+    not_implemented();
   }
 
   value = &g_array_index(parameters, xpath_result_t, 0);
   if (value->type != XPATH_RESULT_TYPE_BOOLEAN) {
-    abort();
+    not_implemented();
   }
 
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -696,12 +702,12 @@ xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters)
   xpath_result_t result;
 
   if (parameters->len != 1) {
-    abort();
+    not_implemented();
   }
 
   value = &g_array_index(parameters, xpath_result_t, 0);
   if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
+    not_implemented();
   }
 
   result.type = XPATH_RESULT_TYPE_NUMERIC;
@@ -717,12 +723,12 @@ xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters)
   xpath_result_t result;
 
   if (parameters->len != 1) {
-    abort();
+    not_implemented();
   }
 
   value = &g_array_index(parameters, xpath_result_t, 0);
   if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
+    not_implemented();
   }
 
   result.type = XPATH_RESULT_TYPE_NUMERIC;
@@ -738,12 +744,12 @@ xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters)
   xpath_result_t result;
 
   if (parameters->len != 1) {
-    abort();
+    not_implemented();
   }
 
   value = &g_array_index(parameters, xpath_result_t, 0);
   if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
+    not_implemented();
   }
 
   result.type = XPATH_RESULT_TYPE_NUMERIC;
