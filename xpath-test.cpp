@@ -409,6 +409,25 @@ TEST(xpath, two_step)
 }
 
 /* XPath 1.0 */
+
+#define CHECK_RESULT_NUMERIC(_res, _value)	       \
+{						       \
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, (_res).type); \
+  CHECK_EQUAL((_value), (_res).value.numeric);	       \
+}
+
+#define CHECK_RESULT_BOOLEAN(_res, _value)		\
+{							\
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, (_res).type);	\
+  CHECK_EQUAL((_value), (_res).value.boolean);		\
+}
+
+#define CHECK_RESULT_STRING(_res, _value)		\
+{							\
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, (_res).type);	\
+  STRCMP_EQUAL((_value), (_res).value.string);		\
+}
+
 /* 4.1 - Node set functions */
 
 TEST(xpath, fn_last)
@@ -426,18 +445,15 @@ TEST(xpath, fn_last)
 
   context.node = d.a;
   res = xpath_fn_last(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 3);
 
   context.node = d.b;
   res = xpath_fn_last(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 3);
 
   context.node = d.c;
   res = xpath_fn_last(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 3);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
@@ -458,18 +474,15 @@ TEST(xpath, fn_position)
 
   context.node = d.a;
   res = xpath_fn_position(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(1, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 1);
 
   context.node = d.b;
   res = xpath_fn_position(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(2, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 2);
 
   context.node = d.c;
   res = xpath_fn_position(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 3);
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
@@ -511,8 +524,7 @@ TEST(xpath, fn_concat_2)
   parameters = string_parameters("one", "two", NULL);
 
   res = xpath_fn_concat(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("onetwo", res.value.string);
+  CHECK_RESULT_STRING(res, "onetwo");
 
   g_array_free(parameters, TRUE);
 }
@@ -525,8 +537,7 @@ TEST(xpath, fn_concat_3)
   parameters = string_parameters("one", "two", "three", NULL);
 
   res = xpath_fn_concat(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("onetwothree", res.value.string);
+  CHECK_RESULT_STRING(res, "onetwothree");
 
   g_array_free(parameters, TRUE);
 }
@@ -539,8 +550,7 @@ TEST(xpath, fn_starts_with)
   parameters = string_parameters("hello world", "hello", NULL);
 
   res = xpath_fn_starts_with(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(TRUE, res.value.boolean);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
 
   g_array_free(parameters, TRUE);
 }
@@ -552,8 +562,7 @@ TEST(xpath, fn_starts_with_failure)
 
   parameters = string_parameters("hello world", "cow");
   res = xpath_fn_starts_with(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(FALSE, res.value.boolean);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
 
   g_array_free(parameters, TRUE);
 }
@@ -565,8 +574,7 @@ TEST(xpath, fn_contains)
 
   parameters = string_parameters("hello world", "world", NULL);
   res = xpath_fn_contains(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(TRUE, res.value.boolean);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
 
   g_array_free(parameters, TRUE);
 }
@@ -579,8 +587,7 @@ TEST(xpath, fn_contains_failure)
   parameters = string_parameters("hello world", "cow", NULL);
 
   res = xpath_fn_contains(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(FALSE, res.value.boolean);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
 
   g_array_free(parameters, TRUE);
 }
@@ -593,8 +600,7 @@ TEST(xpath, fn_substring_before)
   parameters = string_parameters("1999/04/01", "/", NULL);
 
   res = xpath_fn_substring_before(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("1999", res.value.string);
+  CHECK_RESULT_STRING(res, "1999");
 
   g_array_free(parameters, TRUE);
 }
@@ -607,8 +613,7 @@ TEST(xpath, fn_substring_before_failure)
   parameters = string_parameters("hello world", "cow", NULL);
 
   res = xpath_fn_substring_before(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("", res.value.string);
+  CHECK_RESULT_STRING(res, "");
 
   g_array_free(parameters, TRUE);
 }
@@ -621,8 +626,7 @@ TEST(xpath, fn_substring_after)
   parameters = string_parameters("1999/04/01", "/", NULL);
 
   res = xpath_fn_substring_after(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("04/01", res.value.string);
+  CHECK_RESULT_STRING(res, "04/01");
 
   g_array_free(parameters, TRUE);
 }
@@ -635,8 +639,7 @@ TEST(xpath, fn_substring_after_failure)
   parameters = string_parameters("hello world", "cow", NULL);
 
   res = xpath_fn_substring_after(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("", res.value.string);
+  CHECK_RESULT_STRING(res, "");
 
   g_array_free(parameters, TRUE);
 }
@@ -662,8 +665,7 @@ TEST(xpath, fn_substring_2)
   add_number_param(parameters, 2);
 
   res = xpath_fn_substring(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("2345", res.value.string);
+  CHECK_RESULT_STRING(res, "2345");
 
   g_array_free(parameters, TRUE);
 }
@@ -677,8 +679,7 @@ TEST(xpath, fn_substring_3)
   add_number_param(add_number_param(parameters, 2), 3);
 
   res = xpath_fn_substring(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("234", res.value.string);
+  CHECK_RESULT_STRING(res, "234");
 
   g_array_free(parameters, TRUE);
 }
@@ -692,8 +693,7 @@ TEST(xpath, fn_substring_unicode)
   add_number_param(add_number_param(parameters, 2), 3);
 
   res = xpath_fn_substring(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("ィキペ", res.value.string);
+  CHECK_RESULT_STRING(res, "ィキペ");
 
   g_array_free(parameters, TRUE);
 }
@@ -704,16 +704,14 @@ TEST(xpath, fn_true)
 {
   xpath_result_t res;
   res = xpath_fn_true(NULL, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(TRUE, res.value.boolean);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
 }
 
 TEST(xpath, fn_false)
 {
   xpath_result_t res;
   res = xpath_fn_false(NULL, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(FALSE, res.value.boolean);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
 }
 
 /* 4.4 - Number functions */
@@ -732,18 +730,15 @@ TEST(xpath, fn_floor)
 
   value->value.numeric = 3.5;
   res = xpath_fn_floor(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 3);
 
   value->value.numeric = 0;
   res = xpath_fn_floor(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(0, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 0);
 
   value->value.numeric = -9.9;
   res = xpath_fn_floor(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(-10, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, -10);
 
   g_array_free(parameters, TRUE);
 }
@@ -762,18 +757,15 @@ TEST(xpath, fn_ceiling)
 
   value->value.numeric = 3.5;
   res = xpath_fn_ceiling(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(4, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 4);
 
   value->value.numeric = 0;
   res = xpath_fn_ceiling(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(0, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, 0);
 
   value->value.numeric = -9.9;
   res = xpath_fn_ceiling(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(-9, res.value.numeric);
+  CHECK_RESULT_NUMERIC(res, -9);
 
   g_array_free(parameters, TRUE);
 }
@@ -793,8 +785,7 @@ TEST(xpath, fn_round)
 #define CHECK_round(_in, _expected)			\
   value->value.numeric = _in;				\
   res = xpath_fn_round(NULL, parameters);		\
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);	\
-  CHECK_EQUAL(_expected, res.value.numeric);		\
+  CHECK_RESULT_NUMERIC(res, _expected);			\
 
   CHECK_round(2.0, 2);
   CHECK_round(1.9, 2);
