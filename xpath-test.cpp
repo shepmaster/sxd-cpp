@@ -428,6 +428,44 @@ TEST(xpath, two_step)
   STRCMP_EQUAL((_value), (_res).value.string);		\
 }
 
+static GArray *
+string_parameters(const char *first, ...)
+{
+  GArray *params;
+  const char *string;
+  va_list args;
+
+  va_start(args, first);
+  params = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+
+  string = first;
+  while (string) {
+    xpath_result_t param;
+    param.type = XPATH_RESULT_TYPE_STRING;
+    param.value.string = strdup(string);
+
+    g_array_append_val(params, param);
+
+    string = va_arg(args, const char *);
+  }
+
+  va_end(args);
+
+  return params;
+}
+
+static GArray *
+add_number_param(GArray *params, double value)
+{
+  xpath_result_t num;
+
+  num.type = XPATH_RESULT_TYPE_NUMERIC;
+  num.value.numeric = value;
+  g_array_append_val(params, num);
+
+  return params;
+}
+
 /* 4.1 - Node set functions */
 
 TEST(xpath, fn_last)
@@ -489,32 +527,6 @@ TEST(xpath, fn_position)
 }
 
 /* 4.2 - String functions */
-
-static GArray *
-string_parameters(const char *first, ...)
-{
-  GArray *params;
-  const char *string;
-  va_list args;
-
-  va_start(args, first);
-  params = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
-
-  string = first;
-  while (string) {
-    xpath_result_t param;
-    param.type = XPATH_RESULT_TYPE_STRING;
-    param.value.string = strdup(string);
-
-    g_array_append_val(params, param);
-
-    string = va_arg(args, const char *);
-  }
-
-  va_end(args);
-
-  return params;
-}
 
 TEST(xpath, fn_concat_2)
 {
@@ -642,18 +654,6 @@ TEST(xpath, fn_substring_after_failure)
   CHECK_RESULT_STRING(res, "");
 
   g_array_free(parameters, TRUE);
-}
-
-static GArray *
-add_number_param(GArray *params, double value)
-{
-  xpath_result_t num;
-
-  num.type = XPATH_RESULT_TYPE_NUMERIC;
-  num.value.numeric = value;
-  g_array_append_val(params, num);
-
-  return params;
 }
 
 TEST(xpath, fn_substring_2)
