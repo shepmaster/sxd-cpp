@@ -579,6 +579,73 @@ xpath_fn_substring_after(xpath_evaluation_context_t *context_unused, GArray *par
   return result;
 }
 
+static char *
+utf8_strndup(const char *str, gsize n)
+{
+  const char *end_byte;
+  int len;
+  char *result;
+
+  end_byte = g_utf8_offset_to_pointer(str, n);
+  len = end_byte - str;
+
+  result = malloc(len + 1);
+  memcpy(result, str, len);
+  result[len] = '\0';
+
+  return result;
+}
+
+xpath_result_t
+xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *string;
+  xpath_result_t *start;
+  xpath_result_t *end = NULL;
+  int start_offset;
+  const char *start_byte;
+  xpath_result_t result;
+
+  if (parameters->len < 2) {
+    abort();
+  }
+
+  if (parameters->len > 3) {
+    abort();
+  }
+
+  string = &g_array_index(parameters, xpath_result_t, 0);
+  start = &g_array_index(parameters, xpath_result_t, 1);
+  if (parameters->len == 3) {
+    end = &g_array_index(parameters, xpath_result_t, 2);
+  }
+
+  if (string->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+
+  if (start->type != XPATH_RESULT_TYPE_NUMERIC) {
+    abort();
+  }
+
+  if (end && end->type != XPATH_RESULT_TYPE_NUMERIC) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_STRING;
+
+  /* Start is one-indexed, not zero */
+  start_offset = start->value.numeric - 1;
+  start_byte = g_utf8_offset_to_pointer(string->value.string, start_offset);
+  if (end) {
+    result.value.string = utf8_strndup(start_byte, end->value.numeric);
+  } else {
+    result.value.string = g_strdup(start_byte);
+  }
+
+  return result;
+}
+
 /* 4.3 - Boolean Functions */
 
 xpath_result_t

@@ -156,6 +156,9 @@ xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, GArray *pa
 xpath_result_t
 xpath_fn_substring_after(xpath_evaluation_context_t *context_unused, GArray *parameters);
 
+xpath_result_t
+xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
 /* 4.3 - Boolean Functions */
 
 xpath_result_t

@@ -641,6 +641,63 @@ TEST(xpath, fn_substring_after_failure)
   g_array_free(parameters, TRUE);
 }
 
+static GArray *
+add_number_param(GArray *params, double value)
+{
+  xpath_result_t num;
+
+  num.type = XPATH_RESULT_TYPE_NUMERIC;
+  num.value.numeric = value;
+  g_array_append_val(params, num);
+
+  return params;
+}
+
+TEST(xpath, fn_substring_2)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("12345", NULL);
+  add_number_param(parameters, 2);
+
+  res = xpath_fn_substring(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("2345", res.value.string);
+
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_substring_3)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("12345", NULL);
+  add_number_param(add_number_param(parameters, 2), 3);
+
+  res = xpath_fn_substring(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("234", res.value.string);
+
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_substring_unicode)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("ウィキペディア", NULL);
+  add_number_param(add_number_param(parameters, 2), 3);
+
+  res = xpath_fn_substring(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("ィキペ", res.value.string);
+
+  g_array_free(parameters, TRUE);
+}
+
 /* 4.3 - Boolean functions */
 
 TEST(xpath, fn_true)
