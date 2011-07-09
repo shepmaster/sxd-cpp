@@ -451,6 +451,27 @@ xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused
   return result;
 }
 
+xpath_result_t
+xpath_fn_count(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *nodeset;
+  xpath_result_t result;
+
+  if (parameters->len != 1) {
+    not_implemented();
+  }
+
+  nodeset = &g_array_index(parameters, xpath_result_t, 0);
+  if (nodeset->type != XPATH_RESULT_TYPE_NODESET) {
+    not_implemented();
+  }
+
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  result.value.numeric = nodeset_count(nodeset->value.nodeset);
+
+  return result;
+}
+
 /* 4.2 - String Functions */
 
 xpath_result_t

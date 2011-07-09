@@ -492,6 +492,20 @@ add_boolean_param(GArray *params, int value)
   return params;
 }
 
+static GArray *
+add_nodeset_param(GArray *params, nodeset_t *value)
+{
+  xpath_result_t num;
+
+  params = ensure_parameters(params);
+
+  num.type = XPATH_RESULT_TYPE_NODESET;
+  num.value.nodeset = value;
+  g_array_append_val(params, num);
+
+  return params;
+}
+
 /* 4.1 - Node set functions */
 
 TEST(xpath, fn_last)
@@ -550,6 +564,25 @@ TEST(xpath, fn_position)
 
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
+}
+
+TEST(xpath, fn_count)
+{
+  GArray *parameters;
+  xpath_axis_test_t d;
+  nodeset_t *ns;
+  xpath_result_t res;
+
+  init_xpath_axis_test(&d);
+  ns = nodeset_new_with_nodes(d.a, d.b, d.c, NULL);
+  parameters = add_nodeset_param(NULL, ns);
+
+  res = xpath_fn_count(NULL, parameters);
+  CHECK_RESULT_NUMERIC(res, 3);
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+  g_array_free(parameters, TRUE);
 }
 
 /* 4.2 - String functions */

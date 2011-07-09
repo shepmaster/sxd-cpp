@@ -141,6 +141,9 @@ xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused);
 xpath_result_t
 xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused);
 
+xpath_result_t
+xpath_fn_count(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
 /* 4.2 - String Functions */
 
 xpath_result_t
