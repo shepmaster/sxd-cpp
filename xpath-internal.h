@@ -150,6 +150,9 @@ xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *paramet
 xpath_result_t
 xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters);
 
+xpath_result_t
+xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
 /* 4.3 - Boolean Functions */
 
 xpath_result_t

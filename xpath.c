@@ -529,6 +529,41 @@ xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters
   return result;
 }
 
+xpath_result_t
+xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *haystack;
+  xpath_result_t *needle;
+  xpath_result_t result;
+  const char *location;
+
+  if (parameters->len != 2) {
+    abort();
+  }
+
+  haystack = &g_array_index(parameters, xpath_result_t, 0);
+  needle = &g_array_index(parameters, xpath_result_t, 1);
+
+  if (haystack->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+
+  if (needle->type != XPATH_RESULT_TYPE_STRING) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_STRING;
+  location = g_strstr_len(haystack->value.string, -1, needle->value.string);
+  if (location) {
+    int len = location - haystack->value.string;
+    result.value.string = g_strndup(haystack->value.string, len);
+  } else {
+    result.value.string = g_strdup("");
+  }
+
+  return result;
+}
+
 /* 4.3 - Boolean Functions */
 
 xpath_result_t
