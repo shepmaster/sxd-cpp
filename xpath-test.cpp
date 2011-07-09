@@ -477,25 +477,38 @@ TEST(xpath, fn_position)
 
 /* 4.2 - String functions */
 
-#define set_string_parameter(_parameters, _index, _string)		\
-  {									\
-    xpath_result_t *__value;						\
-    __value = &g_array_index(_parameters, xpath_result_t, _index);	\
-    __value->type = XPATH_RESULT_TYPE_STRING;				\
-    __value->value.string = strdup(_string);				\
+static GArray *
+string_parameters(const char *first, ...)
+{
+  GArray *params;
+  const char *string;
+  va_list args;
+
+  va_start(args, first);
+  params = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+
+  string = first;
+  while (string) {
+    xpath_result_t param;
+    param.type = XPATH_RESULT_TYPE_STRING;
+    param.value.string = strdup(string);
+
+    g_array_append_val(params, param);
+
+    string = va_arg(args, const char *);
   }
+
+  va_end(args);
+
+  return params;
+}
 
 TEST(xpath, fn_concat_2)
 {
   GArray *parameters;
-  xpath_result_t *value;
   xpath_result_t res;
 
-  parameters = g_array_new(FALSE, FALSE, sizeof(*value));
-  g_array_set_size(parameters, 2);
-
-  set_string_parameter(parameters, 0, "one");
-  set_string_parameter(parameters, 1, "two");
+  parameters = string_parameters("one", "two", NULL);
 
   res = xpath_fn_concat(NULL, parameters);
   CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
@@ -509,12 +522,7 @@ TEST(xpath, fn_concat_3)
   GArray *parameters;
   xpath_result_t res;
 
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
-  g_array_set_size(parameters, 3);
-
-  set_string_parameter(parameters, 0, "one");
-  set_string_parameter(parameters, 1, "two");
-  set_string_parameter(parameters, 2, "three");
+  parameters = string_parameters("one", "two", "three", NULL);
 
   res = xpath_fn_concat(NULL, parameters);
   CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
@@ -528,17 +536,21 @@ TEST(xpath, fn_starts_with)
   GArray *parameters;
   xpath_result_t res;
 
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
-  g_array_set_size(parameters, 2);
+  parameters = string_parameters("hello world", "hello", NULL);
 
-  set_string_parameter(parameters, 0, "hello world");
-
-  set_string_parameter(parameters, 1, "hello");
   res = xpath_fn_starts_with(NULL, parameters);
   CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
   CHECK_EQUAL(TRUE, res.value.boolean);
 
-  set_string_parameter(parameters, 1, "cow");
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_starts_with_failure)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("hello world", "cow");
   res = xpath_fn_starts_with(NULL, parameters);
   CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
   CHECK_EQUAL(FALSE, res.value.boolean);
@@ -551,17 +563,21 @@ TEST(xpath, fn_contains)
   GArray *parameters;
   xpath_result_t res;
 
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
-  g_array_set_size(parameters, 2);
-
-  set_string_parameter(parameters, 0, "hello world");
-
-  set_string_parameter(parameters, 1, "world");
+  parameters = string_parameters("hello world", "world", NULL);
   res = xpath_fn_contains(NULL, parameters);
   CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
   CHECK_EQUAL(TRUE, res.value.boolean);
 
-  set_string_parameter(parameters, 1, "cow");
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_contains_failure)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("hello world", "cow", NULL);
+
   res = xpath_fn_contains(NULL, parameters);
   CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
   CHECK_EQUAL(FALSE, res.value.boolean);
