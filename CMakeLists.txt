@@ -2,8 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (SXD)
 enable_testing()
 
-include_directories(/sw/include/glib-2.0 /sw/lib/glib-2.0/include /Users/shep/Projects/cpputest/include)
-link_directories(/sw/lib /Users/shep/Projects/cpputest/lib)
+include_directories(/usr/local/include /usr/local/include/glib-2.0 /usr/local/lib/glib-2.0/include)
 
 add_definitions(-ansi -Wall -pedantic -Werror)
 
