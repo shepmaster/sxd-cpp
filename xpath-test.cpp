@@ -478,6 +478,20 @@ add_number_param(GArray *params, double value)
   return params;
 }
 
+static GArray *
+add_boolean_param(GArray *params, int value)
+{
+  xpath_result_t num;
+
+  params = ensure_parameters(params);
+
+  num.type = XPATH_RESULT_TYPE_BOOLEAN;
+  num.value.boolean = value;
+  g_array_append_val(params, num);
+
+  return params;
+}
+
 /* 4.1 - Node set functions */
 
 TEST(xpath, fn_last)
@@ -711,6 +725,28 @@ TEST(xpath, fn_substring_unicode)
 }
 
 /* 4.3 - Boolean functions */
+
+TEST(xpath, fn_not_true)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = add_boolean_param(NULL, TRUE);
+  res = xpath_fn_not(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_not_false)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = add_boolean_param(NULL, FALSE);
+  res = xpath_fn_not(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
+  g_array_free(parameters, TRUE);
+}
 
 TEST(xpath, fn_true)
 {

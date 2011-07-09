@@ -649,6 +649,27 @@ xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameter
 /* 4.3 - Boolean Functions */
 
 xpath_result_t
+xpath_fn_not(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *value;
+  xpath_result_t result;
+
+  if (parameters->len != 1) {
+    abort();
+  }
+
+  value = &g_array_index(parameters, xpath_result_t, 0);
+  if (value->type != XPATH_RESULT_TYPE_BOOLEAN) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_BOOLEAN;
+  result.value.boolean = ! value->value.boolean;
+
+  return result;
+}
+
+xpath_result_t
 xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
 {
   xpath_result_t result;
