@@ -66,6 +66,4 @@ int
 main(int argc, char **argv)
 {
   return CommandLineTestRunner::RunAllTests(argc, argv);
-
-  return EXIT_SUCCESS;
 }

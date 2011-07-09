@@ -925,6 +925,4 @@ main(int argc, char **argv)
 {
   initialize_globals();
   return CommandLineTestRunner::RunAllTests(argc, argv);
-
-  return EXIT_SUCCESS;
 }
