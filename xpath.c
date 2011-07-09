@@ -408,21 +408,17 @@ xpath_apply_xpath(node_t *node, const char * const xpath)
   return nodes;
 }
 
-xpath_result_t
-xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
-{
-  xpath_result_t result;
-  result.type = XPATH_RESULT_TYPE_BOOLEAN;
-  result.value.boolean = TRUE;
-  return result;
-}
+/* XPath 1.0 Core Function Library */
+/* 4.1 - Node Set Functions */
 
 xpath_result_t
-xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
+xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused)
 {
   xpath_result_t result;
-  result.type = XPATH_RESULT_TYPE_BOOLEAN;
-  result.value.boolean = FALSE;
+
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  result.value.numeric = nodeset_count(context->nodeset);
+
   return result;
 }
 
@@ -446,98 +442,7 @@ xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused
   return result;
 }
 
-xpath_result_t
-xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused)
-{
-  xpath_result_t result;
-
-  result.type = XPATH_RESULT_TYPE_NUMERIC;
-  result.value.numeric = nodeset_count(context->nodeset);
-
-  return result;
-}
-
-xpath_result_t
-xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters)
-{
-  xpath_result_t *value;
-  xpath_result_t result;
-
-  if (parameters->len != 1) {
-    abort();
-  }
-
-  value = &g_array_index(parameters, xpath_result_t, 0);
-  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
-  }
-
-  result.type = XPATH_RESULT_TYPE_NUMERIC;
-  result.value.numeric = floor(value->value.numeric);
-
-  return result;
-}
-
-xpath_result_t
-xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters)
-{
-  xpath_result_t *value;
-  xpath_result_t result;
-
-  if (parameters->len != 1) {
-    abort();
-  }
-
-  value = &g_array_index(parameters, xpath_result_t, 0);
-  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
-  }
-
-  result.type = XPATH_RESULT_TYPE_NUMERIC;
-  result.value.numeric = ceil(value->value.numeric);
-
-  return result;
-}
-
-xpath_result_t
-xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters)
-{
-  xpath_result_t *value;
-  xpath_result_t result;
-
-  if (parameters->len != 1) {
-    abort();
-  }
-
-  value = &g_array_index(parameters, xpath_result_t, 0);
-  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
-    abort();
-  }
-
-  result.type = XPATH_RESULT_TYPE_NUMERIC;
-  if (isfinite(value->value.numeric)) {
-    /* The standard says we need to round towards positive infinity,
-     * but that is not the default. It seems as if we should be able to
-     * use fesetround(), but I can't determine the thread safety of that
-     * function.
-     */
-    double truncated = (int) value->value.numeric;
-
-    if (value->value.numeric < 0) {
-      if (value->value.numeric - truncated >= -0.5) {
-	result.value.numeric = truncated;
-      } else {
-	result.value.numeric = truncated - 1;
-      }
-    } else {
-      result.value.numeric = round(value->value.numeric);
-    }
-  } else {
-    result.value.numeric = value->value.numeric;
-  }
-
-  return result;
-}
+/* 4.2 - String Functions */
 
 xpath_result_t
 xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters)
@@ -621,5 +526,109 @@ xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters
 
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
   result.value.boolean = (g_strstr_len(haystack->value.string, -1, needle->value.string) != NULL);
+  return result;
+}
+
+/* 4.3 - Boolean Functions */
+
+xpath_result_t
+xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
+{
+  xpath_result_t result;
+  result.type = XPATH_RESULT_TYPE_BOOLEAN;
+  result.value.boolean = TRUE;
+  return result;
+}
+
+xpath_result_t
+xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
+{
+  xpath_result_t result;
+  result.type = XPATH_RESULT_TYPE_BOOLEAN;
+  result.value.boolean = FALSE;
+  return result;
+}
+
+/* 4.4 - Number Functions */
+
+xpath_result_t
+xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *value;
+  xpath_result_t result;
+
+  if (parameters->len != 1) {
+    abort();
+  }
+
+  value = &g_array_index(parameters, xpath_result_t, 0);
+  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  result.value.numeric = floor(value->value.numeric);
+
+  return result;
+}
+
+xpath_result_t
+xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *value;
+  xpath_result_t result;
+
+  if (parameters->len != 1) {
+    abort();
+  }
+
+  value = &g_array_index(parameters, xpath_result_t, 0);
+  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  result.value.numeric = ceil(value->value.numeric);
+
+  return result;
+}
+
+xpath_result_t
+xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  xpath_result_t *value;
+  xpath_result_t result;
+
+  if (parameters->len != 1) {
+    abort();
+  }
+
+  value = &g_array_index(parameters, xpath_result_t, 0);
+  if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
+    abort();
+  }
+
+  result.type = XPATH_RESULT_TYPE_NUMERIC;
+  if (isfinite(value->value.numeric)) {
+    /* The standard says we need to round towards positive infinity,
+     * but that is not the default. It seems as if we should be able to
+     * use fesetround(), but I can't determine the thread safety of that
+     * function.
+     */
+    double truncated = (int) value->value.numeric;
+
+    if (value->value.numeric < 0) {
+      if (value->value.numeric - truncated >= -0.5) {
+	result.value.numeric = truncated;
+      } else {
+	result.value.numeric = truncated - 1;
+      }
+    } else {
+      result.value.numeric = round(value->value.numeric);
+    }
+  } else {
+    result.value.numeric = value->value.numeric;
+  }
+
   return result;
 }

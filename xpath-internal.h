@@ -130,26 +130,16 @@ xpath_select_xpath_steps(node_t *node, GArray *steps);
 nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);
 
-xpath_result_t
-xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused);
-
-xpath_result_t
-xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_unused);
-
-xpath_result_t
-xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused);
+/* XPath 1.0 Core Function Library */
+/* 4.1 - Node Set Functions */
 
 xpath_result_t
 xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused);
 
 xpath_result_t
-xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters);
+xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused);
 
-xpath_result_t
-xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters);
-
-xpath_result_t
-xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters);
+/* 4.2 - String Functions */
 
 xpath_result_t
 xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters);
@@ -159,5 +149,24 @@ xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *paramet
 
 xpath_result_t
 xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
+/* 4.3 - Boolean Functions */
+
+xpath_result_t
+xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused);
+
+xpath_result_t
+xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_unused);
+
+/* 4.4 - Number Functions */
+
+xpath_result_t
+xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
+xpath_result_t
+xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters);
+
+xpath_result_t
+xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters);
 
 #endif

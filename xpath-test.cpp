@@ -408,20 +408,39 @@ TEST(xpath, two_step)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, fn_true)
-{
-  xpath_result_t res;
-  res = xpath_fn_true(NULL, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(TRUE, res.value.boolean);
-}
+/* XPath 1.0 */
+/* 4.1 - Node set functions */
 
-TEST(xpath, fn_false)
+TEST(xpath, fn_last)
 {
+  xpath_axis_test_t d;
+  nodeset_t *ns;
   xpath_result_t res;
-  res = xpath_fn_false(NULL, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(FALSE, res.value.boolean);
+  xpath_evaluation_context_t context;
+
+  init_xpath_axis_test(&d);
+
+  ns = nodeset_new_with_nodes(d.a, d.b, d.c, NULL);
+
+  context.nodeset = ns;
+
+  context.node = d.a;
+  res = xpath_fn_last(&context, NULL);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
+
+  context.node = d.b;
+  res = xpath_fn_last(&context, NULL);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
+
+  context.node = d.c;
+  res = xpath_fn_last(&context, NULL);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
+  CHECK_EQUAL(3, res.value.numeric);
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
 }
 
 TEST(xpath, fn_position)
@@ -456,37 +475,119 @@ TEST(xpath, fn_position)
   destroy_xpath_axis_test(&d);
 }
 
-TEST(xpath, fn_last)
+/* 4.2 - String functions */
+
+#define set_string_parameter(_parameters, _index, _string)		\
+  {									\
+    xpath_result_t *__value;						\
+    __value = &g_array_index(_parameters, xpath_result_t, _index);	\
+    __value->type = XPATH_RESULT_TYPE_STRING;				\
+    __value->value.string = strdup(_string);				\
+  }
+
+TEST(xpath, fn_concat_2)
 {
-  xpath_axis_test_t d;
-  nodeset_t *ns;
+  GArray *parameters;
+  xpath_result_t *value;
   xpath_result_t res;
-  xpath_evaluation_context_t context;
 
-  init_xpath_axis_test(&d);
+  parameters = g_array_new(FALSE, FALSE, sizeof(*value));
+  g_array_set_size(parameters, 2);
 
-  ns = nodeset_new_with_nodes(d.a, d.b, d.c, NULL);
+  set_string_parameter(parameters, 0, "one");
+  set_string_parameter(parameters, 1, "two");
 
-  context.nodeset = ns;
+  res = xpath_fn_concat(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("onetwo", res.value.string);
 
-  context.node = d.a;
-  res = xpath_fn_last(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
-
-  context.node = d.b;
-  res = xpath_fn_last(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
-
-  context.node = d.c;
-  res = xpath_fn_last(&context, NULL);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
-  CHECK_EQUAL(3, res.value.numeric);
-
-  nodeset_free(ns);
-  destroy_xpath_axis_test(&d);
+  g_array_free(parameters, TRUE);
 }
+
+TEST(xpath, fn_concat_3)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  g_array_set_size(parameters, 3);
+
+  set_string_parameter(parameters, 0, "one");
+  set_string_parameter(parameters, 1, "two");
+  set_string_parameter(parameters, 2, "three");
+
+  res = xpath_fn_concat(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
+  STRCMP_EQUAL("onetwothree", res.value.string);
+
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_starts_with)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  g_array_set_size(parameters, 2);
+
+  set_string_parameter(parameters, 0, "hello world");
+
+  set_string_parameter(parameters, 1, "hello");
+  res = xpath_fn_starts_with(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(TRUE, res.value.boolean);
+
+  set_string_parameter(parameters, 1, "cow");
+  res = xpath_fn_starts_with(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(FALSE, res.value.boolean);
+
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_contains)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  g_array_set_size(parameters, 2);
+
+  set_string_parameter(parameters, 0, "hello world");
+
+  set_string_parameter(parameters, 1, "world");
+  res = xpath_fn_contains(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(TRUE, res.value.boolean);
+
+  set_string_parameter(parameters, 1, "cow");
+  res = xpath_fn_contains(NULL, parameters);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(FALSE, res.value.boolean);
+
+  g_array_free(parameters, TRUE);
+}
+
+/* 4.3 - Boolean functions */
+
+TEST(xpath, fn_true)
+{
+  xpath_result_t res;
+  res = xpath_fn_true(NULL, NULL);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(TRUE, res.value.boolean);
+}
+
+TEST(xpath, fn_false)
+{
+  xpath_result_t res;
+  res = xpath_fn_false(NULL, NULL);
+  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
+  CHECK_EQUAL(FALSE, res.value.boolean);
+}
+
+/* 4.4 - Number functions */
 
 TEST(xpath, fn_floor)
 {
@@ -594,98 +695,6 @@ TEST(xpath, fn_round)
   res = xpath_fn_round(NULL, parameters);
   CHECK_EQUAL(XPATH_RESULT_TYPE_NUMERIC, res.type);
   CHECK(isnan(res.value.numeric));
-
-  g_array_free(parameters, TRUE);
-}
-
-#define set_string_parameter(_parameters, _index, _string)		\
-  {									\
-    xpath_result_t *__value;						\
-    __value = &g_array_index(_parameters, xpath_result_t, _index);	\
-    __value->type = XPATH_RESULT_TYPE_STRING;				\
-    __value->value.string = strdup(_string);				\
-  }
-
-TEST(xpath, fn_concat_2)
-{
-  GArray *parameters;
-  xpath_result_t *value;
-  xpath_result_t res;
-
-  parameters = g_array_new(FALSE, FALSE, sizeof(*value));
-  g_array_set_size(parameters, 2);
-
-  set_string_parameter(parameters, 0, "one");
-  set_string_parameter(parameters, 1, "two");
-
-  res = xpath_fn_concat(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("onetwo", res.value.string);
-
-  g_array_free(parameters, TRUE);
-}
-
-TEST(xpath, fn_concat_3)
-{
-  GArray *parameters;
-  xpath_result_t res;
-
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
-  g_array_set_size(parameters, 3);
-
-  set_string_parameter(parameters, 0, "one");
-  set_string_parameter(parameters, 1, "two");
-  set_string_parameter(parameters, 2, "three");
-
-  res = xpath_fn_concat(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_STRING, res.type);
-  STRCMP_EQUAL("onetwothree", res.value.string);
-
-  g_array_free(parameters, TRUE);
-}
-
-TEST(xpath, fn_starts_with)
-{
-  GArray *parameters;
-  xpath_result_t res;
-
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
-  g_array_set_size(parameters, 2);
-
-  set_string_parameter(parameters, 0, "hello world");
-
-  set_string_parameter(parameters, 1, "hello");
-  res = xpath_fn_starts_with(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(TRUE, res.value.boolean);
-
-  set_string_parameter(parameters, 1, "cow");
-  res = xpath_fn_starts_with(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(FALSE, res.value.boolean);
-
-  g_array_free(parameters, TRUE);
-}
-
-TEST(xpath, fn_contains)
-{
-  GArray *parameters;
-  xpath_result_t res;
-
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
-  g_array_set_size(parameters, 2);
-
-  set_string_parameter(parameters, 0, "hello world");
-
-  set_string_parameter(parameters, 1, "world");
-  res = xpath_fn_contains(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(TRUE, res.value.boolean);
-
-  set_string_parameter(parameters, 1, "cow");
-  res = xpath_fn_contains(NULL, parameters);
-  CHECK_EQUAL(XPATH_RESULT_TYPE_BOOLEAN, res.type);
-  CHECK_EQUAL(FALSE, res.value.boolean);
 
   g_array_free(parameters, TRUE);
 }
