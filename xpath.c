@@ -502,61 +502,56 @@ xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *paramet
   return result;
 }
 
-xpath_result_t
-xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters)
-{
+typedef struct {
   xpath_result_t *haystack;
   xpath_result_t *needle;
-  xpath_result_t result;
+} find_substring_t;
 
+static const char *
+find_substring(find_substring_t *find, GArray *parameters)
+{
   if (parameters->len != 2) {
     abort();
   }
 
-  haystack = &g_array_index(parameters, xpath_result_t, 0);
-  needle = &g_array_index(parameters, xpath_result_t, 1);
+  find->haystack = &g_array_index(parameters, xpath_result_t, 0);
+  find->needle = &g_array_index(parameters, xpath_result_t, 1);
 
-  if (haystack->type != XPATH_RESULT_TYPE_STRING) {
+  if (find->haystack->type != XPATH_RESULT_TYPE_STRING) {
     abort();
   }
 
-  if (needle->type != XPATH_RESULT_TYPE_STRING) {
+  if (find->needle->type != XPATH_RESULT_TYPE_STRING) {
     abort();
   }
+
+  return g_strstr_len(find->haystack->value.string, -1, find->needle->value.string);
+}
+
+xpath_result_t
+xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters)
+{
+  find_substring_t find;
+  xpath_result_t result;
 
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
-  result.value.boolean = (g_strstr_len(haystack->value.string, -1, needle->value.string) != NULL);
+  result.value.boolean = (find_substring(&find, parameters) != NULL);
   return result;
 }
 
 xpath_result_t
 xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, GArray *parameters)
 {
-  xpath_result_t *haystack;
-  xpath_result_t *needle;
-  xpath_result_t result;
+  find_substring_t find;
   const char *location;
-
-  if (parameters->len != 2) {
-    abort();
-  }
-
-  haystack = &g_array_index(parameters, xpath_result_t, 0);
-  needle = &g_array_index(parameters, xpath_result_t, 1);
-
-  if (haystack->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
-  }
-
-  if (needle->type != XPATH_RESULT_TYPE_STRING) {
-    abort();
-  }
+  xpath_result_t result;
 
   result.type = XPATH_RESULT_TYPE_STRING;
-  location = g_strstr_len(haystack->value.string, -1, needle->value.string);
+
+  location = find_substring(&find, parameters);
   if (location) {
-    int len = location - haystack->value.string;
-    result.value.string = g_strndup(haystack->value.string, len);
+    int len = location - find.haystack->value.string;
+    result.value.string = g_strndup(find.haystack->value.string, len);
   } else {
     result.value.string = g_strdup("");
   }
