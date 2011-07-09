@@ -759,6 +759,107 @@ TEST(xpath, fn_substring_unicode)
 
 /* 4.3 - Boolean functions */
 
+TEST(xpath, fn_boolean_boolean)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = add_boolean_param(NULL, TRUE);
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_boolean_number)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = add_number_param(NULL, 3);
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_boolean_number_negative_zero)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = add_number_param(NULL, -0.0);
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_boolean_number_nan)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = add_number_param(NULL, NAN);
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_boolean_nodeset)
+{
+  GArray *parameters;
+  xpath_axis_test_t d;
+  nodeset_t *ns;
+  xpath_result_t res;
+
+  init_xpath_axis_test(&d);
+  ns = nodeset_new_with_nodes(d.a, d.b, d.c, NULL);
+  parameters = add_nodeset_param(NULL, ns);
+
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
+
+  nodeset_free(ns);
+  destroy_xpath_axis_test(&d);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_boolean_nodeset_empty)
+{
+  GArray *parameters;
+  nodeset_t *ns;
+  xpath_result_t res;
+
+  ns = nodeset_new();
+  parameters = add_nodeset_param(NULL, ns);
+
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
+
+  nodeset_free(ns);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_boolean_string)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("hello world", NULL);
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, TRUE);
+  g_array_free(parameters, TRUE);
+}
+
+TEST(xpath, fn_boolean_string_empty)
+{
+  GArray *parameters;
+  xpath_result_t res;
+
+  parameters = string_parameters("", NULL);
+  res = xpath_fn_boolean(NULL, parameters);
+  CHECK_RESULT_BOOLEAN(res, FALSE);
+  g_array_free(parameters, TRUE);
+}
+
 TEST(xpath, fn_not_true)
 {
   GArray *parameters;
