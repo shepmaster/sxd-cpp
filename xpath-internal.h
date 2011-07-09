@@ -132,4 +132,7 @@ xpath_select_xpath_steps(node_t *node, GArray *steps);
 nodeset_t *
 xpath_apply_xpath(node_t *node, const char * const xpath);
 
+void
+xpath_result_destroy(xpath_result_t *result);
+
 #endif

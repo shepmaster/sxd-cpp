@@ -418,3 +418,19 @@ xpath_apply_xpath(node_t *node, const char * const xpath)
   return nodes;
 }
 
+void
+xpath_result_destroy(xpath_result_t *result)
+{
+  switch (result->type) {
+  case XPATH_RESULT_TYPE_BOOLEAN:
+    break;
+  case XPATH_RESULT_TYPE_NUMERIC:
+    break;
+  case XPATH_RESULT_TYPE_STRING:
+    free(result->value.string);
+    break;
+  case XPATH_RESULT_TYPE_NODESET:
+    nodeset_free(result->value.nodeset);
+    break;
+  }
+}
