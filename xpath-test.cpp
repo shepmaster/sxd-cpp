@@ -429,6 +429,16 @@ TEST(xpath, two_step)
 }
 
 static GArray *
+ensure_parameters(GArray *params)
+{
+  if (params) {
+    return params;
+  } else {
+    return g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  }
+}
+
+static GArray *
 string_parameters(const char *first, ...)
 {
   GArray *params;
@@ -436,7 +446,7 @@ string_parameters(const char *first, ...)
   va_list args;
 
   va_start(args, first);
-  params = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
+  params = ensure_parameters(NULL);
 
   string = first;
   while (string) {
@@ -458,6 +468,8 @@ static GArray *
 add_number_param(GArray *params, double value)
 {
   xpath_result_t num;
+
+  params = ensure_parameters(params);
 
   num.type = XPATH_RESULT_TYPE_NUMERIC;
   num.value.numeric = value;
