@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 
 #include <CppUTest/TestHarness_c.h>
 #include <CppUTest/CommandLineTestRunner.h>
@@ -25,6 +26,44 @@ TEST_GROUP(tokenize)
   CHECK_EQUAL(_type, _tok.type);                \
 }                                               \
 
+static void
+STRNCMP_EQUAL_LOCATION(
+  const char *expected, const char *actual, int len,
+  const char *file, int line
+)
+{
+  int res;
+
+  res = strncmp(expected, actual, len);
+  Utest::getTestResult()->countCheck();
+  if (0 != res) {
+    GString *str = g_string_new(NULL);
+    g_string_printf(str, "Expected [%s] but got [%.*s]", expected, len, actual);
+    FAIL_TEST_LOCATION(str->str, file, line);
+    g_string_free(str, TRUE);
+  }
+}
+
+static void
+_NEXT_TOKEN_STRING(
+  token_type_t type, // const char *type_name,
+  const char *expected, tokenizer_t *tz,
+  const char *file, int line
+)
+{
+  int len;
+  token_t tok;
+
+  len = strlen(expected);
+  tok = tokenizer_next(tz);
+
+  CHECK_EQUAL_LOCATION(type, tok.type, file, line);
+  CHECK_EQUAL_LOCATION(len, tok.value.string.len, file, line);
+  STRNCMP_EQUAL_LOCATION(expected, tok.value.string.str, len, file, line);
+}
+
+#define NEXT_TOKEN_STRING(type, epected, tz) \
+  _NEXT_TOKEN_STRING(type, epected, tz, __FILE__, __LINE__)
 
 TEST(tokenize, tokenize_lt)
 {
@@ -46,18 +85,23 @@ TEST(tokenize, tokenize_slash)
 
 TEST(tokenize, tokenize_string)
 {
-  token_t tok;
-
   tz = tokenizer_new("hello");
-  NEXT_TOKEN(STRING, tz);
-  tok = tokenizer_current(tz);
-  STRCMP_EQUAL("hello", tok.value.string);
+  NEXT_TOKEN_STRING(STRING, "hello", tz);
 }
 
 TEST(tokenize, tokenize_two)
 {
   tz = tokenizer_new("<>");
   NEXT_TOKEN(LT, tz);
+  NEXT_TOKEN(GT, tz);
+}
+
+TEST(tokenize, tokenize_element)
+{
+  tz = tokenizer_new("<world/>");
+  NEXT_TOKEN(LT, tz);
+  NEXT_TOKEN_STRING(STRING, "world", tz);
+  NEXT_TOKEN(SLASH, tz);
   NEXT_TOKEN(GT, tz);
 }
 

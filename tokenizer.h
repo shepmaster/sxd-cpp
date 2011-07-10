@@ -13,7 +13,10 @@ typedef enum {
 typedef struct {
   token_type_t type;
   union {
-    const char *string;
+    struct {
+      const char *str;
+      int len;
+    } string;
   } value;
 } token_t;
 
