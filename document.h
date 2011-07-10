@@ -25,4 +25,10 @@ document_manage_node(document_t *doc, node_t *node);
 unsigned int
 document_managed_node_count(document_t *doc);
 
+document_t *
+document_parse(const char *input);
+
+element_t *
+document_root(document_t *doc);
+
 #endif

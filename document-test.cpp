@@ -76,6 +76,18 @@ TEST(document, move_node_between_documents)
   document_free(d2);
 }
 
+TEST(document, parse)
+{
+  document_t *doc;
+  element_t *root;
+
+  doc = document_parse("<hello/>");
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+
+  document_free(doc);
+}
+
 int
 main(int argc, char **argv)
 {

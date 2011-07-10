@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "document.h"
 #include "node-internal.h"
@@ -7,6 +8,7 @@
 #include "intern.h"
 
 struct documentS {
+  element_t *root;
   intern_t *dict;
   unsigned int managed_node_count;
 };
@@ -70,4 +72,39 @@ document_manage_node(document_t *doc, node_t *node)
 {
   node_change_document(node, doc);
   doc->managed_node_count++;
+}
+
+#include "tokenizer.h"
+
+document_t *
+document_parse(const char *input)
+{
+  tokenizer_t *tokenizer;
+  token_t token;
+  document_t * doc;
+  element_t *element;
+  char *name;
+
+  tokenizer = tokenizer_new(input);
+
+  doc = document_new();
+
+  token = tokenizer_next(tokenizer); /* lt */
+  token = tokenizer_next(tokenizer); /* name */
+  name = g_strndup(token.value.string.str, token.value.string.len);
+  element = document_element_new(doc, name);
+  free(name);
+
+  token = tokenizer_next(tokenizer); /* slash */
+  token = tokenizer_next(tokenizer); /* gt */
+
+  doc->root = element;
+
+  return doc;
+}
+
+element_t *
+document_root(document_t *doc)
+{
+  return doc->root;
 }
