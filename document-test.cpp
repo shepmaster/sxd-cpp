@@ -76,12 +76,24 @@ TEST(document, move_node_between_documents)
   document_free(d2);
 }
 
-TEST(document, parse)
+TEST(document, parse_simple)
 {
   document_t *doc;
   element_t *root;
 
   doc = document_parse("<hello/>");
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+
+  document_free(doc);
+}
+
+TEST(document, parse_simple_with_space)
+{
+  document_t *doc;
+  element_t *root;
+
+  doc = document_parse("<hello />");
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
 
