@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "document.h"
+#include "document-internal.h"
 #include "node-internal.h"
 #include "element-internal.h"
 #include "intern.h"
@@ -74,8 +74,6 @@ document_manage_node(document_t *doc, node_t *node)
   doc->managed_node_count++;
 }
 
-#include "tokenizer.h"
-
 static void
 _expect_token(token_type_t expected, token_t actual, const char *file, int line)
 {
@@ -104,27 +102,38 @@ document_parse(const char *input)
     if (END == token.type) break;
     if (LT == token.type) {
       element_t *element;
-      char *name;
-
-      token = tokenizer_next(tokenizer);
-      expect_token(STRING, token);
-
-      name = g_strndup(token.value.string.str, token.value.string.len);
-      element = document_element_new(doc, name);
+      element = parse_element(doc, tokenizer);
       doc->root = element;
-      free(name);
-
-      token = tokenizer_next(tokenizer);
-      while (SPACE == token.type) {
-        token = tokenizer_next(tokenizer);
-      }
-      expect_token(SLASH, token);
-      token = tokenizer_next(tokenizer);
-      expect_token(GT, token);
     }
   }
 
   return doc;
+}
+
+element_t *
+parse_element(document_t *doc, tokenizer_t *tokenizer)
+{
+  token_t token;
+  element_t *element;
+  char *name;
+
+  token = tokenizer_next(tokenizer);
+  expect_token(STRING, token);
+
+  name = g_strndup(token.value.string.str, token.value.string.len);
+  element = document_element_new(doc, name);
+  free(name);
+
+  token = tokenizer_next(tokenizer);
+  while (SPACE == token.type) {
+    token = tokenizer_next(tokenizer);
+  }
+
+  expect_token(SLASH, token);
+  token = tokenizer_next(tokenizer);
+  expect_token(GT, token);
+
+  return element;
 }
 
 element_t *
