@@ -126,6 +126,12 @@ init_step(xpath_step_t *step)
   step->predicates = NULL;
 }
 
+static void
+destroy_step(xpath_step_t *step)
+{
+  if (step->name) free(step->name);
+}
+
 TEST(xpath, element)
 {
   xpath_test_data_t d;
@@ -390,6 +396,7 @@ TEST(xpath, two_step)
   xpath_step_t step;
   GArray *steps;
   xpath_axis_test_t d;
+  unsigned int i;
 
   init_xpath_axis_test(&d);
   steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
@@ -404,6 +411,11 @@ TEST(xpath, two_step)
   CHECK_EQUAL(1, nodeset_count(ns));
   CHECK_nodeset_item(d.c, ns, 0);
 
+  for (i = 0; i < steps->len; i++) {
+    xpath_step_t *x;
+    x = &g_array_index(steps, xpath_step_t, i);
+    destroy_step(x);
+  }
   g_array_free(steps, TRUE);
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
@@ -497,7 +509,6 @@ TEST(xpath_predicate, predicate_fn_floor)
   xpath_result_t value;
   GArray *parameters;
 
-  init_xpath_axis_test(&d);
   init_step(&step);
   parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
   value.type = XPATH_RESULT_TYPE_NUMERIC;
@@ -512,6 +523,8 @@ TEST(xpath_predicate, predicate_fn_floor)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
+
+  g_array_free(parameters, TRUE);
 }
 
 TEST(xpath_predicate, predicate_fn_ceiling)
@@ -533,6 +546,8 @@ TEST(xpath_predicate, predicate_fn_ceiling)
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
+
+  g_array_free(parameters, TRUE);
 }
 
 TEST(xpath_predicate, predicate_equal_true)
