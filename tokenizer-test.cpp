@@ -10,18 +10,55 @@ extern "C" {
 }
 
 TEST_GROUP(tokenize)
-{};
+{
+  tokenizer_t *tz;
+
+  void teardown(void)
+  {
+    if (tz) tokenizer_free(tz);
+  }
+};
+
+#define NEXT_TOKEN(_type, _tz)                  \
+{                                               \
+  token_t _tok = tokenizer_next(_tz);           \
+  CHECK_EQUAL(_type, _tok.type);                \
+}                                               \
+
 
 TEST(tokenize, tokenize_lt)
 {
-  tokenizer_t *tz;
+  tz = tokenizer_new("<");
+  NEXT_TOKEN(LT, tz);
+}
+
+TEST(tokenize, tokenize_gt)
+{
+  tz = tokenizer_new(">");
+  NEXT_TOKEN(GT, tz);
+}
+
+TEST(tokenize, tokenize_slash)
+{
+  tz = tokenizer_new("/");
+  NEXT_TOKEN(SLASH, tz);
+}
+
+TEST(tokenize, tokenize_string)
+{
   token_t tok;
 
-  tz = tokenizer_new("<");
-  tok = tokenizer_next(tz);
-  CHECK_EQUAL(LT, tok);
+  tz = tokenizer_new("hello");
+  NEXT_TOKEN(STRING, tz);
+  tok = tokenizer_current(tz);
+  STRCMP_EQUAL("hello", tok.value.string);
+}
 
-  tokenizer_free(tz);
+TEST(tokenize, tokenize_two)
+{
+  tz = tokenizer_new("<>");
+  NEXT_TOKEN(LT, tz);
+  NEXT_TOKEN(GT, tz);
 }
 
 int
