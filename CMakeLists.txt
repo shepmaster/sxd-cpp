@@ -6,14 +6,14 @@ include_directories(/usr/local/include /usr/local/include/glib-2.0 /usr/local/li
 
 add_definitions(-ansi -Wall -pedantic -Werror)
 
-set(sxd_source document.c element.c exception.c intern.c nmtoken.c node.c text-node.c nodeset.c xpath.c xpath-functions.c)
+set(sxd_source document.c element.c exception.c intern.c nmtoken.c node.c text-node.c nodeset.c xpath.c xpath-functions.c tokenizer.c)
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd glib-2.0 intl)
 
 add_library(test-utilities SHARED test-utilities.c)
 target_link_libraries(test-utilities glib-2.0 intl sxd)
 
-set(test_programs element intern document exception nmtoken node text-node nodeset xpath xpath-functions)
+set(test_programs element intern document exception nmtoken node text-node nodeset xpath xpath-functions tokenizer)
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
   target_link_libraries(${program}-test sxd test-utilities cpputest)
