@@ -110,6 +110,12 @@ document_parse(const char *input)
   return doc;
 }
 
+#define consume_space() \
+  while (SPACE == token.type) { token = tokenizer_next(tokenizer); }
+
+#define dup_token_string(token) \
+  g_strndup(token.value.string.str, token.value.string.len)
+
 element_t *
 parse_element(document_t *doc, tokenizer_t *tokenizer)
 {
@@ -125,8 +131,10 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
   free(name);
 
   token = tokenizer_next(tokenizer);
-  while (SPACE == token.type) {
-    token = tokenizer_next(tokenizer);
+  consume_space();
+
+  if (STRING == token.type) {
+    token = parse_attribute(tokenizer, element);
   }
 
   expect_token(SLASH, token);
@@ -134,6 +142,40 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
   expect_token(GT, token);
 
   return element;
+}
+
+token_t
+parse_attribute(tokenizer_t *tokenizer, element_t *element)
+{
+  token_t token;
+  char *name;
+  char *value;
+  token_type_t quote_style;
+
+  name = dup_token_string(token);
+
+  token = tokenizer_next(tokenizer);
+  expect_token(EQ, token);
+
+  token = tokenizer_next(tokenizer);
+  quote_style = token.type;
+  if (quote_style != QUOT &&
+      quote_style != APOS) {
+    abort();
+  }
+
+  token = tokenizer_next(tokenizer);
+  expect_token(STRING, token);
+  value = dup_token_string(token);
+
+  element_set_attribute(element, name, value);
+
+  token = tokenizer_next(tokenizer);
+  expect_token(quote_style, token);
+
+  token = tokenizer_next(tokenizer);
+  consume_space();
+  return token;
 }
 
 element_t *
