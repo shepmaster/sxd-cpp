@@ -71,6 +71,30 @@ TEST(tokenize, tokenize_end)
   NEXT_TOKEN(END, tz);
 }
 
+TEST(tokenize, tokenize_space_space)
+{
+  tz = tokenizer_new(" ");
+  NEXT_TOKEN(SPACE, tz);
+}
+
+TEST(tokenize, tokenize_space_tab)
+{
+  tz = tokenizer_new("	");
+  NEXT_TOKEN(SPACE, tz);
+}
+
+TEST(tokenize, tokenize_space_lf)
+{
+  tz = tokenizer_new("\n");
+  NEXT_TOKEN(SPACE, tz);
+}
+
+TEST(tokenize, tokenize_space_cr)
+{
+  tz = tokenizer_new("\r");
+  NEXT_TOKEN(SPACE, tz);
+}
+
 TEST(tokenize, tokenize_lt)
 {
   tz = tokenizer_new("<");

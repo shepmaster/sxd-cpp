@@ -5,6 +5,7 @@ typedef struct tokenizerS tokenizer_t;
 
 typedef enum {
   END,
+  SPACE,
   LT,
   STRING,
   SLASH,

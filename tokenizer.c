@@ -34,6 +34,11 @@ tokenizer_next(tokenizer_t *tokenizer)
 
   if (tokenizer->current[0] == '\0') {
     tok.type = END;
+  } else if (tokenizer->current[0] == ' ' ||
+             tokenizer->current[0] == '\t' ||
+             tokenizer->current[0] == '\n' ||
+             tokenizer->current[0] == '\r') {
+    tok.type = SPACE;
   } else if (tokenizer->current[0] == '<') {
     tok.type = LT;
   } else if (tokenizer->current[0] == '>') {
