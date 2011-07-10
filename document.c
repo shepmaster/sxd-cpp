@@ -133,7 +133,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
   token = tokenizer_next(tokenizer);
   consume_space();
 
-  if (STRING == token.type) {
+  while (STRING == token.type) {
     token = parse_attribute(tokenizer, element);
   }
 

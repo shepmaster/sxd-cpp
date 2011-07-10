@@ -113,6 +113,20 @@ TEST(document, parse_element_with_attribute)
   document_free(doc);
 }
 
+TEST(document, parse_element_with_attributes)
+{
+  document_t *doc;
+  element_t *root;
+
+  doc = document_parse("<hello one='two' three='four' />");
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("two", element_get_attribute(root, "one"));
+  STRCMP_EQUAL("four", element_get_attribute(root, "three"));
+
+  document_free(doc);
+}
+
 int
 main(int argc, char **argv)
 {
