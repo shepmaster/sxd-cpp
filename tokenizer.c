@@ -14,7 +14,7 @@ tokenizer_t *
 tokenizer_new(const char *input)
 {
   tokenizer_t *tokenizer;
-  tokenizer = calloc(sizeof(&tokenizer), 1);
+  tokenizer = calloc(sizeof(*tokenizer), 1);
   tokenizer->input = input;
   tokenizer->current = input;
   return tokenizer;
@@ -32,7 +32,9 @@ tokenizer_next(tokenizer_t *tokenizer)
   token_t tok;
   int len = 1;
 
-  if (tokenizer->current[0] == '<') {
+  if (tokenizer->current[0] == '\0') {
+    tok.type = END;
+  } else if (tokenizer->current[0] == '<') {
     tok.type = LT;
   } else if (tokenizer->current[0] == '>') {
     tok.type = GT;

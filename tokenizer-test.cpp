@@ -65,6 +65,12 @@ _NEXT_TOKEN_STRING(
 #define NEXT_TOKEN_STRING(type, epected, tz) \
   _NEXT_TOKEN_STRING(type, epected, tz, __FILE__, __LINE__)
 
+TEST(tokenize, tokenize_end)
+{
+  tz = tokenizer_new("");
+  NEXT_TOKEN(END, tz);
+}
+
 TEST(tokenize, tokenize_lt)
 {
   tz = tokenizer_new("<");

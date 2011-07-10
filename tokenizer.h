@@ -4,10 +4,11 @@
 typedef struct tokenizerS tokenizer_t;
 
 typedef enum {
-    LT,
-    STRING,
-    SLASH,
-    GT
+  END,
+  LT,
+  STRING,
+  SLASH,
+  GT
 } token_type_t;
 
 typedef struct {

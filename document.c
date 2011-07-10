@@ -80,25 +80,27 @@ document_t *
 document_parse(const char *input)
 {
   tokenizer_t *tokenizer;
-  token_t token;
   document_t * doc;
-  element_t *element;
-  char *name;
 
   tokenizer = tokenizer_new(input);
 
   doc = document_new();
 
-  token = tokenizer_next(tokenizer); /* lt */
-  token = tokenizer_next(tokenizer); /* name */
-  name = g_strndup(token.value.string.str, token.value.string.len);
-  element = document_element_new(doc, name);
-  free(name);
+  while (TRUE) {
+  token_t token;
+    token = tokenizer_next(tokenizer);
 
-  token = tokenizer_next(tokenizer); /* slash */
-  token = tokenizer_next(tokenizer); /* gt */
+    if (END == token.type) break;
+    if (STRING == token.type) {
+      element_t *element;
+      char *name;
 
-  doc->root = element;
+      name = g_strndup(token.value.string.str, token.value.string.len);
+      element = document_element_new(doc, name);
+      doc->root = element;
+      free(name);
+    }
+  }
 
   return doc;
 }
