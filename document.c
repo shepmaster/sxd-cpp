@@ -76,6 +76,17 @@ document_manage_node(document_t *doc, node_t *node)
 
 #include "tokenizer.h"
 
+static void
+_expect_token(token_type_t expected, token_t actual, const char *file, int line)
+{
+  if (actual.type != expected) {
+    fprintf(stderr, "Expected %d, got %d (%s:%d)\n", expected, actual.type, file, line);
+    abort();
+  }
+}
+#define expect_token(expected, actual) \
+  _expect_token(expected, actual, __FILE__, __LINE__)
+
 document_t *
 document_parse(const char *input)
 {
@@ -91,14 +102,25 @@ document_parse(const char *input)
     token = tokenizer_next(tokenizer);
 
     if (END == token.type) break;
-    if (STRING == token.type) {
+    if (LT == token.type) {
       element_t *element;
       char *name;
+
+      token = tokenizer_next(tokenizer);
+      expect_token(STRING, token);
 
       name = g_strndup(token.value.string.str, token.value.string.len);
       element = document_element_new(doc, name);
       doc->root = element;
       free(name);
+
+      token = tokenizer_next(tokenizer);
+      while (SPACE == token.type) {
+        token = tokenizer_next(tokenizer);
+      }
+      expect_token(SLASH, token);
+      token = tokenizer_next(tokenizer);
+      expect_token(GT, token);
     }
   }
 
