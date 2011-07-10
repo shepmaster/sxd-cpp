@@ -76,55 +76,46 @@ TEST(document, move_node_between_documents)
   document_free(d2);
 }
 
-TEST(document, parse_simple)
+TEST_GROUP(document_parse)
 {
   document_t *doc;
   element_t *root;
 
+  void teardown(void)
+  {
+    if (doc) document_free(doc);
+  }
+};
+
+TEST(document_parse, empty)
+{
   doc = document_parse("<hello/>");
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
-
-  document_free(doc);
 }
 
-TEST(document, parse_simple_with_space)
+TEST(document_parse, empty_with_space)
 {
-  document_t *doc;
-  element_t *root;
-
   doc = document_parse("<hello />");
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
-
-  document_free(doc);
 }
 
-TEST(document, parse_element_with_attribute)
+TEST(document_parse, element_with_attribute)
 {
-  document_t *doc;
-  element_t *root;
-
   doc = document_parse("<hello one='two' />");
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
   STRCMP_EQUAL("two", element_get_attribute(root, "one"));
-
-  document_free(doc);
 }
 
-TEST(document, parse_element_with_attributes)
+TEST(document_parse, element_with_attributes)
 {
-  document_t *doc;
-  element_t *root;
-
   doc = document_parse("<hello one='two' three='four' />");
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
   STRCMP_EQUAL("two", element_get_attribute(root, "one"));
   STRCMP_EQUAL("four", element_get_attribute(root, "three"));
-
-  document_free(doc);
 }
 
 int
