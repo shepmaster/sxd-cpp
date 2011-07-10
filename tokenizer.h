@@ -8,7 +8,10 @@ typedef enum {
   LT,
   STRING,
   SLASH,
-  GT
+  GT,
+  EQ,
+  APOS,
+  QUOT
 } token_type_t;
 
 typedef struct {

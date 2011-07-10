@@ -40,6 +40,12 @@ tokenizer_next(tokenizer_t *tokenizer)
     tok.type = GT;
   } else if (tokenizer->current[0] == '/') {
     tok.type = SLASH;
+  } else if (tokenizer->current[0] == '=') {
+    tok.type = EQ;
+  } else if (tokenizer->current[0] == '\'') {
+    tok.type = APOS;
+  } else if (tokenizer->current[0] == '"') {
+    tok.type = QUOT;
   } else {
     const char *tmp;
     tok.type = STRING;

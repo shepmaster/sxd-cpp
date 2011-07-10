@@ -89,6 +89,24 @@ TEST(tokenize, tokenize_slash)
   NEXT_TOKEN(SLASH, tz);
 }
 
+TEST(tokenize, tokenize_eq)
+{
+  tz = tokenizer_new("=");
+  NEXT_TOKEN(EQ, tz);
+}
+
+TEST(tokenize, tokenize_apos)
+{
+  tz = tokenizer_new("'");
+  NEXT_TOKEN(APOS, tz);
+}
+
+TEST(tokenize, tokenize_quot)
+{
+  tz = tokenizer_new("\"");
+  NEXT_TOKEN(QUOT, tz);
+}
+
 TEST(tokenize, tokenize_string)
 {
   tz = tokenizer_new("hello");
