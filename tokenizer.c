@@ -8,6 +8,8 @@ struct tokenizerS {
   const char *input;
   const char *current;
   token_t current_token;
+  tokenizer_context_t current_context;
+  tokenizer_context_t next_context;
 };
 
 tokenizer_t *
@@ -31,6 +33,9 @@ tokenizer_next(tokenizer_t *tokenizer)
 {
   token_t tok;
   int len = 1;
+  int newline = FALSE;
+
+  tokenizer->current_context = tokenizer->next_context;
 
   if (tokenizer->current[0] == '\0') {
     tok.type = END;
@@ -39,6 +44,10 @@ tokenizer_next(tokenizer_t *tokenizer)
              tokenizer->current[0] == '\n' ||
              tokenizer->current[0] == '\r') {
     tok.type = SPACE;
+    if (tokenizer->current[0] == '\n' ||
+        tokenizer->current[0] == '\r') {
+      newline = TRUE;
+    }
   } else if (tokenizer->current[0] == '<') {
     tok.type = LT;
   } else if (tokenizer->current[0] == '>') {
@@ -65,6 +74,15 @@ tokenizer_next(tokenizer_t *tokenizer)
 
   tokenizer->current += len;
 
+  /* This seems ugly */
+  if (newline) {
+    tokenizer->next_context.line++;
+    tokenizer->next_context.column = 0;
+  } else {
+    tokenizer->next_context.column += len;
+  }
+  tokenizer->next_context.offset += len;
+
   tokenizer->current_token = tok;
   return tok;
 }
@@ -80,10 +98,8 @@ tokenizer_context(tokenizer_t *tokenizer)
 {
   tokenizer_context_t context;
 
-  context.line = 0;
-  context.column = 0;
+  context = tokenizer->current_context;
   context.string = g_strdup(tokenizer->input);
-  context.offset = 0;
 
   return context;
 }

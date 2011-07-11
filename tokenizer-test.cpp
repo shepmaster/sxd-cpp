@@ -153,16 +153,65 @@ TEST(tokenize, tokenize_element)
   NEXT_TOKEN(GT, tz);
 }
 
-TEST(tokenize, context)
+TEST(tokenize, context_empty)
 {
   tokenizer_context_t context;
   tz = tokenizer_new("");
+  tokenizer_next(tz);
 
   context = tokenizer_context(tz);
   CHECK_EQUAL(0, context.line);
   CHECK_EQUAL(0, context.column);
   STRCMP_EQUAL("", context.string);
   CHECK_EQUAL(0, context.offset);
+
+  tokenizer_context_destroy(&context);
+}
+
+TEST(tokenize, context_basic)
+{
+  tokenizer_context_t context;
+  tz = tokenizer_new("<hello>");
+  tokenizer_next(tz);
+  tokenizer_next(tz);
+
+  context = tokenizer_context(tz);
+  CHECK_EQUAL(0, context.line);
+  CHECK_EQUAL(1, context.column);
+  STRCMP_EQUAL("<hello>", context.string);
+  CHECK_EQUAL(1, context.offset);
+
+  tokenizer_context_destroy(&context);
+}
+
+TEST(tokenize, context_string)
+{
+  tokenizer_context_t context;
+  tz = tokenizer_new("hello>");
+  tokenizer_next(tz);
+  tokenizer_next(tz);
+
+  context = tokenizer_context(tz);
+  CHECK_EQUAL(0, context.line);
+  CHECK_EQUAL(5, context.column);
+  STRCMP_EQUAL("hello>", context.string);
+  CHECK_EQUAL(5, context.offset);
+
+  tokenizer_context_destroy(&context);
+}
+
+TEST(tokenize, context_newline)
+{
+  tokenizer_context_t context;
+  tz = tokenizer_new("\nworld");
+  tokenizer_next(tz);
+  tokenizer_next(tz);
+
+  context = tokenizer_context(tz);
+  CHECK_EQUAL(1, context.line);
+  CHECK_EQUAL(0, context.column);
+  STRCMP_EQUAL("\nworld", context.string);
+  CHECK_EQUAL(1, context.offset);
 
   tokenizer_context_destroy(&context);
 }
