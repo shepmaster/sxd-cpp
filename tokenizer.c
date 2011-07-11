@@ -74,3 +74,22 @@ tokenizer_current(tokenizer_t *tokenizer)
 {
   return tokenizer->current_token;
 }
+
+tokenizer_context_t
+tokenizer_context(tokenizer_t *tokenizer)
+{
+  tokenizer_context_t context;
+
+  context.line = 0;
+  context.column = 0;
+  context.string = g_strdup(tokenizer->input);
+  context.offset = 0;
+
+  return context;
+}
+
+void
+tokenizer_context_destroy(tokenizer_context_t *context)
+{
+  free(context->string);
+}

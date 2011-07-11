@@ -153,6 +153,20 @@ TEST(tokenize, tokenize_element)
   NEXT_TOKEN(GT, tz);
 }
 
+TEST(tokenize, context)
+{
+  tokenizer_context_t context;
+  tz = tokenizer_new("");
+
+  context = tokenizer_context(tz);
+  CHECK_EQUAL(0, context.line);
+  CHECK_EQUAL(0, context.column);
+  STRCMP_EQUAL("", context.string);
+  CHECK_EQUAL(0, context.offset);
+
+  tokenizer_context_destroy(&context);
+}
+
 int
 main(int argc, char **argv)
 {
