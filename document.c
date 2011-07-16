@@ -75,6 +75,15 @@ document_manage_node(document_t *doc, node_t *node)
 }
 
 static void
+_info_abort(const char *file, int line)
+{
+  fprintf(stderr, "Aborting at %s:%d\n", file, line);
+  abort();
+}
+#define info_abort()                            \
+  _info_abort(__FILE__, __LINE__)
+
+static void
 _expect_token(
   token_type_t expected, token_t actual, tokenizer_t *tokenizer,
   const char *file, int line
@@ -90,8 +99,8 @@ _expect_token(
 
     tokenizer_context_destroy(&context);
 
-    fprintf(stderr, "Expected %s, got %s (%s:%d)\n", tokenizer_token_name(expected), tokenizer_token_name(actual.type), file, line);
-    abort();
+    fprintf(stderr, "Expected %s, got %s\n", tokenizer_token_name(expected), tokenizer_token_name(actual.type));
+    _info_abort(file, line);
   }
 }
 #define expect_token(expected, actual, tokenzier)                       \
@@ -159,7 +168,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
     consume_space();
     expect_token(LT, token, tokenizer);
   } else {
-    abort();
+    info_abort();
   }
 
   return element;
@@ -182,7 +191,7 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element)
   quote_style = token.type;
   if (quote_style != QUOT &&
       quote_style != APOS) {
-    abort();
+    info_abort();
   }
 
   token = tokenizer_next(tokenizer);
