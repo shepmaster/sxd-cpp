@@ -15,7 +15,7 @@ TEST_GROUP(document)
 TEST(document, new_document)
 {
   document_t *doc;
-  
+
   doc = document_new();
   CHECK(doc != NULL);
   document_free(doc);
@@ -97,6 +97,13 @@ TEST(document_parse, empty)
 TEST(document_parse, empty_with_space)
 {
   doc = document_parse("<hello />");
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+}
+
+TEST(document_parse, empty_with_end_tag)
+{
+  doc = document_parse("<hello></hello>");
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
 }

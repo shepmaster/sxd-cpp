@@ -17,7 +17,7 @@ void
 document_free(document_t *doc)
 {
   if (! doc) return;
-  
+
   intern_free(doc->dict);
   free(doc);
 }
@@ -146,9 +146,18 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
     token = parse_attribute(tokenizer, element);
   }
 
-  expect_token(SLASH, token, tokenizer);
-  token = tokenizer_next(tokenizer);
-  expect_token(GT, token, tokenizer);
+  if (SLASH == token.type) {
+    /* Self-closing */
+    token = tokenizer_next(tokenizer);
+    expect_token(GT, token, tokenizer);
+  } else if (GT == token.type) {
+    /* Possible content */
+    token = tokenizer_next(tokenizer);
+    consume_space();
+    expect_token(LT, token, tokenizer);
+  } else {
+    abort();
+  }
 
   return element;
 }
