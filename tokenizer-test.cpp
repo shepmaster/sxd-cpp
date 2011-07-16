@@ -216,6 +216,11 @@ TEST(tokenize, context_newline)
   tokenizer_context_destroy(&context);
 }
 
+TEST(tokenize, token_name)
+{
+  STRCMP_EQUAL(">", tokenizer_token_name(GT));
+}
+
 int
 main(int argc, char **argv)
 {

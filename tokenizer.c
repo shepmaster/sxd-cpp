@@ -109,3 +109,30 @@ tokenizer_context_destroy(tokenizer_context_t *context)
 {
   free(context->string);
 }
+
+const char *
+tokenizer_token_name(token_type_t type)
+{
+  switch (type) {
+  case END:
+    return "End-of-input";
+  case SPACE:
+    return "whitespace";
+  case LT:
+    return "<";
+  case STRING:
+    return "[string]";
+  case SLASH:
+    return "/";
+  case GT:
+    return ">";
+  case EQ:
+    return "=";
+  case APOS:
+    return "'";
+  case QUOT:
+    return "\"";
+  }
+
+  return "";
+}

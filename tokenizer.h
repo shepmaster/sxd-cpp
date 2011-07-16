@@ -50,4 +50,7 @@ tokenizer_context(tokenizer_t *tokenizer);
 void
 tokenizer_context_destroy(tokenizer_context_t *context);
 
+const char *
+tokenizer_token_name(token_type_t type);
+
 #endif
