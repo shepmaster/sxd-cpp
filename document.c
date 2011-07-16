@@ -85,9 +85,12 @@ _expect_token(
 
     context = tokenizer_context(tokenizer);
     fprintf(stderr, "At line %d, column %d of input\n", context.line, context.column);
+    fprintf(stderr, "%s\n", context.string);
+    fprintf(stderr, "%*s^\n", context.offset, " ");
+
     tokenizer_context_destroy(&context);
 
-    fprintf(stderr, "Expected %d, got %d (%s:%d)\n", expected, actual.type, file, line);
+    fprintf(stderr, "Expected %s, got %s (%s:%d)\n", tokenizer_token_name(expected), tokenizer_token_name(actual.type), file, line);
     abort();
   }
 }
