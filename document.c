@@ -75,15 +75,24 @@ document_manage_node(document_t *doc, node_t *node)
 }
 
 static void
-_expect_token(token_type_t expected, token_t actual, const char *file, int line)
+_expect_token(
+  token_type_t expected, token_t actual, tokenizer_t *tokenizer,
+  const char *file, int line
+)
 {
   if (actual.type != expected) {
+    tokenizer_context_t context;
+
+    context = tokenizer_context(tokenizer);
+    fprintf(stderr, "At line %d, column %d of input\n", context.line, context.column);
+    tokenizer_context_destroy(&context);
+
     fprintf(stderr, "Expected %d, got %d (%s:%d)\n", expected, actual.type, file, line);
     abort();
   }
 }
-#define expect_token(expected, actual) \
-  _expect_token(expected, actual, __FILE__, __LINE__)
+#define expect_token(expected, actual, tokenzier)                       \
+  _expect_token(expected, actual, tokenizer, __FILE__, __LINE__)
 
 document_t *
 document_parse(const char *input)
@@ -124,7 +133,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
   char *name;
 
   token = tokenizer_next(tokenizer);
-  expect_token(STRING, token);
+  expect_token(STRING, token, tokenizer);
 
   name = g_strndup(token.value.string.str, token.value.string.len);
   element = document_element_new(doc, name);
@@ -137,9 +146,9 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
     token = parse_attribute(tokenizer, element);
   }
 
-  expect_token(SLASH, token);
+  expect_token(SLASH, token, tokenizer);
   token = tokenizer_next(tokenizer);
-  expect_token(GT, token);
+  expect_token(GT, token, tokenizer);
 
   return element;
 }
@@ -155,7 +164,7 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element)
   name = dup_token_string(token);
 
   token = tokenizer_next(tokenizer);
-  expect_token(EQ, token);
+  expect_token(EQ, token, tokenizer);
 
   token = tokenizer_next(tokenizer);
   quote_style = token.type;
@@ -165,13 +174,13 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element)
   }
 
   token = tokenizer_next(tokenizer);
-  expect_token(STRING, token);
+  expect_token(STRING, token, tokenizer);
   value = dup_token_string(token);
 
   element_set_attribute(element, name, value);
 
   token = tokenizer_next(tokenizer);
-  expect_token(quote_style, token);
+  expect_token(quote_style, token, tokenizer);
 
   token = tokenizer_next(tokenizer);
   consume_space();
