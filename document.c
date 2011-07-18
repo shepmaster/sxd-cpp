@@ -155,13 +155,25 @@ document_parse(const char *input, GError **error)
   g_strndup(token.value.string.str, token.value.string.len)
 
 element_t *
+parse_element1(document_t *doc, tokenizer_t *tokenizer, GError **error);
+
+element_t *
 parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
+{
+  token_t token;
+
+  token = tokenizer_next(tokenizer);
+  return parse_element1(doc, tokenizer, error);
+}
+
+element_t *
+parse_element1(document_t *doc, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   element_t *element;
   char *name;
 
-  token = tokenizer_next(tokenizer);
+  token = tokenizer_current(tokenizer);
   if (! expect_token(STRING, tokenizer, error)) return NULL;
 
   name = g_strndup(token.value.string.str, token.value.string.len);
@@ -190,14 +202,36 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
     if (! expect_token(LT, tokenizer, error)) return NULL;
 
     token = tokenizer_next(tokenizer);
-    if (! expect_token(SLASH, tokenizer, error)) return NULL;
+    if (SLASH == token.type) {
+      token = tokenizer_next(tokenizer);
+      if (! expect_token(STRING, tokenizer, error)) return NULL;
 
-    token = tokenizer_next(tokenizer);
-    if (! expect_token(STRING, tokenizer, error)) return NULL;
+      token = tokenizer_next(tokenizer);
+      consume_space();
+      if (! expect_token(GT, tokenizer, error)) return NULL;
+    } else if (STRING == token.type) {
+      element_t *child;
 
-    token = tokenizer_next(tokenizer);
-    consume_space();
-    if (! expect_token(GT, tokenizer, error)) return NULL;
+      child = parse_element1(doc, tokenizer, error);
+      if (*error) return NULL;
+
+      node_append_child((node_t *)element, (node_t *)child);
+
+      token = tokenizer_next(tokenizer);
+      if (! expect_token(LT, tokenizer, error)) return NULL;
+
+      token = tokenizer_next(tokenizer);
+      if (! expect_token(SLASH, tokenizer, error)) return NULL;
+
+      token = tokenizer_next(tokenizer);
+      if (! expect_token(STRING, tokenizer, error)) return NULL;
+
+      token = tokenizer_next(tokenizer);
+      if (! expect_token(GT, tokenizer, error)) return NULL;
+    } else {
+      info_abort(error);
+      return NULL;
+    }
   } else {
     info_abort(error);
     return NULL;

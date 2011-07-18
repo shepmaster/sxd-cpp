@@ -154,6 +154,19 @@ TEST(document_parse, element_with_attributes)
   STRCMP_EQUAL("four", element_get_attribute(root, "three"));
 }
 
+TEST(document_parse, element_with_child)
+{
+  node_t *node;
+  element_t *child;
+  doc = document_parse("<hello><world /></hello>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  node = node_first_child(element_cast_to_node(root));
+  child = (element_t *)node;
+  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("world", element_name(child));
+}
+
 int
 main(int argc, char **argv)
 {
