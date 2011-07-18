@@ -3,6 +3,8 @@
 
 typedef struct documentS document_t;
 
+#include <glib.h>
+
 #include "node.h"
 #include "element.h"
 #include "text-node.h"
@@ -25,8 +27,17 @@ document_manage_node(document_t *doc, node_t *node);
 unsigned int
 document_managed_node_count(document_t *doc);
 
+#define DOCUMENT_PARSE_ERROR document_parse_error_quark()
+
+GQuark
+document_parse_error_quark(void);
+
+typedef enum {
+  DOCUMENT_PARSE_ERROR_FAILED
+} DocumentParseError;
+
 document_t *
-document_parse(const char *input);
+document_parse(const char *input, GError **error);
 
 element_t *
 document_root(document_t *doc);

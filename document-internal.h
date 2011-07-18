@@ -11,9 +11,9 @@ void
 document_stop_managing_node(document_t *doc, node_t *node);
 
 element_t *
-parse_element(document_t *document, tokenizer_t *tokenizer);
+parse_element(document_t *document, tokenizer_t *tokenizer, GError **error);
 
-token_t
-parse_attribute(tokenizer_t *tokenizer, element_t *element);
+void
+parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error);
 
 #endif

@@ -74,40 +74,56 @@ document_manage_node(document_t *doc, node_t *node)
   doc->managed_node_count++;
 }
 
-static void
-_info_abort(const char *file, int line)
+GQuark
+document_parse_error_quark(void)
 {
-  fprintf(stderr, "Aborting at %s:%d\n", file, line);
-  abort();
+  return g_quark_from_static_string("document-parse-error-quark");
 }
-#define info_abort()                            \
-  _info_abort(__FILE__, __LINE__)
 
 static void
+_info_abort(GError **error, const char *file, int line)
+{
+  g_set_error(error, DOCUMENT_PARSE_ERROR, DOCUMENT_PARSE_ERROR_FAILED, "Aborting parsing at %s:%d\n", file, line);
+}
+#define info_abort(error)                       \
+  _info_abort(error, __FILE__, __LINE__)
+
+static int
 _expect_token(
-  token_type_t expected, token_t actual, tokenizer_t *tokenizer,
+  token_type_t expected, tokenizer_t *tokenizer, GError **error,
   const char *file, int line
 )
 {
-  if (actual.type != expected) {
-    tokenizer_context_t context;
+  token_t actual;
+  GString *msg;
+  tokenizer_context_t context;
 
-    context = tokenizer_context(tokenizer);
-    fprintf(stderr, "At line %d, column %d of input\n", context.line, context.column);
-    fprintf(stderr, "%s\n", context.string);
-    fprintf(stderr, "%*s^\n", context.offset, " ");
-
-    tokenizer_context_destroy(&context);
-
-    fprintf(stderr, "Expected %s, got %s\n", tokenizer_token_name(expected), tokenizer_token_name(actual.type));
-    _info_abort(file, line);
+  actual = tokenizer_current(tokenizer);
+  if (actual.type == expected) {
+    return TRUE;
   }
+
+  _info_abort(error, file, line);
+
+  msg = g_string_new(NULL);
+
+  context = tokenizer_context(tokenizer);
+  g_string_printf(msg, "At line %d, column %d of input\n", context.line, context.column);
+  g_string_append_printf(msg, "%s\n", context.string);
+  g_string_append_printf(msg, "%*s^\n", context.offset, " ");
+  tokenizer_context_destroy(&context);
+
+  g_string_append_printf(msg, "Expected %s, got %s\n", tokenizer_token_name(expected), tokenizer_token_name(actual.type));
+  g_prefix_error(error, "%s", msg->str);
+  g_string_free(msg, TRUE);
+
+  return FALSE;
 }
-#define expect_token(expected, actual, tokenzier)                       \
-  _expect_token(expected, actual, tokenizer, __FILE__, __LINE__)
+#define expect_token(expected, tokenzier, error)                \
+  _expect_token(expected, tokenizer, error, __FILE__, __LINE__)
 
 document_t *
-document_parse(const char *input)
+document_parse(const char *input, GError **error)
 {
   tokenizer_t *tokenizer;
   document_t * doc;
@@ -123,7 +139,8 @@ document_parse(const char *input)
     if (END == token.type) break;
     if (LT == token.type) {
       element_t *element;
-      element = parse_element(doc, tokenizer);
+      element = parse_element(doc, tokenizer, error);
+      if (*error) return NULL;
       doc->root = element;
     }
   }
@@ -138,14 +155,14 @@ document_parse(const char *input)
   g_strndup(token.value.string.str, token.value.string.len)
 
 element_t *
-parse_element(document_t *doc, tokenizer_t *tokenizer)
+parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   element_t *element;
   char *name;
 
   token = tokenizer_next(tokenizer);
-  expect_token(STRING, token, tokenizer);
+  if (! expect_token(STRING, tokenizer, error)) return NULL;
 
   name = g_strndup(token.value.string.str, token.value.string.len);
   element = document_element_new(doc, name);
@@ -155,39 +172,42 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
   consume_space();
 
   while (STRING == token.type) {
-    token = parse_attribute(tokenizer, element);
+    parse_attribute(tokenizer, element, error);
+    if (*error) {
+      return NULL;
+    }
+    token = tokenizer_current(tokenizer);
   }
 
   if (SLASH == token.type) {
     /* Self-closing */
     token = tokenizer_next(tokenizer);
-    expect_token(GT, token, tokenizer);
+    if (! expect_token(GT, tokenizer, error)) return NULL;
   } else if (GT == token.type) {
     /* Possible content */
     token = tokenizer_next(tokenizer);
     consume_space();
-    expect_token(LT, token, tokenizer);
+    if (! expect_token(LT, tokenizer, error)) return NULL;
 
     token = tokenizer_next(tokenizer);
-    /* if (SLASH == token.type)  */
-    expect_token(SLASH, token, tokenizer);
+    if (! expect_token(SLASH, tokenizer, error)) return NULL;
 
     token = tokenizer_next(tokenizer);
-    expect_token(STRING, token, tokenizer);
+    if (! expect_token(STRING, tokenizer, error)) return NULL;
 
     token = tokenizer_next(tokenizer);
     consume_space();
-    expect_token(GT, token, tokenizer);
-
+    if (! expect_token(GT, tokenizer, error)) return NULL;
   } else {
-    info_abort();
+    info_abort(error);
+    return NULL;
   }
 
   return element;
 }
 
-token_t
-parse_attribute(tokenizer_t *tokenizer, element_t *element)
+void
+parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
 {
   token_t token;
   char *name;
@@ -197,27 +217,28 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element)
   name = dup_token_string(token);
 
   token = tokenizer_next(tokenizer);
-  expect_token(EQ, token, tokenizer);
+  if (! expect_token(EQ, tokenizer, error)) return;
 
   token = tokenizer_next(tokenizer);
   quote_style = token.type;
   if (quote_style != QUOT &&
       quote_style != APOS) {
-    info_abort();
+    info_abort(error);
+    return;
   }
 
   token = tokenizer_next(tokenizer);
-  expect_token(STRING, token, tokenizer);
+  if (! expect_token(STRING, tokenizer, error)) return;
+
   value = dup_token_string(token);
 
   element_set_attribute(element, name, value);
 
   token = tokenizer_next(tokenizer);
-  expect_token(quote_style, token, tokenizer);
+  if (! expect_token(quote_style, tokenizer, error)) return;
 
   token = tokenizer_next(tokenizer);
   consume_space();
-  return token;
 }
 
 element_t *

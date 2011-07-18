@@ -76,10 +76,34 @@ TEST(document, move_node_between_documents)
   document_free(d2);
 }
 
+TEST_GROUP(document_parse_error)
+{
+  document_t *doc;
+  GError *error;
+};
+
+TEST(document_parse_error, basic)
+{
+  doc = document_parse("<<", &error);
+  POINTERS_EQUAL(NULL, doc);
+  CHECK(NULL != error);
+  CHECK(g_error_matches(error, DOCUMENT_PARSE_ERROR, DOCUMENT_PARSE_ERROR_FAILED));
+}
+
+static void
+_check_parse_error(GError *error, const char *file, int line)
+{
+  if (NULL == error) return;
+  FAIL_LOCATION(error->message, file, line);
+}
+#define CHECK_PARSE_ERROR(error)                \
+  _check_parse_error(error, __FILE__, __LINE__)
+
 TEST_GROUP(document_parse)
 {
   document_t *doc;
   element_t *root;
+  GError *error;
 
   void teardown(void)
   {
@@ -89,28 +113,32 @@ TEST_GROUP(document_parse)
 
 TEST(document_parse, empty)
 {
-  doc = document_parse("<hello/>");
+  doc = document_parse("<hello/>", &error);
+  CHECK_PARSE_ERROR(error);
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
 }
 
 TEST(document_parse, empty_with_space)
 {
-  doc = document_parse("<hello />");
+  doc = document_parse("<hello />", &error);
+  CHECK_PARSE_ERROR(error);
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
 }
 
 TEST(document_parse, empty_with_end_tag)
 {
-  doc = document_parse("<hello></hello>");
+  doc = document_parse("<hello></hello>", &error);
+  CHECK_PARSE_ERROR(error);
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
 }
 
 TEST(document_parse, element_with_attribute)
 {
-  doc = document_parse("<hello one='two' />");
+  doc = document_parse("<hello one='two' />", &error);
+  CHECK_PARSE_ERROR(error);
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
   STRCMP_EQUAL("two", element_get_attribute(root, "one"));
@@ -118,7 +146,8 @@ TEST(document_parse, element_with_attribute)
 
 TEST(document_parse, element_with_attributes)
 {
-  doc = document_parse("<hello one='two' three='four' />");
+  doc = document_parse("<hello one='two' three='four' />", &error);
+  CHECK_PARSE_ERROR(error);
   root = document_root(doc);
   STRCMP_EQUAL("hello", element_name(root));
   STRCMP_EQUAL("two", element_get_attribute(root, "one"));
