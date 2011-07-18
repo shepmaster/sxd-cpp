@@ -167,6 +167,18 @@ parse_element(document_t *doc, tokenizer_t *tokenizer)
     token = tokenizer_next(tokenizer);
     consume_space();
     expect_token(LT, token, tokenizer);
+
+    token = tokenizer_next(tokenizer);
+    /* if (SLASH == token.type)  */
+    expect_token(SLASH, token, tokenizer);
+
+    token = tokenizer_next(tokenizer);
+    expect_token(STRING, token, tokenizer);
+
+    token = tokenizer_next(tokenizer);
+    consume_space();
+    expect_token(GT, token, tokenizer);
+
   } else {
     info_abort();
   }
