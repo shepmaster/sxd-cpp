@@ -99,6 +99,18 @@ _check_parse_error(GError *error, const char *file, int line)
 #define CHECK_PARSE_ERROR(error)                \
   _check_parse_error(error, __FILE__, __LINE__)
 
+#define CHECK_ELEMENT_NAME(_node, _name)                        \
+{                                                               \
+  CHECK_EQUAL(NODE_TYPE_ELEMENT, node_type(_node));             \
+  STRCMP_EQUAL(_name, element_name((element_t *)_node));        \
+}
+
+#define CHECK_TEXT_NODE(_node, _content)                        \
+{                                                               \
+  CHECK_EQUAL(NODE_TYPE_TEXT_NODE, node_type(_node));           \
+  STRCMP_EQUAL(_content, text_node_text((text_node_t *)_node)); \
+}
+
 TEST_GROUP(document_parse)
 {
   document_t *doc;
@@ -157,62 +169,54 @@ TEST(document_parse, element_with_attributes)
 TEST(document_parse, element_with_child)
 {
   node_t *node;
-  element_t *child;
   doc = document_parse("<hello><world /></hello>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
   node = node_first_child(element_cast_to_node(root));
-  child = (element_t *)node;
   STRCMP_EQUAL("hello", element_name(root));
-  STRCMP_EQUAL("world", element_name(child));
+  CHECK_ELEMENT_NAME(node, "world");
 }
 
 TEST(document_parse, element_with_two_children)
 {
   node_t *node;
-  element_t *child;
-  element_t *child2;
+
   doc = document_parse("<hello><world /><cool /></hello>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
+
   node = node_first_child(element_cast_to_node(root));
-  child = (element_t *)node;
-  child2 = (element_t *)node_next_sibling(node);
-  STRCMP_EQUAL("hello", element_name(root));
-  STRCMP_EQUAL("world", element_name(child));
-  STRCMP_EQUAL("cool", element_name(child2));
+  CHECK_ELEMENT_NAME(node, "world");
+
+  node = node_next_sibling(node);
+  CHECK_ELEMENT_NAME(node, "cool");
 }
 
 TEST(document_parse, element_with_grandchild)
 {
   node_t *node;
-  element_t *child;
-  element_t *grandchild;
+
   doc = document_parse("<hello><world><cool /></world></hello>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
+
   node = node_first_child((node_t *)root);
-  child = (element_t *)node;
-  grandchild = (element_t *)node_first_child(node);
-  STRCMP_EQUAL("hello", element_name(root));
-  STRCMP_EQUAL("world", element_name(child));
-  STRCMP_EQUAL("cool", element_name(grandchild));
+  CHECK_ELEMENT_NAME(node, "world");
+
+  node = node_first_child(node);
+  CHECK_ELEMENT_NAME(node, "cool");
 }
 
 TEST(document_parse, element_with_text)
 {
   node_t *node;
-  text_node_t *child;
 
   doc = document_parse("<hello>world</hello>", &error);
   CHECK_PARSE_ERROR(error);
-
   root = document_root(doc);
-  node = node_first_child((node_t *)root);
 
-  CHECK_EQUAL(NODE_TYPE_TEXT_NODE, node_type(node));
-  child = (text_node_t *)node;
-  STRCMP_EQUAL("world", text_node_text(child));
+  node = node_first_child((node_t *)root);
+  CHECK_TEXT_NODE(node, "world");
 }
 
 int
