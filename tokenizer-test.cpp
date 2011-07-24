@@ -161,9 +161,20 @@ TEST(tokenize, tokenize_push)
   NEXT_TOKEN(LT, tz);
 }
 
-TEST(tokenize, context_empty)
+TEST_GROUP(tokenize_context)
 {
+  tokenizer_t *tz;
   tokenizer_context_t context;
+
+  void teardown(void)
+  {
+    if (tz) tokenizer_free(tz);
+    tokenizer_context_destroy(&context);
+  }
+};
+
+TEST(tokenize_context, empty)
+{
   tz = tokenizer_new("");
   tokenizer_next(tz);
 
@@ -172,13 +183,10 @@ TEST(tokenize, context_empty)
   CHECK_EQUAL(0, context.column);
   STRCMP_EQUAL("", context.string);
   CHECK_EQUAL(0, context.offset);
-
-  tokenizer_context_destroy(&context);
 }
 
-TEST(tokenize, context_basic)
+TEST(tokenize_context, basic)
 {
-  tokenizer_context_t context;
   tz = tokenizer_new("<hello>");
   tokenizer_next(tz);
   tokenizer_next(tz);
@@ -188,13 +196,10 @@ TEST(tokenize, context_basic)
   CHECK_EQUAL(1, context.column);
   STRCMP_EQUAL("<hello>", context.string);
   CHECK_EQUAL(1, context.offset);
-
-  tokenizer_context_destroy(&context);
 }
 
-TEST(tokenize, context_string)
+TEST(tokenize_context, string)
 {
-  tokenizer_context_t context;
   tz = tokenizer_new("hello>");
   tokenizer_next(tz);
   tokenizer_next(tz);
@@ -204,13 +209,10 @@ TEST(tokenize, context_string)
   CHECK_EQUAL(5, context.column);
   STRCMP_EQUAL("hello>", context.string);
   CHECK_EQUAL(5, context.offset);
-
-  tokenizer_context_destroy(&context);
 }
 
-TEST(tokenize, context_newline)
+TEST(tokenize_context, newline)
 {
-  tokenizer_context_t context;
   tz = tokenizer_new("\nworld");
   tokenizer_next(tz);
   tokenizer_next(tz);
@@ -220,8 +222,49 @@ TEST(tokenize, context_newline)
   CHECK_EQUAL(0, context.column);
   STRCMP_EQUAL("\nworld", context.string);
   CHECK_EQUAL(1, context.offset);
+}
 
-  tokenizer_context_destroy(&context);
+TEST(tokenize_context, push)
+{
+  tz = tokenizer_new("<>");
+  tokenizer_next(tz);
+  tokenizer_next(tz);
+  tokenizer_push(tz);
+
+  context = tokenizer_context(tz);
+  CHECK_EQUAL(0, context.line);
+  CHECK_EQUAL(0, context.column);
+  STRCMP_EQUAL("<>", context.string);
+  CHECK_EQUAL(0, context.offset);
+}
+
+TEST(tokenize_context, push_string)
+{
+  tz = tokenizer_new("hello<>");
+  tokenizer_next(tz);
+  tokenizer_next(tz);
+  tokenizer_next(tz);
+  tokenizer_push(tz);
+
+  context = tokenizer_context(tz);
+  CHECK_EQUAL(0, context.line);
+  CHECK_EQUAL(5, context.column);
+  STRCMP_EQUAL("hello<>", context.string);
+  CHECK_EQUAL(5, context.offset);
+}
+
+TEST(tokenize_context, push_next)
+{
+  tz = tokenizer_new("<>");
+  tokenizer_next(tz);
+  tokenizer_push(tz);
+  tokenizer_next(tz);
+
+  context = tokenizer_context(tz);
+  CHECK_EQUAL(0, context.line);
+  CHECK_EQUAL(0, context.column);
+  STRCMP_EQUAL("<>", context.string);
+  CHECK_EQUAL(0, context.offset);
 }
 
 TEST(tokenize, token_name)
