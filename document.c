@@ -154,43 +154,40 @@ document_parse(const char *input, GError **error)
 #define dup_token_string(token) \
   g_strndup(token.value.string.str, token.value.string.len)
 
-typedef enum {
-  ELEMENT, END_TAG, ERROR
-} element_or_end_tag_t;
-
-element_or_end_tag_t
+void
 parse_element_or_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
 
   token = tokenizer_next(tokenizer);
   consume_space();
-  if (! expect_token(LT, tokenizer, error)) return ERROR;
+  if (! expect_token(LT, tokenizer, error)) return;
 
   token = tokenizer_next(tokenizer);
   if (SLASH == token.type) {
     /* TODO: Check this matches the element name */
     token = tokenizer_next(tokenizer);
-    if (! expect_token(STRING, tokenizer, error)) return ERROR;
+    if (! expect_token(STRING, tokenizer, error)) return;
 
     token = tokenizer_next(tokenizer);
     consume_space();
-    if (! expect_token(GT, tokenizer, error)) return ERROR;
+    if (! expect_token(GT, tokenizer, error)) return;
 
-    return END_TAG;
+    return;
   } else if (STRING == token.type) {
     element_t *child;
 
     tokenizer_push(tokenizer);
     child = parse_element(doc, tokenizer, error);
-    if (*error) return ERROR;
+    if (*error) return;
 
     node_append_child((node_t *)element, (node_t *)child);
 
-    return parse_element_or_end_tag(doc, element, tokenizer, error);
+    parse_element_or_end_tag(doc, element, tokenizer, error);
+    return;
   } else {
     info_abort(error);
-    return ERROR;
+    return;
   }
 }
 
@@ -228,20 +225,18 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
     token = tokenizer_next(tokenizer);
 
     if (LT == token.type) {
-      element_or_end_tag_t res;
       tokenizer_push(tokenizer);
-      res = parse_element_or_end_tag(doc, element, tokenizer, error);
-      if (ERROR == res) return NULL;
+      parse_element_or_end_tag(doc, element, tokenizer, error);
+      if (*error) return NULL;
     } else if (STRING == token.type) {
-      element_or_end_tag_t res;
       char *str;
 
       str = dup_token_string(token);
       node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, str));
       free(str);
 
-      res = parse_element_or_end_tag(doc, element, tokenizer, error);
-      if (ERROR == res) return NULL;
+      parse_element_or_end_tag(doc, element, tokenizer, error);
+      if (*error) return NULL;
     } else {
       info_abort(error);
       return NULL;
