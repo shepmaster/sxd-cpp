@@ -248,6 +248,7 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
   char *value;
   token_type_t quote_style;
 
+  token = tokenizer_current(tokenizer);
   name = dup_token_string(token);
 
   token = tokenizer_next(tokenizer);
