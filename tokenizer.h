@@ -44,6 +44,9 @@ tokenizer_next(tokenizer_t *tokenizer);
 token_t
 tokenizer_current(tokenizer_t *tokenizer);
 
+void
+tokenizer_push(tokenizer_t *tokenizer);
+
 tokenizer_context_t
 tokenizer_context(tokenizer_t *tokenizer);
 

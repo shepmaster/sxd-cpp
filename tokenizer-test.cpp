@@ -153,6 +153,14 @@ TEST(tokenize, tokenize_element)
   NEXT_TOKEN(GT, tz);
 }
 
+TEST(tokenize, tokenize_push)
+{
+  tz = tokenizer_new("<>");
+  tokenizer_next(tz);
+  tokenizer_push(tz);
+  NEXT_TOKEN(LT, tz);
+}
+
 TEST(tokenize, context_empty)
 {
   tokenizer_context_t context;
