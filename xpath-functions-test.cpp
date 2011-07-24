@@ -247,7 +247,7 @@ TEST(xpath, fn_starts_with)
 
 TEST(xpath, fn_starts_with_failure)
 {
-  parameters = string_parameters("hello world", "cow");
+  parameters = string_parameters("hello world", "cow", NULL);
   res = xpath_fn_starts_with(NULL, parameters);
   CHECK_RESULT_BOOLEAN(res, FALSE);
 }
