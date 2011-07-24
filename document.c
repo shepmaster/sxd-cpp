@@ -155,25 +155,13 @@ document_parse(const char *input, GError **error)
   g_strndup(token.value.string.str, token.value.string.len)
 
 element_t *
-parse_element1(document_t *doc, tokenizer_t *tokenizer, GError **error);
-
-element_t *
 parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
-{
-  token_t token;
-
-  token = tokenizer_next(tokenizer);
-  return parse_element1(doc, tokenizer, error);
-}
-
-element_t *
-parse_element1(document_t *doc, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   element_t *element;
   char *name;
 
-  token = tokenizer_current(tokenizer);
+  token = tokenizer_next(tokenizer);
   if (! expect_token(STRING, tokenizer, error)) return NULL;
 
   name = g_strndup(token.value.string.str, token.value.string.len);
@@ -212,7 +200,9 @@ parse_element1(document_t *doc, tokenizer_t *tokenizer, GError **error)
     } else if (STRING == token.type) {
       element_t *child;
 
-      child = parse_element1(doc, tokenizer, error);
+      tokenizer_push(tokenizer);
+
+      child = parse_element(doc, tokenizer, error);
       if (*error) return NULL;
 
       node_append_child((node_t *)element, (node_t *)child);
