@@ -167,6 +167,22 @@ TEST(document_parse, element_with_child)
   STRCMP_EQUAL("world", element_name(child));
 }
 
+TEST(document_parse, element_with_two_children)
+{
+  node_t *node;
+  element_t *child;
+  element_t *child2;
+  doc = document_parse("<hello><world /><cool /></hello>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  node = node_first_child(element_cast_to_node(root));
+  child = (element_t *)node;
+  child2 = (element_t *)node_next_sibling(node);
+  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("world", element_name(child));
+  STRCMP_EQUAL("cool", element_name(child2));
+}
+
 TEST(document_parse, element_with_grandchild)
 {
   node_t *node;
