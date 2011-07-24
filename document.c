@@ -204,7 +204,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
   token = tokenizer_next(tokenizer);
   if (! expect_token(STRING, tokenizer, error)) return NULL;
 
-  name = g_strndup(token.value.string.str, token.value.string.len);
+  name = dup_token_string(token);
   element = document_element_new(doc, name);
   free(name);
 
@@ -224,10 +224,28 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
     token = tokenizer_next(tokenizer);
     if (! expect_token(GT, tokenizer, error)) return NULL;
   } else if (GT == token.type) {
-    element_or_end_tag_t res;
     /* Possible content */
-    res = parse_element_or_end_tag(doc, element, tokenizer, error);
-    if (ERROR == res) return NULL;
+    token = tokenizer_next(tokenizer);
+
+    if (LT == token.type) {
+      element_or_end_tag_t res;
+      tokenizer_push(tokenizer);
+      res = parse_element_or_end_tag(doc, element, tokenizer, error);
+      if (ERROR == res) return NULL;
+    } else if (STRING == token.type) {
+      element_or_end_tag_t res;
+      char *str;
+
+      str = dup_token_string(token);
+      node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, str));
+      free(str);
+
+      res = parse_element_or_end_tag(doc, element, tokenizer, error);
+      if (ERROR == res) return NULL;
+    } else {
+      info_abort(error);
+      return NULL;
+    }
   } else {
     info_abort(error);
     return NULL;

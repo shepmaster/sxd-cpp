@@ -199,6 +199,22 @@ TEST(document_parse, element_with_grandchild)
   STRCMP_EQUAL("cool", element_name(grandchild));
 }
 
+TEST(document_parse, element_with_text)
+{
+  node_t *node;
+  text_node_t *child;
+
+  doc = document_parse("<hello>world</hello>", &error);
+  CHECK_PARSE_ERROR(error);
+
+  root = document_root(doc);
+  node = node_first_child((node_t *)root);
+
+  CHECK_EQUAL(NODE_TYPE_TEXT_NODE, node_type(node));
+  child = (text_node_t *)node;
+  STRCMP_EQUAL("world", text_node_text(child));
+}
+
 int
 main(int argc, char **argv)
 {
