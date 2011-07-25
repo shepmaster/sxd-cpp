@@ -228,6 +228,18 @@ TEST(document_parse, element_with_text)
   CHECK_TEXT_NODE(node, "world");
 }
 
+TEST(document_parse, element_with_nonalpha_text)
+{
+  node_t *node;
+
+  doc = document_parse("<a>one, 2</a>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+
+  node = node_first_child((node_t *)root);
+  CHECK_TEXT_NODE(node, "one, 2");
+}
+
 TEST(document_parse, element_with_mixed_content)
 {
   node_t *node;

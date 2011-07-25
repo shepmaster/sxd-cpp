@@ -160,7 +160,7 @@ parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GEr
   token_t token;
   char *str;
 
-  token = tokenizer_next(tokenizer);
+  token = tokenizer_next_string(tokenizer, CHARDATA);
   if (STRING != token.type) {
     tokenizer_push(tokenizer);
     return;
