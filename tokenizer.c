@@ -6,6 +6,7 @@
 #include "tokenizer.h"
 
 typedef struct {
+  int valid;
   const char *offset;
   token_t token;
   tokenizer_context_t context;
@@ -49,6 +50,12 @@ tokenizer_next(tokenizer_t *tokenizer)
     return tokenizer_current(tokenizer);
   }
 
+  if (END == tokenizer->to_use->token.type &&
+      tokenizer->to_use->valid)
+  {
+    return tokenizer_current(tokenizer);
+  }
+
   offset = tokenizer->current.offset;
   tokenizer->previous = tokenizer->current;
 
@@ -87,6 +94,7 @@ tokenizer_next(tokenizer_t *tokenizer)
     tok.value.string.len = len;
   }
 
+  tokenizer->current.valid = TRUE;
   tokenizer->current.context = tokenizer->next_context;
   tokenizer->current.token = tok;
   tokenizer->current.offset += len;

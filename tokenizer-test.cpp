@@ -71,6 +71,13 @@ TEST(tokenize, tokenize_end)
   NEXT_TOKEN(END, tz);
 }
 
+TEST(tokenize, tokenize_after_end)
+{
+  tz = tokenizer_new("");
+  NEXT_TOKEN(END, tz);
+  NEXT_TOKEN(END, tz);
+}
+
 TEST(tokenize, tokenize_space_space)
 {
   tz = tokenizer_new(" ");
