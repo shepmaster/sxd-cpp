@@ -43,6 +43,22 @@ tokenizer_next(tokenizer_t *tokenizer)
   return tokenizer_next_string(tokenizer, NONE);
 }
 
+int
+tokenize_string(const char *offset, token_t *tok, const char *invalid)
+{
+  const char *tmp = offset;
+  int len;
+
+  while (! strchr(invalid, *tmp)) tmp++;
+  len = tmp - offset;
+
+  tok->type = STRING;
+  tok->value.string.str = offset;
+  tok->value.string.len = len;
+
+  return len;
+}
+
 token_t
 tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
 {
@@ -67,29 +83,17 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
 
   if (offset[0] == '\0') {
     tok.type = END;
-  } else if (attr_value != NONE) {
-    const char *tmp;
-    tok.type = STRING;
-    tok.value.string.str = offset;
-    tmp = offset;
-
-    switch (attr_value) {
-    case ATTR_VALUE_APOS:
-      while (*tmp != '\'') tmp++;
-      break;
-    case ATTR_VALUE_QUOT:
-      while (*tmp != '"') tmp++;
-      break;
-    case CHARDATA:
-      while (*tmp != '<' && *tmp != '&') tmp++;
-      /* TODO: Check for ]]> */
-      break;
-    case NONE:
-      abort();
-    }
-
-    len = tmp - offset;
-    tok.value.string.len = len;
+  } else if (attr_value == ATTR_VALUE_QUOT) {
+    len = tokenize_string(offset, &tok, "\"");
+  } else if (attr_value == ATTR_VALUE_APOS) {
+    len = tokenize_string(offset, &tok, "'");
+  } else if (offset[0] == '<') {
+    tok.type = LT;
+  } else if (offset[0] == '&') {
+    tok.type = AMP;
+  } else if (attr_value == CHARDATA) {
+    len = tokenize_string(offset, &tok, "<&");
+    /* TODO: Check for ]]> */
   } else if (offset[0] == ' ' ||
              offset[0] == '\t' ||
              offset[0] == '\n' ||
@@ -99,8 +103,6 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
         offset[0] == '\r') {
       newline = TRUE;
     }
-  } else if (offset[0] == '<') {
-    tok.type = LT;
   } else if (offset[0] == '>') {
     tok.type = GT;
   } else if (offset[0] == '/') {
@@ -111,8 +113,6 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
     tok.type = APOS;
   } else if (offset[0] == '"') {
     tok.type = QUOT;
-  } else if (offset[0] == '&') {
-    tok.type = AMP;
   } else {
     const char *tmp;
     tok.type = STRING;

@@ -168,6 +168,14 @@ TEST(tokenize, tokenize_chardata_amp)
   NEXT_TOKEN(AMP, tz);
 }
 
+TEST(tokenize, tokenize_chardata_bad_start)
+{
+  token_t token;
+  tz = tokenizer_new("<");
+  token = tokenizer_next_string(tz, CHARDATA);
+  CHECK_EQUAL(LT, token.type);
+}
+
 TEST(tokenize, tokenize_two)
 {
   tz = tokenizer_new("<>");
