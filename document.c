@@ -288,7 +288,7 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
     return;
   }
 
-  token = tokenizer_next(tokenizer);
+  token = tokenizer_next_string(tokenizer, quote_style == QUOT ? ATTR_VALUE_QUOT : ATTR_VALUE_APOS);
   if (! expect_token(STRING, tokenizer, error)) return;
 
   value = dup_token_string(token);
