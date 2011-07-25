@@ -219,6 +219,22 @@ TEST(document_parse, element_with_text)
   CHECK_TEXT_NODE(node, "world");
 }
 
+TEST(document_parse, element_with_mixed_content)
+{
+  node_t *node;
+
+  doc = document_parse("<hello><one />b</hello>", &error);
+  CHECK_PARSE_ERROR(error);
+
+  root = document_root(doc);
+
+  node = node_first_child((node_t *)root);
+  CHECK_ELEMENT_NAME(node, "one");
+
+  node = node_next_sibling(node);
+  CHECK_TEXT_NODE(node, "b");
+}
+
 int
 main(int argc, char **argv)
 {

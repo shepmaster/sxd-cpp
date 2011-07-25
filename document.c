@@ -155,13 +155,32 @@ document_parse(const char *input, GError **error)
   g_strndup(token.value.string.str, token.value.string.len)
 
 void
+parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  token_t token;
+  char *str;
+
+  token = tokenizer_next(tokenizer);
+  if (STRING != token.type) {
+    tokenizer_push(tokenizer);
+    return;
+  }
+
+  str = dup_token_string(token);
+  node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, str));
+  free(str);
+}
+
+void
 parse_element_or_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
 
   token = tokenizer_next(tokenizer);
-  consume_space();
-  if (! expect_token(LT, tokenizer, error)) return;
+  if (LT != token.type) {
+    tokenizer_push(tokenizer);
+    return;
+  }
 
   token = tokenizer_next(tokenizer);
   if (SLASH == token.type) {
@@ -183,7 +202,6 @@ parse_element_or_end_tag(document_t *doc, element_t *element, tokenizer_t *token
 
     node_append_child((node_t *)element, (node_t *)child);
 
-    parse_element_or_end_tag(doc, element, tokenizer, error);
     return;
   } else {
     info_abort(error);
@@ -222,24 +240,23 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
     if (! expect_token(GT, tokenizer, error)) return NULL;
   } else if (GT == token.type) {
     /* Possible content */
-    token = tokenizer_next(tokenizer);
+    parse_text_node(doc, element, tokenizer, error);
+    if (*error) return NULL;
 
-    if (LT == token.type) {
-      tokenizer_push(tokenizer);
-      parse_element_or_end_tag(doc, element, tokenizer, error);
-      if (*error) return NULL;
-    } else if (STRING == token.type) {
-      char *str;
+    while (TRUE) {
+      token = tokenizer_next(tokenizer);
 
-      str = dup_token_string(token);
-      node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, str));
-      free(str);
-
-      parse_element_or_end_tag(doc, element, tokenizer, error);
-      if (*error) return NULL;
-    } else {
-      info_abort(error);
-      return NULL;
+      if (LT == token.type) {
+        tokenizer_push(tokenizer);
+        parse_element_or_end_tag(doc, element, tokenizer, error);
+        if (*error) return NULL;
+      } else if (STRING == token.type) {
+        tokenizer_push(tokenizer);
+        parse_text_node(doc, element, tokenizer, error);
+        if (*error) return NULL;
+      } else {
+        break;
+      }
     }
   } else {
     info_abort(error);
