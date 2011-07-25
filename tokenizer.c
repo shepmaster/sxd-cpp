@@ -80,6 +80,10 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
     case ATTR_VALUE_QUOT:
       while (*tmp != '"') tmp++;
       break;
+    case CHARDATA:
+      while (*tmp != '<' && *tmp != '&') tmp++;
+      /* TODO: Check for ]]> */
+      break;
     case NONE:
       abort();
     }
@@ -107,6 +111,8 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
     tok.type = APOS;
   } else if (offset[0] == '"') {
     tok.type = QUOT;
+  } else if (offset[0] == '&') {
+    tok.type = AMP;
   } else {
     const char *tmp;
     tok.type = STRING;
@@ -191,6 +197,8 @@ tokenizer_token_name(token_type_t type)
     return "'";
   case QUOT:
     return "\"";
+  case AMP:
+    return "&";
   }
 
   return "";

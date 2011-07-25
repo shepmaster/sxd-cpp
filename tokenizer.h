@@ -12,7 +12,8 @@ typedef enum {
   GT,
   EQ,
   APOS,
-  QUOT
+  QUOT,
+  AMP
 } token_type_t;
 
 typedef struct {
@@ -35,7 +36,8 @@ typedef struct {
 typedef enum {
   NONE,
   ATTR_VALUE_APOS,
-  ATTR_VALUE_QUOT
+  ATTR_VALUE_QUOT,
+  CHARDATA
 } string_type_t;
 
 tokenizer_t *

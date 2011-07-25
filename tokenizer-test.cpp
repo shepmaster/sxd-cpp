@@ -154,6 +154,20 @@ TEST(tokenize, tokenize_attr_value_quot)
   NEXT_TOKEN(END, tz);
 }
 
+TEST(tokenize, tokenize_chardata_lt)
+{
+  tz = tokenizer_new("a, 2<");
+  NEXT_TOKEN_STRING("a, 2", tz, CHARDATA);
+  NEXT_TOKEN(LT, tz);
+}
+
+TEST(tokenize, tokenize_chardata_amp)
+{
+  tz = tokenizer_new("a, 2&");
+  NEXT_TOKEN_STRING("a, 2", tz, CHARDATA);
+  NEXT_TOKEN(AMP, tz);
+}
+
 TEST(tokenize, tokenize_two)
 {
   tz = tokenizer_new("<>");
