@@ -40,6 +40,12 @@ tokenizer_free(tokenizer_t *tokenizer)
 token_t
 tokenizer_next(tokenizer_t *tokenizer)
 {
+  return tokenizer_next_string(tokenizer, NONE);
+}
+
+token_t
+tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
+{
   token_t tok;
   int len = 1;
   int newline = FALSE;
@@ -61,6 +67,25 @@ tokenizer_next(tokenizer_t *tokenizer)
 
   if (offset[0] == '\0') {
     tok.type = END;
+  } else if (attr_value != NONE) {
+    const char *tmp;
+    tok.type = STRING;
+    tok.value.string.str = offset;
+    tmp = offset;
+
+    switch (attr_value) {
+    case ATTR_VALUE_APOS:
+      while (*tmp != '\'') tmp++;
+      break;
+    case ATTR_VALUE_QUOT:
+      while (*tmp != '"') tmp++;
+      break;
+    case NONE:
+      abort();
+    }
+
+    len = tmp - offset;
+    tok.value.string.len = len;
   } else if (offset[0] == ' ' ||
              offset[0] == '\t' ||
              offset[0] == '\n' ||

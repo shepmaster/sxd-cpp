@@ -32,6 +32,12 @@ typedef struct {
   int offset;
 } tokenizer_context_t;
 
+typedef enum {
+  NONE,
+  ATTR_VALUE_APOS,
+  ATTR_VALUE_QUOT
+} string_type_t;
+
 tokenizer_t *
 tokenizer_new(const char *input);
 
@@ -40,6 +46,9 @@ tokenizer_free(tokenizer_t *tokenizer);
 
 token_t
 tokenizer_next(tokenizer_t *tokenizer);
+
+token_t
+tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type);
 
 token_t
 tokenizer_current(tokenizer_t *tokenizer);

@@ -46,8 +46,8 @@ STRNCMP_EQUAL_LOCATION(
 
 static void
 _NEXT_TOKEN_STRING(
-  token_type_t type, // const char *type_name,
-  const char *expected, tokenizer_t *tz,
+  const char *expected,
+  tokenizer_t *tz, string_type_t string_type,
   const char *file, int line
 )
 {
@@ -55,15 +55,15 @@ _NEXT_TOKEN_STRING(
   token_t tok;
 
   len = strlen(expected);
-  tok = tokenizer_next(tz);
+  tok = tokenizer_next_string(tz, string_type);
 
-  CHECK_EQUAL_LOCATION(type, tok.type, file, line);
+  CHECK_EQUAL_LOCATION(STRING, tok.type, file, line);
   CHECK_EQUAL_LOCATION(len, tok.value.string.len, file, line);
   STRNCMP_EQUAL_LOCATION(expected, tok.value.string.str, len, file, line);
 }
 
-#define NEXT_TOKEN_STRING(type, epected, tz) \
-  _NEXT_TOKEN_STRING(type, epected, tz, __FILE__, __LINE__)
+#define NEXT_TOKEN_STRING(expected, tz, string_type)                    \
+  _NEXT_TOKEN_STRING(expected, tz, string_type, __FILE__, __LINE__)
 
 TEST(tokenize, tokenize_end)
 {
@@ -138,10 +138,20 @@ TEST(tokenize, tokenize_quot)
   NEXT_TOKEN(QUOT, tz);
 }
 
-TEST(tokenize, tokenize_string)
+TEST(tokenize, tokenize_attr_value_apos)
 {
-  tz = tokenizer_new("hello");
-  NEXT_TOKEN_STRING(STRING, "hello", tz);
+  tz = tokenizer_new("hello world'");
+  NEXT_TOKEN_STRING("hello world", tz, ATTR_VALUE_APOS);
+  NEXT_TOKEN(APOS, tz);
+  NEXT_TOKEN(END, tz);
+}
+
+TEST(tokenize, tokenize_attr_value_quot)
+{
+  tz = tokenizer_new("hello world\"");
+  NEXT_TOKEN_STRING("hello world", tz, ATTR_VALUE_QUOT);
+  NEXT_TOKEN(QUOT, tz);
+  NEXT_TOKEN(END, tz);
 }
 
 TEST(tokenize, tokenize_two)
@@ -155,7 +165,7 @@ TEST(tokenize, tokenize_element)
 {
   tz = tokenizer_new("<world/>");
   NEXT_TOKEN(LT, tz);
-  NEXT_TOKEN_STRING(STRING, "world", tz);
+  NEXT_TOKEN_STRING("world", tz, NONE);
   NEXT_TOKEN(SLASH, tz);
   NEXT_TOKEN(GT, tz);
 }
