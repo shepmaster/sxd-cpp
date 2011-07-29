@@ -155,6 +155,9 @@ document_parse(const char *input, GError **error)
 #define consume_space() \
   while (SPACE == token.type) { token = tokenizer_next(tokenizer); }
 
+#define consume_space_string(_type) \
+  while (SPACE == token.type) { token = tokenizer_next_string(tokenizer, _type); }
+
 #define dup_token_string(token) \
   g_strndup(token.value.string.str, token.value.string.len)
 
@@ -182,14 +185,14 @@ parse_entity(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError
   char *str;
   const char *expanded = NULL;
 
-  token = tokenizer_next_string(tokenizer, CHARDATA);
+  token = tokenizer_next(tokenizer);
   if (AMP != token.type) {
     tokenizer_push(tokenizer);
     return;
   }
 
-  token = tokenizer_next(tokenizer);
-  expect_token(STRING, tokenizer, error);
+  token = tokenizer_next_string(tokenizer, NAME);
+  if (! expect_token(STRING, tokenizer, error)) return;
 
   str = dup_token_string(token);
   if (strcmp("lt", str) == 0) {
@@ -208,7 +211,7 @@ parse_entity(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError
   node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, expanded));
 
   token = tokenizer_next(tokenizer);
-  expect_token(SEMICOLON, tokenizer, error);
+  if (! expect_token(SEMICOLON, tokenizer, error)) return;
 }
 
 void
@@ -222,10 +225,10 @@ parse_element_or_end_tag(document_t *doc, element_t *element, tokenizer_t *token
     return;
   }
 
-  token = tokenizer_next(tokenizer);
+  token = tokenizer_next_string(tokenizer, NAME);
   if (SLASH == token.type) {
     /* TODO: Check this matches the element name */
-    token = tokenizer_next(tokenizer);
+    token = tokenizer_next_string(tokenizer, NAME);
     if (! expect_token(STRING, tokenizer, error)) return;
 
     token = tokenizer_next(tokenizer);
@@ -256,22 +259,24 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
   element_t *element;
   char *name;
 
-  token = tokenizer_next(tokenizer);
+  token = tokenizer_next_string(tokenizer, NAME);
   if (! expect_token(STRING, tokenizer, error)) return NULL;
 
   name = dup_token_string(token);
   element = document_element_new(doc, name);
   free(name);
 
-  token = tokenizer_next(tokenizer);
-  consume_space();
+  token = tokenizer_next_string(tokenizer, NAME);
+  consume_space_string(NAME);
 
   while (STRING == token.type) {
     parse_attribute(tokenizer, element, error);
     if (*error) {
       return NULL;
     }
-    token = tokenizer_current(tokenizer);
+
+    token = tokenizer_next_string(tokenizer, NAME);
+    consume_space_string(NAME);
   }
 
   if (SLASH == token.type) {
@@ -339,9 +344,6 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(quote_style, tokenizer, error)) return;
-
-  token = tokenizer_next(tokenizer);
-  consume_space();
 }
 
 element_t *

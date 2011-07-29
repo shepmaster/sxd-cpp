@@ -205,7 +205,7 @@ TEST(tokenize, tokenize_element)
 {
   tz = tokenizer_new("<world/>");
   NEXT_TOKEN(LT, tz);
-  NEXT_TOKEN_STRING("world", tz, NONE);
+  NEXT_TOKEN_STRING("world", tz, NAME);
   NEXT_TOKEN(SLASH, tz);
   NEXT_TOKEN(GT, tz);
 }
@@ -246,7 +246,7 @@ TEST(tokenize_context, basic)
 {
   tz = tokenizer_new("<hello>");
   tokenizer_next(tz);
-  tokenizer_next(tz);
+  tokenizer_next_string(tz, NAME);
 
   context = tokenizer_context(tz);
   CHECK_EQUAL(0, context.line);
@@ -258,7 +258,7 @@ TEST(tokenize_context, basic)
 TEST(tokenize_context, string)
 {
   tz = tokenizer_new("hello>");
-  tokenizer_next(tz);
+  tokenizer_next_string(tz, NAME);
   tokenizer_next(tz);
 
   context = tokenizer_context(tz);
@@ -272,7 +272,7 @@ TEST(tokenize_context, newline)
 {
   tz = tokenizer_new("\nworld");
   tokenizer_next(tz);
-  tokenizer_next(tz);
+  tokenizer_next_string(tz, NAME);
 
   context = tokenizer_context(tz);
   CHECK_EQUAL(1, context.line);
@@ -298,7 +298,7 @@ TEST(tokenize_context, push)
 TEST(tokenize_context, push_string)
 {
   tz = tokenizer_new("hello<>");
-  tokenizer_next(tz);
+  tokenizer_next_string(tz, NAME);
   tokenizer_next(tz);
   tokenizer_next(tz);
   tokenizer_push(tz);

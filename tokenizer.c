@@ -185,15 +185,7 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     len = tmp - offset;
     tok.value.string.len = len;
   } else {
-    const char *tmp;
-    tok.type = STRING;
-    tok.value.string.str = offset;
-    tmp = offset;
-    /* Using ascii function here is wrong */
-    /* Needs to be a Name? */
-    while (g_ascii_isalpha(*tmp)) tmp++;
-    len = tmp - offset;
-    tok.value.string.len = len;
+    abort();
   }
 
   tokenizer->current.valid = TRUE;
