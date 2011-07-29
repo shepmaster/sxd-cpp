@@ -115,6 +115,8 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
     tok.type = QUOT;
   } else if (offset[0] == ';') {
     tok.type = SEMICOLON;
+  } else if (offset[0] == '#') {
+    tok.type = HASH;
   } else {
     const char *tmp;
     tok.type = STRING;
@@ -203,6 +205,8 @@ tokenizer_token_name(token_type_t type)
     return "&";
   case SEMICOLON:
     return ";";
+  case HASH:
+    return "#";
   }
 
   return "";

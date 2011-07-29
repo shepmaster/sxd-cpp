@@ -144,6 +144,12 @@ TEST(tokenize, tokenize_semicolon)
   NEXT_TOKEN(SEMICOLON, tz);
 }
 
+TEST(tokenize, tokenize_hash)
+{
+  tz = tokenizer_new("#");
+  NEXT_TOKEN(HASH, tz);
+}
+
 TEST(tokenize, tokenize_attr_value_apos)
 {
   tz = tokenizer_new("hello world'");
