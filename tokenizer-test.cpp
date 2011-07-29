@@ -138,6 +138,12 @@ TEST(tokenize, tokenize_quot)
   NEXT_TOKEN(QUOT, tz);
 }
 
+TEST(tokenize, tokenize_semicolon)
+{
+  tz = tokenizer_new(";");
+  NEXT_TOKEN(SEMICOLON, tz);
+}
+
 TEST(tokenize, tokenize_attr_value_apos)
 {
   tz = tokenizer_new("hello world'");

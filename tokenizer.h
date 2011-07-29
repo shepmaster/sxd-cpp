@@ -13,7 +13,8 @@ typedef enum {
   EQ,
   APOS,
   QUOT,
-  AMP
+  AMP,
+  SEMICOLON
 } token_type_t;
 
 typedef struct {
