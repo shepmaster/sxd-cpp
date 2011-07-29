@@ -39,7 +39,8 @@ typedef enum {
   NONE,
   ATTR_VALUE_APOS,
   ATTR_VALUE_QUOT,
-  CHARDATA
+  CHARDATA,
+  NAME
 } string_type_t;
 
 tokenizer_t *

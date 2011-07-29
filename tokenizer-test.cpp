@@ -188,6 +188,12 @@ TEST(tokenize, tokenize_chardata_bad_start)
   CHECK_EQUAL(LT, token.type);
 }
 
+TEST(tokenize, tokenize_name)
+{
+  tz = tokenizer_new("_H0-.");
+  NEXT_TOKEN_STRING("_H0-.", tz, NAME);
+}
+
 TEST(tokenize, tokenize_two)
 {
   tz = tokenizer_new("<>");

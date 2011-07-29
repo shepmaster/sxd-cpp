@@ -59,8 +59,67 @@ tokenize_string(const char *offset, token_t *tok, const char *invalid)
   return len;
 }
 
+int
+is_name_start_char(const char *offset)
+{
+  /* TODO: manage length*/
+  gunichar *converted;
+
+  if (*offset == '\0') return FALSE;
+
+  /* Easy ASCII-only tests */
+  if (*offset == ':') return TRUE;
+  if (*offset >= 'A' && *offset <= 'Z') return TRUE;
+  if (*offset == '_') return TRUE;
+  if (*offset >= 'a' && *offset <= 'z') return TRUE;
+
+  /* TODO: error checking */
+  converted = g_utf8_to_ucs4(offset, 1, NULL, NULL, NULL);
+
+  /* More expensive Unicode checks */
+  if (*converted >= 0xC0 && *converted <= 0xD6) return TRUE;
+  if (*converted >= 0xD8 && *converted <= 0xF6) return TRUE;
+  if (*converted >= 0xF8 && *converted <= 0x2FF) return TRUE;
+  if (*converted >= 0x370 && *converted <= 0x37D) return TRUE;
+  if (*converted >= 0x37F && *converted <= 0x1FFF) return TRUE;
+  if (*converted >= 0x200C && *converted <= 0x200D) return TRUE;
+  if (*converted >= 0x2070 && *converted <= 0x218F) return TRUE;
+  if (*converted >= 0x2C00 && *converted <= 0x2FEF) return TRUE;
+  if (*converted >= 0x3001 && *converted <= 0xD7FF) return TRUE;
+  if (*converted >= 0xF900 && *converted <= 0xFDCF) return TRUE;
+  if (*converted >= 0xFDF0 && *converted <= 0xFFFD) return TRUE;
+  if (*converted >= 0x10000 && *converted <= 0xEFFFF) return TRUE;
+
+  return FALSE;
+}
+
+int
+is_name_char(const char *offset)
+{
+  /* TODO: manage length*/
+  gunichar *converted;
+
+  if (*offset == '\0') return FALSE;
+  if (is_name_start_char(offset)) return TRUE;
+
+  /* Easy ASCII-only tests */
+  if (*offset == '-') return TRUE;
+  if (*offset == '.') return TRUE;
+  if (*offset >= '0' && *offset <= '9') return TRUE;
+
+  /* TODO: error checking */
+  converted = g_utf8_to_ucs4(offset, 1, NULL, NULL, NULL);
+
+  /* More expensive Unicode checks */
+  if (*converted == 0xB7) return TRUE;
+  if (*converted >= 0x0300 && *converted <= 0x036F) return TRUE;
+  if (*converted >= 0x203F && *converted <= 0x2040) return TRUE;
+
+  return FALSE;
+}
+
 token_t
-tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
+tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
 {
   token_t tok;
   int len = 1;
@@ -83,15 +142,15 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
 
   if (offset[0] == '\0') {
     tok.type = END;
-  } else if (attr_value == ATTR_VALUE_QUOT) {
+  } else if (string_type == ATTR_VALUE_QUOT) {
     len = tokenize_string(offset, &tok, "\"");
-  } else if (attr_value == ATTR_VALUE_APOS) {
+  } else if (string_type == ATTR_VALUE_APOS) {
     len = tokenize_string(offset, &tok, "'");
   } else if (offset[0] == '<') {
     tok.type = LT;
   } else if (offset[0] == '&') {
     tok.type = AMP;
-  } else if (attr_value == CHARDATA) {
+  } else if (string_type == CHARDATA) {
     len = tokenize_string(offset, &tok, "<&");
     /* TODO: Check for ]]> */
   } else if (offset[0] == ' ' ||
@@ -117,6 +176,14 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t attr_value)
     tok.type = SEMICOLON;
   } else if (offset[0] == '#') {
     tok.type = HASH;
+  } else if (string_type == NAME && is_name_start_char(offset)){
+    const char *tmp;
+    tok.type = STRING;
+    tok.value.string.str = offset;
+    tmp = offset + 1; /* Already verified the first character */
+    while (is_name_char(tmp)) tmp++;
+    len = tmp - offset;
+    tok.value.string.len = len;
   } else {
     const char *tmp;
     tok.type = STRING;
