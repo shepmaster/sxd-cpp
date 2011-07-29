@@ -136,12 +136,16 @@ document_parse(const char *input, GError **error)
   token_t token;
     token = tokenizer_next(tokenizer);
 
-    if (END == token.type) break;
-    if (LT == token.type) {
+    if (END == token.type) {
+      break;
+    } else if (LT == token.type) {
       element_t *element;
       element = parse_element(doc, tokenizer, error);
       if (*error) return NULL;
       doc->root = element;
+    } else {
+      info_abort(error);
+      break;
     }
   }
 
@@ -255,6 +259,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
         parse_text_node(doc, element, tokenizer, error);
         if (*error) return NULL;
       } else {
+        tokenizer_push(tokenizer);
         break;
       }
     }
