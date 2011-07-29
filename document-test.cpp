@@ -228,6 +228,30 @@ TEST(document_parse, element_with_text)
   CHECK_TEXT_NODE(node, "world");
 }
 
+TEST(document_parse, element_with_entities)
+{
+  node_t *node;
+
+  doc = document_parse("<a>&lt;&gt;&amp;&quot;&apos;</a>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+
+  node = node_first_child((node_t *)root);
+  CHECK_TEXT_NODE(node, "<");
+
+  node = node_next_sibling(node);
+  CHECK_TEXT_NODE(node, ">");
+
+  node = node_next_sibling(node);
+  CHECK_TEXT_NODE(node, "&");
+
+  node = node_next_sibling(node);
+  CHECK_TEXT_NODE(node, "\"");
+
+  node = node_next_sibling(node);
+  CHECK_TEXT_NODE(node, "'");
+}
+
 TEST(document_parse, element_with_nonalpha_text)
 {
   node_t *node;

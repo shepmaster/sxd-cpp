@@ -176,6 +176,42 @@ parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GEr
 }
 
 void
+parse_entity(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  token_t token;
+  char *str;
+  const char *expanded = NULL;
+
+  token = tokenizer_next_string(tokenizer, CHARDATA);
+  if (AMP != token.type) {
+    tokenizer_push(tokenizer);
+    return;
+  }
+
+  token = tokenizer_next(tokenizer);
+  expect_token(STRING, tokenizer, error);
+
+  str = dup_token_string(token);
+  if (strcmp("lt", str) == 0) {
+    expanded = "<";
+  } else if (strcmp("gt", str) == 0) {
+    expanded = ">";
+  } else if (strcmp("amp", str) == 0) {
+    expanded = "&";
+  } else if (strcmp("quot", str) == 0) {
+    expanded = "\"";
+  } else if (strcmp("apos", str) == 0) {
+    expanded = "'";
+  }
+  free(str);
+
+  node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, expanded));
+
+  token = tokenizer_next(tokenizer);
+  expect_token(SEMICOLON, tokenizer, error);
+}
+
+void
 parse_element_or_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
@@ -244,11 +280,8 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
     if (! expect_token(GT, tokenizer, error)) return NULL;
   } else if (GT == token.type) {
     /* Possible content */
-    parse_text_node(doc, element, tokenizer, error);
-    if (*error) return NULL;
-
     while (TRUE) {
-      token = tokenizer_next(tokenizer);
+      token = tokenizer_next_string(tokenizer, CHARDATA);
 
       if (LT == token.type) {
         tokenizer_push(tokenizer);
@@ -257,6 +290,10 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
       } else if (STRING == token.type) {
         tokenizer_push(tokenizer);
         parse_text_node(doc, element, tokenizer, error);
+        if (*error) return NULL;
+      } else if (AMP == token.type) {
+        tokenizer_push(tokenizer);
+        parse_entity(doc, element, tokenizer, error);
         if (*error) return NULL;
       } else {
         tokenizer_push(tokenizer);
