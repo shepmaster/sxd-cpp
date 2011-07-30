@@ -118,6 +118,44 @@ is_name_char(const char *offset)
   return FALSE;
 }
 
+int
+is_digit(const char *c)
+{
+  return g_ascii_isdigit(*c);
+}
+
+typedef int (*test_char_t)(const char *);
+
+int
+tokenize_string_fns(const char *offset, test_char_t first, test_char_t rest, token_t *tok, int *len)
+{
+  const char *tmp;
+
+  if (! first(offset)) return FALSE;
+
+  tmp = offset + 1; /* Already verified the first character */
+  while (rest(tmp)) tmp++;
+  *len = tmp - offset;
+
+  tok->type = STRING;
+  tok->value.string.str = offset;
+  tok->value.string.len = *len;
+
+  return TRUE;
+}
+
+int
+tokenize_name_string(const char *offset, token_t *tok, int *len)
+{
+  return tokenize_string_fns(offset, is_name_start_char, is_name_char, tok, len);
+}
+
+int
+tokenize_integer_string(const char *offset, token_t *tok, int *len)
+{
+  return tokenize_string_fns(offset, is_digit, is_digit, tok, len);
+}
+
 token_t
 tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
 {
@@ -125,6 +163,7 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
   int len = 1;
   int newline = FALSE;
   const char *offset;
+  int string;
 
   if (tokenizer->to_use == &tokenizer->previous) {
     tokenizer->to_use = &tokenizer->current;
@@ -140,7 +179,13 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
   offset = tokenizer->current.offset;
   tokenizer->previous = tokenizer->current;
 
-  if (offset[0] == '\0') {
+  if (string_type == NAME && tokenize_name_string(offset, &tok, &len)) string = TRUE;
+  else if (string_type == INTEGER && tokenize_integer_string(offset, &tok, &len)) string = TRUE;
+  else string = FALSE;
+
+  if (string) {
+    /* Do nothing */
+  } else if (offset[0] == '\0') {
     tok.type = END;
   } else if (string_type == ATTR_VALUE_QUOT) {
     len = tokenize_string(offset, &tok, "\"");
@@ -176,22 +221,6 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     tok.type = SEMICOLON;
   } else if (offset[0] == '#') {
     tok.type = HASH;
-  } else if (string_type == INTEGER && *offset >= '0' && *offset <= '9') {
-    const char *tmp;
-    tok.type = STRING;
-    tok.value.string.str = offset;
-    tmp = offset + 1; /* Already verified the first character */
-    while (*tmp >= '0' && *tmp <= '9') tmp++;
-    len = tmp - offset;
-    tok.value.string.len = len;
-  } else if (string_type == NAME && is_name_start_char(offset)){
-    const char *tmp;
-    tok.type = STRING;
-    tok.value.string.str = offset;
-    tmp = offset + 1; /* Already verified the first character */
-    while (is_name_char(tmp)) tmp++;
-    len = tmp - offset;
-    tok.value.string.len = len;
   } else {
     abort();
   }
