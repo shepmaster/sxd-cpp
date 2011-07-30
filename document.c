@@ -183,6 +183,7 @@ parse_entity(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError
 {
   token_t token;
   char *str;
+  char *utf8 = NULL;
   const char *expanded = NULL;
 
   token = tokenizer_next(tokenizer);
@@ -192,23 +193,38 @@ parse_entity(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError
   }
 
   token = tokenizer_next_string(tokenizer, NAME);
-  if (! expect_token(STRING, tokenizer, error)) return;
+  if (HASH == token.type) {
+    gunichar c;
 
-  str = dup_token_string(token);
-  if (strcmp("lt", str) == 0) {
-    expanded = "<";
-  } else if (strcmp("gt", str) == 0) {
-    expanded = ">";
-  } else if (strcmp("amp", str) == 0) {
-    expanded = "&";
-  } else if (strcmp("quot", str) == 0) {
-    expanded = "\"";
-  } else if (strcmp("apos", str) == 0) {
-    expanded = "'";
+    token = tokenizer_next_string(tokenizer, INTEGER);
+
+    str = dup_token_string(token);
+    sscanf(str, "%"G_GUINT32_FORMAT"d", &c);
+    free(str);
+
+    expanded = utf8 = g_ucs4_to_utf8(&c, 1, NULL, NULL, error);
+    if (*error) return;
+  } else if (STRING == token.type) {
+    str = dup_token_string(token);
+    if (strcmp("lt", str) == 0) {
+      expanded = "<";
+    } else if (strcmp("gt", str) == 0) {
+      expanded = ">";
+    } else if (strcmp("amp", str) == 0) {
+      expanded = "&";
+    } else if (strcmp("quot", str) == 0) {
+      expanded = "\"";
+    } else if (strcmp("apos", str) == 0) {
+      expanded = "'";
+    }
+    free(str);
+  } else {
+    info_abort(error);
+    return;
   }
-  free(str);
 
   node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, expanded));
+  if (utf8) free(utf8);
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(SEMICOLON, tokenizer, error)) return;

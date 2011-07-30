@@ -252,6 +252,18 @@ TEST(document_parse, element_with_entities)
   CHECK_TEXT_NODE(node, "'");
 }
 
+TEST(document_parse, element_with_char_ref)
+{
+  node_t *node;
+
+  doc = document_parse("<a>&#77;</a>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+
+  node = node_first_child((node_t *)root);
+  CHECK_TEXT_NODE(node, "M");
+}
+
 TEST(document_parse, element_with_nonalpha_text)
 {
   node_t *node;
