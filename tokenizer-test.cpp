@@ -200,6 +200,12 @@ TEST(tokenize, tokenize_integer)
   NEXT_TOKEN_STRING("13790", tz, INTEGER);
 }
 
+TEST(tokenize, tokenize_hex)
+{
+  tz = tokenizer_new("aF09");
+  NEXT_TOKEN_STRING("aF09", tz, HEX);
+}
+
 TEST(tokenize, tokenize_two)
 {
   tz = tokenizer_new("<>");

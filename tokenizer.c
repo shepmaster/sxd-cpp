@@ -124,6 +124,12 @@ is_digit(const char *c)
   return g_ascii_isdigit(*c);
 }
 
+int
+is_hex(const char *c)
+{
+  return g_ascii_isxdigit(*c);
+}
+
 typedef int (*test_char_t)(const char *);
 
 int
@@ -156,6 +162,12 @@ tokenize_integer_string(const char *offset, token_t *tok, int *len)
   return tokenize_string_fns(offset, is_digit, is_digit, tok, len);
 }
 
+int
+tokenize_hex_string(const char *offset, token_t *tok, int *len)
+{
+  return tokenize_string_fns(offset, is_hex, is_hex, tok, len);
+}
+
 token_t
 tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
 {
@@ -181,6 +193,7 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
 
   if (string_type == NAME && tokenize_name_string(offset, &tok, &len)) string = TRUE;
   else if (string_type == INTEGER && tokenize_integer_string(offset, &tok, &len)) string = TRUE;
+  else if (string_type == HEX && tokenize_hex_string(offset, &tok, &len)) string = TRUE;
   else string = FALSE;
 
   if (string) {

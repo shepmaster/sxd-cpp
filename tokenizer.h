@@ -41,7 +41,8 @@ typedef enum {
   ATTR_VALUE_QUOT,
   CHARDATA,
   NAME,
-  INTEGER
+  INTEGER,
+  HEX
 } string_type_t;
 
 tokenizer_t *
