@@ -176,6 +176,14 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     tok.type = SEMICOLON;
   } else if (offset[0] == '#') {
     tok.type = HASH;
+  } else if (string_type == INTEGER && *offset >= '0' && *offset <= '9') {
+    const char *tmp;
+    tok.type = STRING;
+    tok.value.string.str = offset;
+    tmp = offset + 1; /* Already verified the first character */
+    while (*tmp >= '0' && *tmp <= '9') tmp++;
+    len = tmp - offset;
+    tok.value.string.len = len;
   } else if (string_type == NAME && is_name_start_char(offset)){
     const char *tmp;
     tok.type = STRING;

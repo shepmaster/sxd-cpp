@@ -194,6 +194,12 @@ TEST(tokenize, tokenize_name)
   NEXT_TOKEN_STRING("_H0-.", tz, NAME);
 }
 
+TEST(tokenize, tokenize_integer)
+{
+  tz = tokenizer_new("13790");
+  NEXT_TOKEN_STRING("13790", tz, INTEGER);
+}
+
 TEST(tokenize, tokenize_two)
 {
   tz = tokenizer_new("<>");
