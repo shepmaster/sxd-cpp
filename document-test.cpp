@@ -175,6 +175,14 @@ TEST(document_parse, element_with_attribute_with_nonalpha)
   STRCMP_EQUAL("check one, 2", element_get_attribute(root, "one"));
 }
 
+TEST(document_parse, element_with_attribute_with_entity)
+{
+  doc = document_parse("<hello one=\"&lt;\" />", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  STRCMP_EQUAL("<", element_get_attribute(root, "one"));
+}
+
 TEST(document_parse, element_with_child)
 {
   node_t *node;

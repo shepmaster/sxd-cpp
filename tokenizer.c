@@ -200,10 +200,6 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     /* Do nothing */
   } else if (offset[0] == '\0') {
     tok.type = END;
-  } else if (string_type == ATTR_VALUE_QUOT) {
-    len = tokenize_string(offset, &tok, "\"");
-  } else if (string_type == ATTR_VALUE_APOS) {
-    len = tokenize_string(offset, &tok, "'");
   } else if (offset[0] == '<') {
     tok.type = LT;
   } else if (offset[0] == '&') {
@@ -218,6 +214,10 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     } else {
       tok.type = AMP;
     }
+  } else if (string_type == ATTR_VALUE_QUOT && (*offset != '"')) {
+    len = tokenize_string(offset, &tok, "\"");
+  } else if (string_type == ATTR_VALUE_APOS && (*offset != '\'')) {
+    len = tokenize_string(offset, &tok, "'");
   } else if (string_type == CHARDATA) {
     len = tokenize_string(offset, &tok, "<&");
     /* TODO: Check for ]]> */

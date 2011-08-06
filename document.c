@@ -178,8 +178,10 @@ parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GEr
   free(str);
 }
 
-void
-parse_entity(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+typedef void (* entity_callback_t)(void *user, const char *entity_text);
+
+static void
+parse_entity(tokenizer_t *tokenizer, GError **error, entity_callback_t callback, void *user)
 {
   token_t token;
   char *str;
@@ -205,10 +207,47 @@ parse_entity(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError
   }
   free(str);
 
-  node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, expanded));
+  callback(user, expanded);
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(SEMICOLON, tokenizer, error)) return;
+}
+
+typedef struct {
+  document_t *doc;
+  element_t *element;
+} entity_text_t;
+
+static void
+parse_entity_text1(void *user, const char *entity_text)
+{
+  entity_text_t *info = user;
+  node_t *text;
+
+  text = (node_t *)document_text_node_new(info->doc, entity_text);
+  node_append_child((node_t *)info->element, text);
+}
+
+void
+parse_entity_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  entity_text_t info;
+  info.doc = doc;
+  info.element = element;
+  parse_entity(tokenizer, error, parse_entity_text1, &info);
+}
+
+static void
+parse_entity_attribute1(void *user, const char *entity_text)
+{
+  GString *string = user;
+  g_string_append(string, entity_text);
+}
+
+void
+parse_entity_attribute(GString *value, tokenizer_t *tokenizer, GError **error)
+{
+  parse_entity(tokenizer, error, parse_entity_attribute1, value);
 }
 
 void
@@ -349,7 +388,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
         if (*error) return NULL;
       } else if (AMP == token.type) {
         tokenizer_push(tokenizer);
-        parse_entity(doc, element, tokenizer, error);
+        parse_entity_text(doc, element, tokenizer, error);
         if (*error) return NULL;
       } else if (CHAR_REF == token.type) {
         tokenizer_push(tokenizer);
@@ -377,7 +416,7 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
 {
   token_t token;
   char *name;
-  char *value;
+  GString *value;
   token_type_t quote_style;
 
   token = tokenizer_current(tokenizer);
@@ -394,15 +433,30 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
     return;
   }
 
-  token = tokenizer_next_string(tokenizer, quote_style == QUOT ? ATTR_VALUE_QUOT : ATTR_VALUE_APOS);
-  if (! expect_token(STRING, tokenizer, error)) return;
+  value = g_string_new(NULL);
 
-  value = dup_token_string(token);
+  while (TRUE) {
+    token = tokenizer_next_string(tokenizer, quote_style == QUOT ? ATTR_VALUE_QUOT : ATTR_VALUE_APOS);
 
-  element_set_attribute(element, name, value);
+    if (quote_style == token.type) {
+      break;
+    } else if (STRING == token.type) {
+      char *str;
+      str = dup_token_string(token);
+      g_string_append(value, str);
+      free(str);
+    } else if (AMP == token.type) {
+      tokenizer_push(tokenizer);
+      parse_entity_attribute(value, tokenizer, error);
+      if (*error) return;
+    } else {
+      info_abort(error);
+      return;
+    }
+  }
 
-  token = tokenizer_next(tokenizer);
-  if (! expect_token(quote_style, tokenizer, error)) return;
+  element_set_attribute(element, name, value->str);
+  g_string_free(value, TRUE);
 }
 
 element_t *
