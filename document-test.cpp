@@ -264,6 +264,18 @@ TEST(document_parse, element_with_char_ref)
   CHECK_TEXT_NODE(node, "M");
 }
 
+TEST(document_parse, element_with_char_ref_hex)
+{
+  node_t *node;
+
+  doc = document_parse("<a>&#x4d;</a>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+
+  node = node_first_child((node_t *)root);
+  CHECK_TEXT_NODE(node, "M");
+}
+
 TEST(document_parse, element_with_nonalpha_text)
 {
   node_t *node;

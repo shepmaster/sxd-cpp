@@ -239,6 +239,33 @@ parse_char_ref(document_t *doc, element_t *element, tokenizer_t *tokenizer, GErr
 }
 
 void
+parse_char_ref_hex(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  token_t token;
+  char *str;
+  gunichar c;
+  char *expanded;
+
+  token = tokenizer_next(tokenizer);
+  if (! expect_token(CHAR_REF_HEX, tokenizer, error)) return;
+
+  token = tokenizer_next_string(tokenizer, HEX);
+
+  str = dup_token_string(token);
+  sscanf(str, "%06"G_GINT32_MODIFIER"X", &c);
+  free(str);
+
+  expanded = g_ucs4_to_utf8(&c, 1, NULL, NULL, error);
+  if (*error) return;
+
+  node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, expanded));
+  free(expanded);
+
+  token = tokenizer_next(tokenizer);
+  if (! expect_token(SEMICOLON, tokenizer, error)) return;
+}
+
+void
 parse_element_or_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
@@ -327,6 +354,10 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
       } else if (CHAR_REF == token.type) {
         tokenizer_push(tokenizer);
         parse_char_ref(doc, element, tokenizer, error);
+        if (*error) return NULL;
+      } else if (CHAR_REF_HEX == token.type) {
+        tokenizer_push(tokenizer);
+        parse_char_ref_hex(doc, element, tokenizer, error);
         if (*error) return NULL;
       } else {
         tokenizer_push(tokenizer);
