@@ -207,7 +207,12 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
   } else if (offset[0] == '<') {
     tok.type = LT;
   } else if (offset[0] == '&') {
-    tok.type = AMP;
+    if (offset[1] == '#') {
+      tok.type = CHAR_REF;
+      len = 2;
+    } else {
+      tok.type = AMP;
+    }
   } else if (string_type == CHARDATA) {
     len = tokenize_string(offset, &tok, "<&");
     /* TODO: Check for ]]> */
@@ -232,8 +237,6 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     tok.type = QUOT;
   } else if (offset[0] == ';') {
     tok.type = SEMICOLON;
-  } else if (offset[0] == '#') {
-    tok.type = HASH;
   } else {
     abort();
   }
@@ -312,10 +315,10 @@ tokenizer_token_name(token_type_t type)
     return "\"";
   case AMP:
     return "&";
+  case CHAR_REF:
+    return "&#";
   case SEMICOLON:
     return ";";
-  case HASH:
-    return "#";
   }
 
   return "";

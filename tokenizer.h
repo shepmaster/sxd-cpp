@@ -14,8 +14,8 @@ typedef enum {
   APOS,
   QUOT,
   AMP,
-  SEMICOLON,
-  HASH
+  CHAR_REF,
+  SEMICOLON
 } token_type_t;
 
 typedef struct {

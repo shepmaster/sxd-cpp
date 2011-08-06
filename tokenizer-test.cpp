@@ -138,16 +138,22 @@ TEST(tokenize, tokenize_quot)
   NEXT_TOKEN(QUOT, tz);
 }
 
+TEST(tokenize, tokenize_amp)
+{
+  tz = tokenizer_new("&");
+  NEXT_TOKEN(AMP, tz);
+}
+
+TEST(tokenize, tokenize_char_ref)
+{
+  tz = tokenizer_new("&#");
+  NEXT_TOKEN(CHAR_REF, tz);
+}
+
 TEST(tokenize, tokenize_semicolon)
 {
   tz = tokenizer_new(";");
   NEXT_TOKEN(SEMICOLON, tz);
-}
-
-TEST(tokenize, tokenize_hash)
-{
-  tz = tokenizer_new("#");
-  NEXT_TOKEN(HASH, tz);
 }
 
 TEST(tokenize, tokenize_attr_value_apos)
