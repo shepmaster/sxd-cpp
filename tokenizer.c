@@ -208,8 +208,13 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     tok.type = LT;
   } else if (offset[0] == '&') {
     if (offset[1] == '#') {
-      tok.type = CHAR_REF;
-      len = 2;
+      if (offset[2] == 'x') {
+        tok.type = CHAR_REF_HEX;
+        len = 3;
+      } else {
+        tok.type = CHAR_REF;
+        len = 2;
+      }
     } else {
       tok.type = AMP;
     }
@@ -317,6 +322,8 @@ tokenizer_token_name(token_type_t type)
     return "&";
   case CHAR_REF:
     return "&#";
+  case CHAR_REF_HEX:
+    return "&#x";
   case SEMICOLON:
     return ";";
   }

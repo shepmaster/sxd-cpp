@@ -150,6 +150,12 @@ TEST(tokenize, tokenize_char_ref)
   NEXT_TOKEN(CHAR_REF, tz);
 }
 
+TEST(tokenize, tokenize_char_ref_hex)
+{
+  tz = tokenizer_new("&#x");
+  NEXT_TOKEN(CHAR_REF_HEX, tz);
+}
+
 TEST(tokenize, tokenize_semicolon)
 {
   tz = tokenizer_new(";");

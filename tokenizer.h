@@ -15,6 +15,7 @@ typedef enum {
   QUOT,
   AMP,
   CHAR_REF,
+  CHAR_REF_HEX,
   SEMICOLON
 } token_type_t;
 
