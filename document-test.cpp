@@ -191,6 +191,14 @@ TEST(document_parse, element_with_attribute_with_char_ref)
   STRCMP_EQUAL("r", element_get_attribute(root, "one"));
 }
 
+TEST(document_parse, element_with_attribute_with_char_ref_hex)
+{
+  doc = document_parse("<hello one=\"&#x63;\" />", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  STRCMP_EQUAL("c", element_get_attribute(root, "one"));
+}
+
 TEST(document_parse, element_with_child)
 {
   node_t *node;
