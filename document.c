@@ -219,7 +219,7 @@ typedef struct {
 } entity_text_t;
 
 static void
-parse_entity_text1(void *user, const char *entity_text)
+add_entity_text(void *user, const char *entity_text)
 {
   entity_text_t *info = user;
   node_t *text;
@@ -234,11 +234,11 @@ parse_entity_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, G
   entity_text_t info;
   info.doc = doc;
   info.element = element;
-  parse_entity(tokenizer, error, parse_entity_text1, &info);
+  parse_entity(tokenizer, error, add_entity_text, &info);
 }
 
 static void
-parse_entity_attribute1(void *user, const char *entity_text)
+add_entity_attribute(void *user, const char *entity_text)
 {
   GString *string = user;
   g_string_append(string, entity_text);
@@ -247,7 +247,7 @@ parse_entity_attribute1(void *user, const char *entity_text)
 void
 parse_entity_attribute(GString *value, tokenizer_t *tokenizer, GError **error)
 {
-  parse_entity(tokenizer, error, parse_entity_attribute1, value);
+  parse_entity(tokenizer, error, add_entity_attribute, value);
 }
 
 static void
@@ -277,36 +277,19 @@ parse_char_ref(tokenizer_t *tokenizer, GError **error, entity_callback_t callbac
   if (! expect_token(SEMICOLON, tokenizer, error)) return;
 }
 
-static void
-parse_char_ref_text1(void *user, const char *entity_text)
-{
-  entity_text_t *info = user;
-  node_t *text;
-
-  text = (node_t *)document_text_node_new(info->doc, entity_text);
-  node_append_child((node_t *)info->element, text);
-}
-
 void
 parse_char_ref_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
   info.element = element;
-  parse_char_ref(tokenizer, error, parse_char_ref_text1, &info);
-}
-
-static void
-parse_char_ref_attribute1(void *user, const char *entity_text)
-{
-  GString *string = user;
-  g_string_append(string, entity_text);
+  parse_char_ref(tokenizer, error, add_entity_text, &info);
 }
 
 void
 parse_char_ref_attribute(GString *string, tokenizer_t *tokenizer, GError **error)
 {
-  parse_char_ref(tokenizer, error, parse_char_ref_attribute1, string);
+  parse_char_ref(tokenizer, error, add_entity_attribute, string);
 }
 
 void
@@ -336,36 +319,19 @@ parse_char_ref_hex(tokenizer_t *tokenizer, GError **error, entity_callback_t cal
   if (! expect_token(SEMICOLON, tokenizer, error)) return;
 }
 
-static void
-parse_char_ref_hex_text1(void *user, const char *entity_text)
-{
-  entity_text_t *info = user;
-  node_t *text;
-
-  text = (node_t *)document_text_node_new(info->doc, entity_text);
-  node_append_child((node_t *)info->element, text);
-}
-
 void
 parse_char_ref_hex_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
   info.element = element;
-  parse_char_ref_hex(tokenizer, error, parse_char_ref_hex_text1, &info);
-}
-
-static void
-parse_char_ref_hex_attribute1(void *user, const char *entity_text)
-{
-  GString *string = user;
-  g_string_append(string, entity_text);
+  parse_char_ref_hex(tokenizer, error, add_entity_text, &info);
 }
 
 void
 parse_char_ref_hex_attribute(GString *string, tokenizer_t *tokenizer, GError **error)
 {
-  parse_char_ref_hex(tokenizer, error, parse_char_ref_hex_attribute1, string);
+  parse_char_ref_hex(tokenizer, error, add_entity_attribute, string);
 }
 
 void
