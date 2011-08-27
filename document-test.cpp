@@ -183,6 +183,14 @@ TEST(document_parse, element_with_attribute_with_entity)
   STRCMP_EQUAL("<", element_get_attribute(root, "one"));
 }
 
+TEST(document_parse, element_with_attribute_with_char_ref)
+{
+  doc = document_parse("<hello one=\"&#114;\" />", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  STRCMP_EQUAL("r", element_get_attribute(root, "one"));
+}
+
 TEST(document_parse, element_with_child)
 {
   node_t *node;

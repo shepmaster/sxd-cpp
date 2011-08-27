@@ -250,8 +250,8 @@ parse_entity_attribute(GString *value, tokenizer_t *tokenizer, GError **error)
   parse_entity(tokenizer, error, parse_entity_attribute1, value);
 }
 
-void
-parse_char_ref(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+static void
+parse_char_ref(tokenizer_t *tokenizer, GError **error, entity_callback_t callback, void *user)
 {
   token_t token;
   char *str;
@@ -270,11 +270,44 @@ parse_char_ref(document_t *doc, element_t *element, tokenizer_t *tokenizer, GErr
   expanded = g_ucs4_to_utf8(&c, 1, NULL, NULL, error);
   if (*error) return;
 
-  node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, expanded));
+  callback(user, expanded);
+
   free(expanded);
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(SEMICOLON, tokenizer, error)) return;
+}
+
+static void
+parse_char_ref_text1(void *user, const char *entity_text)
+{
+  entity_text_t *info = user;
+  node_t *text;
+
+  text = (node_t *)document_text_node_new(info->doc, entity_text);
+  node_append_child((node_t *)info->element, text);
+}
+
+void
+parse_char_ref_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  entity_text_t info;
+  info.doc = doc;
+  info.element = element;
+  parse_char_ref(tokenizer, error, parse_char_ref_text1, &info);
+}
+
+static void
+parse_char_ref_attribute1(void *user, const char *entity_text)
+{
+  GString *string = user;
+  g_string_append(string, entity_text);
+}
+
+void
+parse_char_ref_attribute(GString *string, tokenizer_t *tokenizer, GError **error)
+{
+  parse_char_ref(tokenizer, error, parse_char_ref_attribute1, string);
 }
 
 void
@@ -392,7 +425,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
         if (*error) return NULL;
       } else if (CHAR_REF == token.type) {
         tokenizer_push(tokenizer);
-        parse_char_ref(doc, element, tokenizer, error);
+        parse_char_ref_text(doc, element, tokenizer, error);
         if (*error) return NULL;
       } else if (CHAR_REF_HEX == token.type) {
         tokenizer_push(tokenizer);
@@ -448,6 +481,10 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
     } else if (AMP == token.type) {
       tokenizer_push(tokenizer);
       parse_entity_attribute(value, tokenizer, error);
+      if (*error) return;
+    } else if (CHAR_REF == token.type) {
+      tokenizer_push(tokenizer);
+      parse_char_ref_attribute(value, tokenizer, error);
       if (*error) return;
     } else {
       info_abort(error);
