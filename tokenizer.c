@@ -201,7 +201,12 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
   } else if (offset[0] == '\0') {
     tok.type = END;
   } else if (offset[0] == '<') {
-    tok.type = LT;
+    if (offset[1] == '?') {
+      tok.type = PI_START;
+      len = 2;
+    } else {
+      tok.type = LT;
+    }
   } else if (offset[0] == '&') {
     if (offset[1] == '#') {
       if (offset[2] == 'x') {
@@ -232,6 +237,9 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     }
   } else if (offset[0] == '>') {
     tok.type = GT;
+  } else if (offset[0] == '?' && offset[1] == '>') {
+    tok.type = PI_END;
+    len = 2;
   } else if (offset[0] == '/') {
     tok.type = SLASH;
   } else if (offset[0] == '=') {
@@ -312,6 +320,10 @@ tokenizer_token_name(token_type_t type)
     return "/";
   case GT:
     return ">";
+  case PI_START:
+    return "<?";
+  case PI_END:
+    return "?>";
   case EQ:
     return "=";
   case APOS:

@@ -10,6 +10,8 @@ typedef enum {
   STRING,
   SLASH,
   GT,
+  PI_START,
+  PI_END,
   EQ,
   APOS,
   QUOT,

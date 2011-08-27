@@ -114,6 +114,18 @@ TEST(tokenize, tokenize_gt)
   NEXT_TOKEN(GT, tz);
 }
 
+TEST(tokenize, tokenize_pi_start)
+{
+  tz = tokenizer_new("<?");
+  NEXT_TOKEN(PI_START, tz);
+}
+
+TEST(tokenize, tokenize_pi_end)
+{
+  tz = tokenizer_new("?>");
+  NEXT_TOKEN(PI_END, tz);
+}
+
 TEST(tokenize, tokenize_slash)
 {
   tz = tokenizer_new("/");
