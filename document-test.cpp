@@ -147,6 +147,14 @@ TEST(document_parse, empty_with_end_tag)
   STRCMP_EQUAL("hello", element_name(root));
 }
 
+TEST(document_parse, preamble)
+{
+  doc = document_parse("<?xml?><hello/>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+}
+
 TEST(document_parse, element_with_attribute)
 {
   doc = document_parse("<hello one='two' />", &error);

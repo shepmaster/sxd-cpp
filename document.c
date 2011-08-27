@@ -138,6 +138,9 @@ document_parse(const char *input, GError **error)
 
     if (END == token.type) {
       break;
+    } else if (PI_START == token.type) {
+      parse_preamble(tokenizer, error);
+      if (*error) return NULL;
     } else if (LT == token.type) {
       element_t *element;
       element = parse_element(doc, tokenizer, error);
@@ -160,6 +163,26 @@ document_parse(const char *input, GError **error)
 
 #define dup_token_string(token) \
   g_strndup(token.value.string.str, token.value.string.len)
+
+void
+parse_preamble(tokenizer_t *tokenizer, GError **error)
+{
+  token_t token;
+  char *name;
+
+  token = tokenizer_next_string(tokenizer, NAME);
+  if (! expect_token(STRING, tokenizer, error)) return;
+
+  name = dup_token_string(token);
+  if (strcmp("xml", name) != 0) {
+    info_abort(error);
+    return;
+  }
+  free(name);
+
+  token = tokenizer_next(tokenizer);
+  if (! expect_token(PI_END, tokenizer, error)) return;
+}
 
 void
 parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
