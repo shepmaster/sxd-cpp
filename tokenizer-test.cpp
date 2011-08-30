@@ -190,6 +190,24 @@ TEST(tokenize, tokenize_attr_value_quot)
   NEXT_TOKEN(END, tz);
 }
 
+TEST(tokenize, tokenize_chardata_not_whitespace_only)
+{
+  token_t token;
+
+  tz = tokenizer_new(" \thi\r\n");
+  token = tokenizer_next_string(tz, CHARDATA);
+  CHECK_EQUAL(FALSE, token.value.string.whitespace_only);
+}
+
+TEST(tokenize, tokenize_chardata_whitespace_only)
+{
+  token_t token;
+
+  tz = tokenizer_new(" \t\n\r");
+  token = tokenizer_next_string(tz, CHARDATA);
+  CHECK_EQUAL(TRUE, token.value.string.whitespace_only);
+}
+
 TEST(tokenize, tokenize_chardata_lt)
 {
   tz = tokenizer_new("a, 2<");

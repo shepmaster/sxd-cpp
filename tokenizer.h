@@ -27,6 +27,7 @@ typedef struct {
     struct {
       const char *str;
       int len;
+      int whitespace_only;
     } string;
   } value;
 } token_t;

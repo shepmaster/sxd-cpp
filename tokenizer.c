@@ -49,7 +49,16 @@ tokenize_string(const char *offset, token_t *tok, const char *invalid)
   const char *tmp = offset;
   int len;
 
-  while (! strchr(invalid, *tmp)) tmp++;
+  tok->value.string.whitespace_only = TRUE;
+
+  while (! strchr(invalid, *tmp)) {
+    if (tok->value.string.whitespace_only &&
+        ! strchr(" \t\n\r", *tmp))
+    {
+      tok->value.string.whitespace_only = FALSE;
+    }
+    tmp++;
+  }
   len = tmp - offset;
 
   tok->type = STRING;
