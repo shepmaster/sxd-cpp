@@ -196,6 +196,10 @@ parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GEr
     return;
   }
 
+  if (token.value.string.whitespace_only) {
+    return;
+  }
+
   str = dup_token_string(token);
   node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, str));
   free(str);

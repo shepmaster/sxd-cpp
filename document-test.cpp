@@ -233,6 +233,21 @@ TEST(document_parse, element_with_two_children)
   CHECK_ELEMENT_NAME(node, "cool");
 }
 
+TEST(document_parse, element_with_two_children_whitespace)
+{
+  node_t *node;
+
+  doc = document_parse("<hello>\r\n\t<world />\n  <cool />\n</hello>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+
+  node = node_first_child(element_cast_to_node(root));
+  CHECK_ELEMENT_NAME(node, "world");
+
+  node = node_next_sibling(node);
+  CHECK_ELEMENT_NAME(node, "cool");
+}
+
 TEST(document_parse, element_with_grandchild)
 {
   node_t *node;
