@@ -362,41 +362,32 @@ parse_char_ref_hex_attribute(GString *string, tokenizer_t *tokenizer, GError **e
 }
 
 void
-parse_element_or_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
 
-  token = tokenizer_next(tokenizer);
-  if (LT != token.type) {
-    tokenizer_push(tokenizer);
-    return;
-  }
-
+  /* TODO: Check this matches the element name */
   token = tokenizer_next_string(tokenizer, NAME);
-  if (SLASH == token.type) {
-    /* TODO: Check this matches the element name */
-    token = tokenizer_next_string(tokenizer, NAME);
-    if (! expect_token(STRING, tokenizer, error)) return;
+  if (! expect_token(STRING, tokenizer, error)) return;
 
-    token = tokenizer_next(tokenizer);
-    consume_space();
-    if (! expect_token(GT, tokenizer, error)) return;
+  token = tokenizer_next(tokenizer);
+  consume_space();
+  if (! expect_token(GT, tokenizer, error)) return;
 
-    return;
-  } else if (STRING == token.type) {
-    element_t *child;
+  return;
+}
 
-    tokenizer_push(tokenizer);
-    child = parse_element(doc, tokenizer, error);
-    if (*error) return;
+void
+parse_child_element(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  element_t *child;
 
-    node_append_child((node_t *)element, (node_t *)child);
+  child = parse_element(doc, tokenizer, error);
+  if (*error) return;
 
-    return;
-  } else {
-    info_abort(error);
-    return;
-  }
+  node_append_child((node_t *)element, (node_t *)child);
+
+  return;
 }
 
 element_t *
@@ -435,9 +426,11 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
     while (TRUE) {
       token = tokenizer_next_string(tokenizer, CHARDATA);
 
-      if (LT == token.type) {
-        tokenizer_push(tokenizer);
-        parse_element_or_end_tag(doc, element, tokenizer, error);
+      if (CLOSE_TAG_START == token.type) {
+        parse_end_tag(doc, element, tokenizer, error);
+        break;
+      } else if (LT == token.type) {
+        parse_child_element(doc, element, tokenizer, error);
         if (*error) return NULL;
       } else if (STRING == token.type) {
         tokenizer_push(tokenizer);
