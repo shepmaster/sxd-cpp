@@ -122,46 +122,6 @@ _expect_token(
 #define expect_token(expected, tokenzier, error)                \
   _expect_token(expected, tokenizer, error, __FILE__, __LINE__)
 
-document_t *
-document_parse(const char *input, GError **error)
-{
-  tokenizer_t *tokenizer;
-  token_t token;
-  document_t *doc;
-  element_t *element;
-
-  doc = document_new();
-
-  tokenizer = tokenizer_new(input);
-  token = tokenizer_next_string(tokenizer, CHARDATA);
-
-  if (PI_START == token.type) {
-    parse_preamble(tokenizer, error);
-    if (*error) return NULL;
-
-    token = tokenizer_next_string(tokenizer, CHARDATA);
-  }
-
-  if (STRING == token.type) {
-    if (! token.value.string.whitespace_only) {
-      info_abort(error);
-      return NULL;
-    }
-
-    token = tokenizer_next(tokenizer);
-  }
-
-  if (! expect_token(LT, tokenizer, error)) return NULL;
-  element = parse_element(doc, tokenizer, error);
-  if (*error) return NULL;
-  doc->root = element;
-
-  token = tokenizer_next(tokenizer);
-  if (! expect_token(END, tokenizer, error)) return NULL;
-
-  return doc;
-}
-
 #define consume_space() \
   while (SPACE == token.type) { token = tokenizer_next(tokenizer); }
 
@@ -171,30 +131,10 @@ document_parse(const char *input, GError **error)
 #define dup_token_string(token) \
   g_strndup(token.value.string.str, token.value.string.len)
 
-void
-parse_preamble(tokenizer_t *tokenizer, GError **error)
-{
-  token_t token;
-  char *name;
-  GHashTable *attrs;
+/* Forward declarations */
 
-  token = tokenizer_next_string(tokenizer, NAME);
-  if (! expect_token(STRING, tokenizer, error)) return;
-
-  name = dup_token_string(token);
-  if (strcmp("xml", name) != 0) {
-    info_abort(error);
-    return;
-  }
-  free(name);
-
-  attrs = parse_attributes(tokenizer, error);
-  if (*error) return;
-  g_hash_table_destroy(attrs);
-
-  token = tokenizer_current(tokenizer);
-  if (! expect_token(PI_END, tokenizer, error)) return;
-}
+element_t *
+parse_element(document_t *document, tokenizer_t *tokenizer, GError **error);
 
 void
 parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
@@ -402,6 +342,61 @@ parse_child_element(document_t *doc, element_t *element, tokenizer_t *tokenizer,
   return;
 }
 
+void
+parse_attribute(tokenizer_t *tokenizer, GHashTable *attrs, GError **error)
+{
+  token_t token;
+  char *name;
+  GString *value;
+  token_type_t quote_style;
+
+  token = tokenizer_current(tokenizer);
+  name = dup_token_string(token);
+
+  token = tokenizer_next(tokenizer);
+  if (! expect_token(EQ, tokenizer, error)) return;
+
+  token = tokenizer_next(tokenizer);
+  quote_style = token.type;
+  if (quote_style != QUOT &&
+      quote_style != APOS) {
+    info_abort(error);
+    return;
+  }
+
+  value = g_string_new(NULL);
+
+  while (TRUE) {
+    token = tokenizer_next_string(tokenizer, quote_style == QUOT ? ATTR_VALUE_QUOT : ATTR_VALUE_APOS);
+
+    if (quote_style == token.type) {
+      break;
+    } else if (STRING == token.type) {
+      char *str;
+      str = dup_token_string(token);
+      g_string_append(value, str);
+      free(str);
+    } else if (AMP == token.type) {
+      tokenizer_push(tokenizer);
+      parse_entity_attribute(value, tokenizer, error);
+      if (*error) return;
+    } else if (CHAR_REF == token.type) {
+      tokenizer_push(tokenizer);
+      parse_char_ref_attribute(value, tokenizer, error);
+      if (*error) return;
+    } else if (CHAR_REF_HEX == token.type) {
+      tokenizer_push(tokenizer);
+      parse_char_ref_hex_attribute(value, tokenizer, error);
+      if (*error) return;
+    } else {
+      info_abort(error);
+      return;
+    }
+  }
+
+  g_hash_table_insert(attrs, name, g_string_free(value, FALSE));
+}
+
 GHashTable *
 parse_attributes(tokenizer_t *tokenizer, GError **error)
 {
@@ -513,58 +508,68 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
 }
 
 void
-parse_attribute(tokenizer_t *tokenizer, GHashTable *attrs, GError **error)
+parse_preamble(tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   char *name;
-  GString *value;
-  token_type_t quote_style;
+  GHashTable *attrs;
 
-  token = tokenizer_current(tokenizer);
+  token = tokenizer_next_string(tokenizer, NAME);
+  if (! expect_token(STRING, tokenizer, error)) return;
+
   name = dup_token_string(token);
-
-  token = tokenizer_next(tokenizer);
-  if (! expect_token(EQ, tokenizer, error)) return;
-
-  token = tokenizer_next(tokenizer);
-  quote_style = token.type;
-  if (quote_style != QUOT &&
-      quote_style != APOS) {
+  if (strcmp("xml", name) != 0) {
     info_abort(error);
     return;
   }
+  free(name);
 
-  value = g_string_new(NULL);
+  attrs = parse_attributes(tokenizer, error);
+  if (*error) return;
+  g_hash_table_destroy(attrs);
 
-  while (TRUE) {
-    token = tokenizer_next_string(tokenizer, quote_style == QUOT ? ATTR_VALUE_QUOT : ATTR_VALUE_APOS);
+  token = tokenizer_current(tokenizer);
+  if (! expect_token(PI_END, tokenizer, error)) return;
+}
 
-    if (quote_style == token.type) {
-      break;
-    } else if (STRING == token.type) {
-      char *str;
-      str = dup_token_string(token);
-      g_string_append(value, str);
-      free(str);
-    } else if (AMP == token.type) {
-      tokenizer_push(tokenizer);
-      parse_entity_attribute(value, tokenizer, error);
-      if (*error) return;
-    } else if (CHAR_REF == token.type) {
-      tokenizer_push(tokenizer);
-      parse_char_ref_attribute(value, tokenizer, error);
-      if (*error) return;
-    } else if (CHAR_REF_HEX == token.type) {
-      tokenizer_push(tokenizer);
-      parse_char_ref_hex_attribute(value, tokenizer, error);
-      if (*error) return;
-    } else {
-      info_abort(error);
-      return;
-    }
+document_t *
+document_parse(const char *input, GError **error)
+{
+  tokenizer_t *tokenizer;
+  token_t token;
+  document_t *doc;
+  element_t *element;
+
+  doc = document_new();
+
+  tokenizer = tokenizer_new(input);
+  token = tokenizer_next_string(tokenizer, CHARDATA);
+
+  if (PI_START == token.type) {
+    parse_preamble(tokenizer, error);
+    if (*error) return NULL;
+
+    token = tokenizer_next_string(tokenizer, CHARDATA);
   }
 
-  g_hash_table_insert(attrs, name, g_string_free(value, FALSE));
+  if (STRING == token.type) {
+    if (! token.value.string.whitespace_only) {
+      info_abort(error);
+      return NULL;
+    }
+
+    token = tokenizer_next(tokenizer);
+  }
+
+  if (! expect_token(LT, tokenizer, error)) return NULL;
+  element = parse_element(doc, tokenizer, error);
+  if (*error) return NULL;
+  doc->root = element;
+
+  token = tokenizer_next(tokenizer);
+  if (! expect_token(END, tokenizer, error)) return NULL;
+
+  return doc;
 }
 
 element_t *
