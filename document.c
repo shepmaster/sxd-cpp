@@ -547,7 +547,7 @@ document_parse(const char *input, GError **error)
 
   if (PI_START == token.type) {
     parse_preamble(tokenizer, error);
-    if (*error) return NULL;
+    if (*error) goto error;
 
     token = tokenizer_next_string(tokenizer, CHARDATA);
   }
@@ -555,21 +555,28 @@ document_parse(const char *input, GError **error)
   if (STRING == token.type) {
     if (! token.value.string.whitespace_only) {
       info_abort(error);
-      return NULL;
+      goto error;
     }
 
     token = tokenizer_next(tokenizer);
   }
 
-  if (! expect_token(LT, tokenizer, error)) return NULL;
+  if (! expect_token(LT, tokenizer, error)) goto error;
   element = parse_element(doc, tokenizer, error);
-  if (*error) return NULL;
+  if (*error) goto error;
   doc->root = element;
 
   token = tokenizer_next(tokenizer);
-  if (! expect_token(END, tokenizer, error)) return NULL;
+  if (! expect_token(END, tokenizer, error)) goto error;
 
+ cleanup:
+  tokenizer_free(tokenizer);
   return doc;
+
+ error:
+  document_free(doc);
+  doc = NULL;
+  goto cleanup;
 }
 
 element_t *

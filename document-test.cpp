@@ -80,6 +80,15 @@ TEST_GROUP(document_parse_error)
 {
   document_t *doc;
   GError *error;
+
+  void teardown(void)
+  {
+    if (doc) {
+      element_free(document_root(doc));
+      document_free(doc);
+    }
+    if (error) g_error_free(error);
+  }
 };
 
 TEST(document_parse_error, basic)
@@ -119,7 +128,11 @@ TEST_GROUP(document_parse)
 
   void teardown(void)
   {
-    if (doc) document_free(doc);
+    if (doc) {
+      element_free(document_root(doc));
+      document_free(doc);
+    }
+    if (error) g_error_free(error);
   }
 };
 

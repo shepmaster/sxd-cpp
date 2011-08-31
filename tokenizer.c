@@ -73,6 +73,7 @@ is_name_start_char(const char *offset)
 {
   /* TODO: manage length*/
   gunichar *converted;
+  gunichar value;
 
   if (*offset == '\0') return FALSE;
 
@@ -84,20 +85,22 @@ is_name_start_char(const char *offset)
 
   /* TODO: error checking */
   converted = g_utf8_to_ucs4(offset, 1, NULL, NULL, NULL);
+  value = *converted;
+  free(converted);
 
   /* More expensive Unicode checks */
-  if (*converted >= 0xC0 && *converted <= 0xD6) return TRUE;
-  if (*converted >= 0xD8 && *converted <= 0xF6) return TRUE;
-  if (*converted >= 0xF8 && *converted <= 0x2FF) return TRUE;
-  if (*converted >= 0x370 && *converted <= 0x37D) return TRUE;
-  if (*converted >= 0x37F && *converted <= 0x1FFF) return TRUE;
-  if (*converted >= 0x200C && *converted <= 0x200D) return TRUE;
-  if (*converted >= 0x2070 && *converted <= 0x218F) return TRUE;
-  if (*converted >= 0x2C00 && *converted <= 0x2FEF) return TRUE;
-  if (*converted >= 0x3001 && *converted <= 0xD7FF) return TRUE;
-  if (*converted >= 0xF900 && *converted <= 0xFDCF) return TRUE;
-  if (*converted >= 0xFDF0 && *converted <= 0xFFFD) return TRUE;
-  if (*converted >= 0x10000 && *converted <= 0xEFFFF) return TRUE;
+  if (value >= 0xC0 && value <= 0xD6) return TRUE;
+  if (value >= 0xD8 && value <= 0xF6) return TRUE;
+  if (value >= 0xF8 && value <= 0x2FF) return TRUE;
+  if (value >= 0x370 && value <= 0x37D) return TRUE;
+  if (value >= 0x37F && value <= 0x1FFF) return TRUE;
+  if (value >= 0x200C && value <= 0x200D) return TRUE;
+  if (value >= 0x2070 && value <= 0x218F) return TRUE;
+  if (value >= 0x2C00 && value <= 0x2FEF) return TRUE;
+  if (value >= 0x3001 && value <= 0xD7FF) return TRUE;
+  if (value >= 0xF900 && value <= 0xFDCF) return TRUE;
+  if (value >= 0xFDF0 && value <= 0xFFFD) return TRUE;
+  if (value >= 0x10000 && value <= 0xEFFFF) return TRUE;
 
   return FALSE;
 }
@@ -107,6 +110,7 @@ is_name_char(const char *offset)
 {
   /* TODO: manage length*/
   gunichar *converted;
+  gunichar value;
 
   if (*offset == '\0') return FALSE;
   if (is_name_start_char(offset)) return TRUE;
@@ -118,11 +122,13 @@ is_name_char(const char *offset)
 
   /* TODO: error checking */
   converted = g_utf8_to_ucs4(offset, 1, NULL, NULL, NULL);
+  value = *converted;
+  free(converted);
 
   /* More expensive Unicode checks */
-  if (*converted == 0xB7) return TRUE;
-  if (*converted >= 0x0300 && *converted <= 0x036F) return TRUE;
-  if (*converted >= 0x203F && *converted <= 0x2040) return TRUE;
+  if (value == 0xB7) return TRUE;
+  if (value >= 0x0300 && value <= 0x036F) return TRUE;
+  if (value >= 0x203F && value <= 0x2040) return TRUE;
 
   return FALSE;
 }
