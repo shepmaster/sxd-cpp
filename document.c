@@ -176,6 +176,7 @@ parse_preamble(tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   char *name;
+  GHashTable *attrs;
 
   token = tokenizer_next_string(tokenizer, NAME);
   if (! expect_token(STRING, tokenizer, error)) return;
@@ -187,7 +188,11 @@ parse_preamble(tokenizer_t *tokenizer, GError **error)
   }
   free(name);
 
-  token = tokenizer_next(tokenizer);
+  attrs = parse_attributes(tokenizer, error);
+  if (*error) return;
+  g_hash_table_destroy(attrs);
+
+  token = tokenizer_current(tokenizer);
   if (! expect_token(PI_END, tokenizer, error)) return;
 }
 
@@ -397,6 +402,52 @@ parse_child_element(document_t *doc, element_t *element, tokenizer_t *tokenizer,
   return;
 }
 
+GHashTable *
+parse_attributes(tokenizer_t *tokenizer, GError **error)
+{
+  GHashTable *attrs;
+  token_t token;
+
+  token = tokenizer_next_string(tokenizer, NAME);
+  consume_space_string(NAME);
+
+  attrs = g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
+
+  while (STRING == token.type) {
+    parse_attribute(tokenizer, attrs, error);
+    if (*error) {
+      return attrs;
+    }
+
+    token = tokenizer_next_string(tokenizer, NAME);
+    consume_space_string(NAME);
+  }
+
+  return attrs;
+}
+
+static void
+parse_element_attributes1(gpointer key_gp, gpointer value_gp, gpointer user_gp)
+{
+  const char *name = key_gp;
+  const char *value = value_gp;
+  element_t *element = user_gp;
+
+  element_set_attribute(element, name, value);
+}
+
+void
+parse_element_attributes(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  GHashTable *attrs;
+
+  attrs = parse_attributes(tokenizer, error);
+  if (*error) return;
+
+  g_hash_table_foreach(attrs, parse_element_attributes1, element);
+  g_hash_table_destroy(attrs);
+}
+
 element_t *
 parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
 {
@@ -411,18 +462,11 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
   element = document_element_new(doc, name);
   free(name);
 
-  token = tokenizer_next_string(tokenizer, NAME);
-  consume_space_string(NAME);
-
-  while (STRING == token.type) {
-    parse_attribute(tokenizer, element, error);
-    if (*error) {
-      return NULL;
-    }
-
-    token = tokenizer_next_string(tokenizer, NAME);
-    consume_space_string(NAME);
+  parse_element_attributes(doc, element, tokenizer, error);
+  if (*error) {
+    return NULL;
   }
+  token = tokenizer_current(tokenizer);
 
   if (SLASH == token.type) {
     /* Self-closing */
@@ -469,7 +513,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
 }
 
 void
-parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
+parse_attribute(tokenizer_t *tokenizer, GHashTable *attrs, GError **error)
 {
   token_t token;
   char *name;
@@ -520,8 +564,7 @@ parse_attribute(tokenizer_t *tokenizer, element_t *element, GError **error)
     }
   }
 
-  element_set_attribute(element, name, value->str);
-  g_string_free(value, TRUE);
+  g_hash_table_insert(attrs, name, g_string_free(value, FALSE));
 }
 
 element_t *

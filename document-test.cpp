@@ -163,6 +163,14 @@ TEST(document_parse, preamble_with_space)
   STRCMP_EQUAL("hello", element_name(root));
 }
 
+TEST(document_parse, preamble_with_version)
+{
+  doc = document_parse("<?xml version='1.0' ?><hello/>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+}
+
 TEST(document_parse, empty_with_leading_whitespace)
 {
   doc = document_parse("\n\r \t<hello/>", &error);
