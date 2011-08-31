@@ -155,6 +155,22 @@ TEST(document_parse, preamble)
   STRCMP_EQUAL("hello", element_name(root));
 }
 
+TEST(document_parse, preamble_with_space)
+{
+  doc = document_parse("<?xml?>\n<hello/>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+}
+
+TEST(document_parse, empty_with_leading_whitespace)
+{
+  doc = document_parse("\n\r \t<hello/>", &error);
+  CHECK_PARSE_ERROR(error);
+  root = document_root(doc);
+  STRCMP_EQUAL("hello", element_name(root));
+}
+
 TEST(document_parse, element_with_attribute)
 {
   doc = document_parse("<hello one='two' />", &error);
