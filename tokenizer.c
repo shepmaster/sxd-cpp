@@ -213,6 +213,9 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     if (offset[1] == '?') {
       tok.type = PI_START;
       len = 2;
+    } else if (offset[1] == '/') {
+      tok.type = CLOSE_TAG_START;
+      len = 2;
     } else {
       tok.type = LT;
     }
@@ -329,6 +332,8 @@ tokenizer_token_name(token_type_t type)
     return "/";
   case GT:
     return ">";
+  case CLOSE_TAG_START:
+    return "</";
   case PI_START:
     return "<?";
   case PI_END:

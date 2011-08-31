@@ -10,6 +10,7 @@ typedef enum {
   STRING,
   SLASH,
   GT,
+  CLOSE_TAG_START,
   PI_START,
   PI_END,
   EQ,

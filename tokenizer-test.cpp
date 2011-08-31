@@ -114,6 +114,12 @@ TEST(tokenize, tokenize_gt)
   NEXT_TOKEN(GT, tz);
 }
 
+TEST(tokenize, tokenize_close_tag_start)
+{
+  tz = tokenizer_new("</");
+  NEXT_TOKEN(CLOSE_TAG_START, tz);
+}
+
 TEST(tokenize, tokenize_pi_start)
 {
   tz = tokenizer_new("<?");
