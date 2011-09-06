@@ -49,6 +49,12 @@ document_text_node_new(document_t *doc, const char * const text)
   return text_node_new(doc, text);
 }
 
+comment_t *
+document_comment_new(document_t *doc, const char * const text)
+{
+  return comment_new(doc, text);
+}
+
 const char *
 document_intern(document_t *doc, const char * const string)
 {
