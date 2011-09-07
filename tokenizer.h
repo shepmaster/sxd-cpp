@@ -48,7 +48,8 @@ typedef enum {
   CHARDATA,
   NAME,
   INTEGER,
-  HEX
+  HEX,
+  COMMENT_TEXT
 } string_type_t;
 
 tokenizer_t *

@@ -138,6 +138,12 @@ TEST(tokenize, tokenize_comment_start)
   NEXT_TOKEN(COMMENT_START, tz);
 }
 
+TEST(tokenize, tokenize_comment_text)
+{
+  tz = tokenizer_new("foo-bar-->");
+  NEXT_TOKEN_STRING("foo-bar", tz, COMMENT_TEXT);
+}
+
 TEST(tokenize, tokenize_slash)
 {
   tz = tokenizer_new("/");

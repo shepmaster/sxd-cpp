@@ -183,6 +183,24 @@ tokenize_hex_string(const char *offset, token_t *tok, int *len)
   return tokenize_string_fns(offset, is_hex, is_hex, tok, len);
 }
 
+int tokenize_comment_text(const char *offset, token_t *tok, int *len)
+{
+  const char *end;
+
+  end = strstr(offset, "--");
+  if (end && end[2] == '>') {
+    *len = end-offset;
+
+    tok->type = STRING;
+    tok->value.string.str = offset;
+    tok->value.string.len = *len;
+
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
 token_t
 tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
 {
@@ -209,6 +227,7 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
   if (string_type == NAME && tokenize_name_string(offset, &tok, &len)) string = TRUE;
   else if (string_type == INTEGER && tokenize_integer_string(offset, &tok, &len)) string = TRUE;
   else if (string_type == HEX && tokenize_hex_string(offset, &tok, &len)) string = TRUE;
+  else if (string_type == COMMENT_TEXT && tokenize_comment_text(offset, &tok, &len)) string = TRUE;
   else string = FALSE;
 
   if (string) {
