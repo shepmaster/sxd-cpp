@@ -8,6 +8,9 @@ typedef struct commentS comment_t;
 const char *
 comment_text(comment_t *comment);
 
+node_t *
+comment_cast_to_node(comment_t *c);
+
 void
 comment_free(comment_t *comment);
 

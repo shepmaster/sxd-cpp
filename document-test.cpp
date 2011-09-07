@@ -6,6 +6,8 @@
 #include <CppUTest/CommandLineTestRunner.h>
 
 extern "C" {
+#include "test-utilities.h"
+
 #include "document.h"
 }
 
