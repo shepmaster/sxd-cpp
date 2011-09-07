@@ -13,6 +13,7 @@ typedef enum {
   CLOSE_TAG_START,
   PI_START,
   PI_END,
+  COMMENT_START,
   EQ,
   APOS,
   QUOT,

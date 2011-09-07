@@ -222,6 +222,13 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
     } else if (offset[1] == '/') {
       tok.type = CLOSE_TAG_START;
       len = 2;
+    } else if (offset[1] == '!' &&
+               offset[2] == '-' &&
+               offset[3] == '-'
+    )
+    {
+      tok.type = COMMENT_START;
+      len = 4;
     } else {
       tok.type = LT;
     }
@@ -344,6 +351,8 @@ tokenizer_token_name(token_type_t type)
     return "<?";
   case PI_END:
     return "?>";
+  case COMMENT_START:
+    return "<!--";
   case EQ:
     return "=";
   case APOS:

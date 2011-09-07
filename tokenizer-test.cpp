@@ -132,6 +132,12 @@ TEST(tokenize, tokenize_pi_end)
   NEXT_TOKEN(PI_END, tz);
 }
 
+TEST(tokenize, tokenize_comment_start)
+{
+  tz = tokenizer_new("<!--");
+  NEXT_TOKEN(COMMENT_START, tz);
+}
+
 TEST(tokenize, tokenize_slash)
 {
   tz = tokenizer_new("/");
