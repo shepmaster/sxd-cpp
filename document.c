@@ -336,6 +336,25 @@ parse_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GErro
 }
 
 void
+parse_comment(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+{
+  comment_t *comment;
+  token_t token;
+  char *text;
+
+  tokenizer_next_string(tokenizer, COMMENT_TEXT);
+  if (! expect_token(STRING, tokenize, error)) return;
+
+  text = dup_token_string(token);
+  comment = document_comment_new(doc, text);
+
+  node_append_child(element_cast_to_node(element), comment_cast_to_node(comment));
+
+  token = tokenizer_next(tokenizer);
+  if (! expect_token(COMMENT_END, tokenize, error)) return;
+}
+
+void
 parse_child_element(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
 {
   element_t *child;
@@ -481,6 +500,9 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
       if (CLOSE_TAG_START == token.type) {
         parse_end_tag(doc, element, tokenizer, error);
         break;
+      } else if (COMMENT_START == token.type) {
+        parse_comment(doc, element, tokenizer, error);
+        if (*error) return NULL;
       } else if (LT == token.type) {
         parse_child_element(doc, element, tokenizer, error);
         if (*error) return NULL;

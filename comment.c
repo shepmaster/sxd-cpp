@@ -29,6 +29,12 @@ comment_free(comment_t *c)
   free(c);
 }
 
+void
+comment_free_node(node_t *node)
+{
+  comment_free((comment_t *)node);
+}
+
 comment_t *
 comment_new(document_t *doc, const char * const text)
 {
@@ -38,6 +44,7 @@ comment_new(document_t *doc, const char * const text)
 
   node_init(&c->node, doc);
   c->node.type = NODE_TYPE_COMMENT;
+  c->node.fn.free_node = comment_free_node;
 
   c->text = strdup(text);
   return c;

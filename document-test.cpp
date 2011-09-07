@@ -405,6 +405,19 @@ TEST(document_parse, element_with_mixed_content)
   CHECK_TEXT_NODE(node, "b");
 }
 
+TEST(document_parse, comment)
+{
+  node_t *node;
+
+  doc = document_parse("<a><!--alert--></a>", &error);
+  CHECK_PARSE_ERROR(error);
+
+  root = document_root(doc);
+
+  node = node_first_child((node_t *)root);
+  CHECK_EQUAL(NODE_TYPE_COMMENT, node_type(node));
+}
+
 int
 main(int argc, char **argv)
 {
