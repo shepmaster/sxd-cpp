@@ -144,6 +144,12 @@ TEST(tokenize, tokenize_comment_text)
   NEXT_TOKEN_STRING("foo-bar", tz, COMMENT_TEXT);
 }
 
+TEST(tokenize, tokenize_comment_end)
+{
+  tz = tokenizer_new("-->");
+  NEXT_TOKEN(COMMENT_END, tz);
+}
+
 TEST(tokenize, tokenize_slash)
 {
   tz = tokenizer_new("/");

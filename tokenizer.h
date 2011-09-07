@@ -14,6 +14,7 @@ typedef enum {
   PI_START,
   PI_END,
   COMMENT_START,
+  COMMENT_END,
   EQ,
   APOS,
   QUOT,

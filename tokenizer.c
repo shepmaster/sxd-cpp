@@ -284,6 +284,12 @@ tokenizer_next_string(tokenizer_t *tokenizer, string_type_t string_type)
   } else if (offset[0] == '?' && offset[1] == '>') {
     tok.type = PI_END;
     len = 2;
+  } else if (offset[0] == '-' &&
+             offset[1] == '-' &&
+             offset[2] == '>')
+  {
+    tok.type = COMMENT_END;
+    len = 3;
   } else if (offset[0] == '/') {
     tok.type = SLASH;
   } else if (offset[0] == '=') {
@@ -372,6 +378,8 @@ tokenizer_token_name(token_type_t type)
     return "?>";
   case COMMENT_START:
     return "<!--";
+  case COMMENT_END:
+    return "-->";
   case EQ:
     return "=";
   case APOS:
