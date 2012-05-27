@@ -5,11 +5,9 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "document.h"
 #include "node.h"
 #include "test-utilities.h"
-}
 
 TEST_GROUP(node)
 {};

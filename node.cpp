@@ -178,7 +178,7 @@ node_document(node_t *node)
 static void
 node_change_document_children(node_t *node, gpointer doc_as_gp)
 {
-  document_t *doc = doc_as_gp;
+  document_t *doc = (document_t *)doc_as_gp;
 
   node_change_document(node, doc);
 }
@@ -213,7 +213,7 @@ node_output(node_t *node, output_t *output)
 static void
 node_output_wrapper(node_t *node, gpointer output_as_gp)
 {
-  node_output(node, output_as_gp);
+  node_output(node, (output_t *)output_as_gp);
 }
 
 void

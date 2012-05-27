@@ -212,7 +212,7 @@ utf8_strndup(const char *str, gsize n)
   end_byte = g_utf8_offset_to_pointer(str, n);
   len = end_byte - str;
 
-  result = malloc(len + 1);
+  result = (char *)malloc(len + 1);
   memcpy(result, str, len);
   result[len] = '\0';
 

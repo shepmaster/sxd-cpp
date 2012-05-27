@@ -29,7 +29,7 @@ xpath_tokenize(const char * const xpath)
   const char *token_start = NULL;
   const char *current;
 
-  tokens = malloc(sizeof(*tokens));
+  tokens = (xpath_tokens_t *)malloc(sizeof(*tokens));
   tokens->xpath = strdup(xpath);
   tokens->tokens = g_array_new(FALSE, FALSE, sizeof(xpath_token_t));
 
@@ -128,7 +128,7 @@ xpath_compile(const char * const xpath)
   xpath_step_t step;
   int i;
 
-  compiled = malloc(sizeof(*compiled));
+  compiled = (xpath_compiled_t *)malloc(sizeof(*compiled));
   compiled->steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
 
   tokens = xpath_tokenize(xpath);
@@ -234,7 +234,7 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
     nodeset_t *selected_nodes;
     int i;
 
-    predicate = item->data;
+    predicate = (xpath_predicate_t *)item->data;
     context.nodeset = current_nodes;
     selected_nodes = nodeset_new();
 
@@ -290,14 +290,14 @@ xpath_test_step(node_t *node, xpath_test_step_t *data)
 static void
 xpath_test_step_wrapper(node_t *node, gpointer data_as_gp)
 {
-  xpath_test_step_t *data = data_as_gp;
+  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   xpath_test_step(node, data);
 }
 
 static void
 xpath_test_and_recur_down(node_t *node, gpointer data_as_gp)
 {
-  xpath_test_step_t *data = data_as_gp;
+  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   xpath_test_step(node, data);
   node_foreach_child(node, xpath_test_and_recur_down, data);
 }
@@ -305,7 +305,7 @@ xpath_test_and_recur_down(node_t *node, gpointer data_as_gp)
 static void
 xpath_test_following_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
 {
-  xpath_test_step_t *data = data_as_gp;
+  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   node_foreach_following_sibling(node, xpath_test_and_recur_down, data);
   node_foreach_ancestor(node, xpath_test_following_siblings_and_recur_up, data);
 }
@@ -313,7 +313,7 @@ xpath_test_following_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
 static void
 xpath_test_preceding_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
 {
-  xpath_test_step_t *data = data_as_gp;
+  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   node_foreach_preceding_sibling(node, xpath_test_and_recur_down, data);
   node_foreach_ancestor(node, xpath_test_preceding_siblings_and_recur_up, data);
 }

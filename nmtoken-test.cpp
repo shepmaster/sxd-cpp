@@ -5,9 +5,7 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "nmtoken.h"
-}
 
 TEST_GROUP(nmtoken)
 {};

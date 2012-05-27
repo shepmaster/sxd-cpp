@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern "C" {
 #include "intern.h"
-}
 
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>

@@ -32,7 +32,7 @@ exception_t *
 exception_new(int id)
 {
   exception_t *ex;
-  ex = calloc(1, sizeof(*ex));
+  ex = (exception_t *)calloc(1, sizeof(*ex));
   if (id >=0 && id < exception_table_size) {
     ex->id = id;
   } else {

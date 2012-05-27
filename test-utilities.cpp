@@ -27,7 +27,7 @@ test_helper_new_text_node(document_t *doc, const char * const text)
 static void
 test_output_fn(void *string_as_void, const char *format, ...)
 {
-  GString *string = string_as_void;
+  GString *string = (GString *)string_as_void;
   va_list params;
 
   va_start(params, format);

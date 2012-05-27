@@ -5,13 +5,11 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "test-utilities.h"
 
 #include "document.h"
 #include "node.h"
 #include "element.h"
-}
 
 TEST_GROUP(element)
 {

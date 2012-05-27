@@ -47,5 +47,5 @@ node_t *
 nodeset_get(nodeset_t *nodeset, unsigned int i)
 {
   GPtrArray *garray = (GPtrArray *)nodeset;
-  return garray->pdata[i];
+  return (node_t *)garray->pdata[i];
 }

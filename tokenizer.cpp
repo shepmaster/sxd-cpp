@@ -24,7 +24,7 @@ tokenizer_t *
 tokenizer_new(const char *input)
 {
   tokenizer_t *tokenizer;
-  tokenizer = calloc(sizeof(*tokenizer), 1);
+  tokenizer = (tokenizer_t *)calloc(sizeof(*tokenizer), 1);
   tokenizer->input = input;
   tokenizer->current.offset = input;
   tokenizer->to_use = &tokenizer->current;

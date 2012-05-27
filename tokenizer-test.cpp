@@ -6,9 +6,7 @@
 #include <CppUTest/TestHarness_c.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "tokenizer.h"
-}
 
 TEST_GROUP(tokenize)
 {

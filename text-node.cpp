@@ -45,7 +45,7 @@ text_node_new(document_t *doc, const char * const text)
 {
   text_node_t *tn;
 
-  tn = calloc(1, sizeof(*tn));
+  tn = (text_node_t *)calloc(1, sizeof(*tn));
 
   node_init(&tn->node, doc);
   tn->node.type = NODE_TYPE_TEXT_NODE;

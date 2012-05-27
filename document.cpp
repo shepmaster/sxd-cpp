@@ -27,7 +27,7 @@ document_new(void)
 {
   document_t *doc;
 
-  doc = calloc(1, sizeof(*doc));
+  doc = (document_t *)calloc(1, sizeof(*doc));
   doc->dict = intern_new();
 
   return doc;
@@ -93,6 +93,21 @@ _info_abort(GError **error, const char *file, int line)
 }
 #define info_abort(error)                       \
   _info_abort(error, __FILE__, __LINE__)
+
+/* static char * */
+/* print_context(tokenizer_t *tokenizer) */
+/* { */
+/*   tokenizer_context_t context; */
+/*   GString *msg; */
+
+/*   msg = g_string_new(NULL); */
+/*   context = tokenizer_context(tokenizer); */
+/*   g_string_printf(msg, "At line %d, column %d of input\n", context.line, context.column); */
+/*   g_string_append_printf(msg, "%s\n", context.string); */
+/*   g_string_append_printf(msg, "%*s^\n", context.offset, " "); */
+/*   tokenizer_context_destroy(&context); */
+/*   return g_string_free(msg, FALSE); */
+/* } */
 
 static int
 _expect_token(
@@ -206,7 +221,7 @@ typedef struct {
 static void
 add_entity_text(void *user, const char *entity_text)
 {
-  entity_text_t *info = user;
+  entity_text_t *info = (entity_text_t *)user;
   node_t *text;
 
   text = (node_t *)document_text_node_new(info->doc, entity_text);
@@ -225,7 +240,7 @@ parse_entity_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, G
 static void
 add_entity_attribute(void *user, const char *entity_text)
 {
-  GString *string = user;
+  GString *string = (GString *)user;
   g_string_append(string, entity_text);
 }
 
@@ -449,9 +464,9 @@ parse_attributes(tokenizer_t *tokenizer, GError **error)
 static void
 parse_element_attributes1(gpointer key_gp, gpointer value_gp, gpointer user_gp)
 {
-  const char *name = key_gp;
-  const char *value = value_gp;
-  element_t *element = user_gp;
+  const char *name = (const char *)key_gp;
+  const char *value = (const char *)value_gp;
+  element_t *element = (element_t *)user_gp;
 
   element_set_attribute(element, name, value);
 }

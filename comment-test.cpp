@@ -5,11 +5,8 @@
 #include <CppUTest/TestHarness_c.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "document.h"
-
 #include "comment.h"
-}
 
 TEST_GROUP(comment)
 {

@@ -6,11 +6,9 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "xpath-internal.h"
 #include "xpath-functions.h"
 #include "test-utilities.h"
-}
 
 static xpath_predicate_t g_predicate_value_true;
 static xpath_predicate_t g_predicate_value_false;

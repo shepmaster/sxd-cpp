@@ -40,7 +40,7 @@ element_new(document_t *doc, const char * const name)
 {
   element_t *e;
 
-  e = calloc(1, sizeof(*e));
+  e = (element_t *)calloc(1, sizeof(*e));
   node_init(&e->node, doc);
   e->node.type = NODE_TYPE_ELEMENT;
   e->node.fn.free_node = element_free_node;
@@ -81,7 +81,7 @@ element_set_attribute(element_t *element, const char * const name, const char * 
 const char *
 element_get_attribute(element_t *element, const char * const name)
 {
-  return g_hash_table_lookup(element->attributes, name);
+  return (char *)g_hash_table_lookup(element->attributes, name);
 }
 
 typedef struct {
@@ -92,9 +92,9 @@ typedef struct {
 static void
 element_change_document_attributes(gpointer name_as_gp, gpointer value_as_gp, gpointer ca_as_gp)
 {
-  const char *name = name_as_gp;
-  const char *value = value_as_gp;
-  change_attributes_t *ca = ca_as_gp;
+  const char *name = (const char *)name_as_gp;
+  const char *value = (const char *)value_as_gp;
+  change_attributes_t *ca = (change_attributes_t *)ca_as_gp;
 
   element_set_attribute1(ca->element->node.doc, ca->new_attributes, name, value);
 }
@@ -119,9 +119,9 @@ element_change_document(node_t *node, document_t *doc)
 static void
 element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer output_as_gp)
 {
-  const char * const name = name_as_gp;
-  const char * const value = value_as_gp;
-  output_t *output = output_as_gp;
+  const char * const name = (const char * const)name_as_gp;
+  const char * const value = (const char * const)value_as_gp;
+  output_t *output = (output_t *)output_as_gp;
 
   output->fn(output->data, " %s=\"%s\"", name, value);
 }
@@ -131,7 +131,7 @@ element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer out
 static void
 fprintf_wrapper(void *data, const char *format, ...)
 {
-  FILE *stream = data;
+  FILE *stream = (FILE *)data;
   va_list params;
 
   va_start(params, format);

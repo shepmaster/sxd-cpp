@@ -40,7 +40,7 @@ comment_new(document_t *doc, const char * const text)
 {
   comment_t *c;
 
-  c = calloc(sizeof(*c), 1);
+  c = (comment_t *)calloc(sizeof(*c), 1);
 
   node_init(&c->node, doc);
   c->node.type = NODE_TYPE_COMMENT;

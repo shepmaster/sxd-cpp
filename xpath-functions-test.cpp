@@ -6,12 +6,10 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "element.h"
 #include "xpath-internal.h"
 #include "xpath-functions.h"
 #include "test-utilities.h"
-}
 
 /* XPath 1.0 */
 

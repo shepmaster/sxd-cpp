@@ -4,9 +4,7 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
-extern "C" {
 #include "exception.h"
-}
 
 #define T_EX_NONEXISTENT_ID 99999
 
