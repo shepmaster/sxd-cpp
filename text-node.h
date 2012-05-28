@@ -20,4 +20,17 @@ text_node_text(text_node_t *tn);
 void
 text_node_output(text_node_t *tn, output_t *output);
 
+class TextNode {
+public:
+  TextNode(node_t *node, document_t *doc, const char *text);
+  ~TextNode();
+  const char *text();
+  void output(output_t *output);
+  void change_document(document_t *doc);
+private:
+
+  node_t *node;
+  const char *text_;
+};
+
 #endif
