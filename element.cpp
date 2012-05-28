@@ -8,18 +8,14 @@
 
 struct elementS {
   node_t node;
-  const char *name;
-  GHashTable *attributes;
+  Element *e;
 };
 
 void
 element_free(element_t *e)
 {
   if (! e) return;
-
-  node_destroy(&e->node);
-  g_hash_table_destroy(e->attributes);
-
+  delete e->e;
   free(e);
 }
 
@@ -41,13 +37,7 @@ element_new(document_t *doc, const char * const name)
   element_t *e;
 
   e = (element_t *)calloc(1, sizeof(*e));
-  node_init(&e->node, doc);
-  e->node.type = NODE_TYPE_ELEMENT;
-  e->node.fn.free_node = element_free_node;
-  e->node.fn.change_document = element_change_document;
-  e->name = document_intern(e->node.doc, name);
-  e->attributes = element_attributes_new();
-
+  e->e = new Element(doc, &e->node, name);
   return e;
 }
 
@@ -60,7 +50,7 @@ element_cast_to_node(element_t *e)
 const char *
 element_name(element_t *e)
 {
-  return e->name;
+  return e->e->name();
 }
 
 static void
@@ -75,17 +65,17 @@ element_set_attribute1(document_t *doc, GHashTable *attributes, const char * con
 void
 element_set_attribute(element_t *element, const char * const name, const char * const value)
 {
-  element_set_attribute1(element->node.doc, element->attributes, name, value);
+  element->e->set_attribute(name, value);
 }
 
 const char *
 element_get_attribute(element_t *element, const char * const name)
 {
-  return (char *)g_hash_table_lookup(element->attributes, name);
+  return element->e->get_attribute(name);
 }
 
 typedef struct {
-  element_t *element;
+  document_t *doc;
   GHashTable *new_attributes;
 } change_attributes_t;
 
@@ -96,24 +86,15 @@ element_change_document_attributes(gpointer name_as_gp, gpointer value_as_gp, gp
   const char *value = (const char *)value_as_gp;
   change_attributes_t *ca = (change_attributes_t *)ca_as_gp;
 
-  element_set_attribute1(ca->element->node.doc, ca->new_attributes, name, value);
+  element_set_attribute1(ca->doc, ca->new_attributes, name, value);
 }
 
 void
 element_change_document(node_t *node, document_t *doc)
 {
   element_t *element;
-  change_attributes_t ca;
-
   element = (element_t *)node;
-
-  element->name = document_intern(doc, element->name);
-
-  ca.new_attributes = element_attributes_new();
-  ca.element = element;
-  g_hash_table_foreach(element->attributes, element_change_document_attributes, &ca);
-  g_hash_table_destroy(element->attributes);
-  element->attributes = ca.new_attributes;
+  element->e->change_document(doc);
 }
 
 static void
@@ -142,6 +123,29 @@ fprintf_wrapper(void *data, const char *format, ...)
 void
 element_output(element_t *element, output_t *output)
 {
+  element->e->output(output);
+}
+
+Element::Element(document_t *doc, node_t *node, const char * const name) :
+  node(node), attributes(NULL)
+{
+  node_init(node, doc);
+  node->type = NODE_TYPE_ELEMENT;
+  node->fn.free_node = element_free_node;
+  node->fn.change_document = element_change_document;
+  name_ = document_intern(node->doc, name);
+  attributes = element_attributes_new();
+}
+
+Element::~Element()
+{
+  node_destroy(node);
+  g_hash_table_destroy(this->attributes);
+}
+
+void
+Element::output(output_t *output)
+{
   output_t def_output;
 
   if (output == NULL) {
@@ -150,13 +154,45 @@ element_output(element_t *element, output_t *output)
     output = &def_output;
   }
 
-  output->fn(output->data, "<%s", element->name);
-  g_hash_table_foreach(element->attributes, element_output_attribute, output);
-  if (node_first_child(element_cast_to_node(element))) {
+  output->fn(output->data, "<%s", name_);
+  g_hash_table_foreach(this->attributes, element_output_attribute, output);
+  if (node_first_child(node)) {
     output->fn(output->data, ">");
-    node_output_children(element_cast_to_node(element), output);
-    output->fn(output->data, "</%s>", element->name);
+    node_output_children(node, output);
+    output->fn(output->data, "</%s>", name_);
   } else {
     output->fn(output->data, " />");
   }
+}
+
+void
+Element::set_attribute(const char * const name, const char * const value)
+{
+  element_set_attribute1(node->doc, attributes, name, value);
+}
+
+const char *
+Element::get_attribute(const char * const name)
+{
+  return (char *)g_hash_table_lookup(attributes, name);
+}
+
+void
+Element::change_document(document_t *doc)
+{
+  change_attributes_t ca;
+
+  this->name_ = document_intern(doc, name_);
+
+  ca.new_attributes = element_attributes_new();
+  ca.doc = node->doc;
+  g_hash_table_foreach(attributes, element_change_document_attributes, &ca);
+  g_hash_table_destroy(attributes);
+  this->attributes = ca.new_attributes;
+}
+
+const char *
+Element::name()
+{
+  return this->name_;
 }

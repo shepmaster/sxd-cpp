@@ -29,4 +29,21 @@ element_get_attribute(element_t *e, const char * const name);
 void
 element_output(element_t *element, output_t *output);
 
+class Element {
+public:
+  Element(document_t *doc, node_t *node, const char * const name);
+  ~Element();
+
+  const char *name();
+  void output(output_t *output);
+  void set_attribute(const char * const name, const char * const value);
+  const char *get_attribute(const char * const name);
+  void change_document(document_t *doc);
+
+private:
+  node_t *node;
+  const char * name_;
+  GHashTable *attributes;
+};
+
 #endif
