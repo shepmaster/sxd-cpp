@@ -76,7 +76,7 @@ document_stop_managing_node(document_t *doc, node_t *node)
 void
 document_manage_node(document_t *doc, node_t *node)
 {
-  node_change_document(node, doc);
+  node->change_document(doc);
   doc->managed_node_count++;
 }
 
@@ -174,7 +174,7 @@ parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GEr
   }
 
   str = dup_token_string(token);
-  node_append_child((node_t *)element, (node_t *)document_text_node_new(doc, str));
+  element->append_child(document_text_node_new(doc, str));
   free(str);
 }
 
@@ -225,7 +225,7 @@ add_entity_text(void *user, const char *entity_text)
   node_t *text;
 
   text = (node_t *)document_text_node_new(info->doc, entity_text);
-  node_append_child((node_t *)info->element, text);
+  info->element->append_child(text);
 }
 
 void
@@ -363,7 +363,7 @@ parse_comment(document_t *doc, element_t *element, tokenizer_t *tokenizer, GErro
   text = dup_token_string(token);
   comment = document_comment_new(doc, text);
 
-  node_append_child(element_cast_to_node(element), comment_cast_to_node(comment));
+  element->append_child(comment);
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(COMMENT_END, tokenize, error)) return;
@@ -377,7 +377,7 @@ parse_child_element(document_t *doc, element_t *element, tokenizer_t *tokenizer,
   child = parse_element(doc, tokenizer, error);
   if (*error) return;
 
-  node_append_child((node_t *)element, (node_t *)child);
+  element->append_child(child);
 
   return;
 }

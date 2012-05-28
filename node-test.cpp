@@ -22,11 +22,11 @@ TEST(node, append_child)
   parent = test_helper_new_node(doc, "parent");
   child = test_helper_new_node(doc, "child");
 
-  node_append_child(parent, child);
-  POINTERS_EQUAL(child, node_first_child(parent));
-  POINTERS_EQUAL(parent, node_parent(child));
+  parent->append_child(child);
+  POINTERS_EQUAL(child, parent->first_child());
+  POINTERS_EQUAL(parent, child->parent());
 
-  node_free(parent);
+  delete parent;
   document_free(doc);
 }
 
@@ -40,12 +40,12 @@ TEST(node, remove_child)
   parent = test_helper_new_node(doc, "parent");
   child = test_helper_new_node(doc, "child");
 
-  node_append_child(parent, child);
-  node_remove_child(parent, child);
-  POINTERS_EQUAL(NULL, node_first_child(parent));
+  parent->append_child(child);
+  parent->remove_child(child);
+  POINTERS_EQUAL(NULL, parent->first_child());
 
-  node_free(parent);
-  node_free(child);
+  delete parent;
+  delete child;
   document_free(doc);
 }
 
@@ -59,11 +59,11 @@ TEST(node, free_child)
   parent = test_helper_new_node(doc, "parent");
   child = test_helper_new_node(doc, "child");
 
-  node_append_child(parent, child);
-  node_free(child);
-  POINTERS_EQUAL(NULL, node_first_child(parent));
+  parent->append_child(child);
+  delete child;
+  POINTERS_EQUAL(NULL, parent->first_child());
 
-  node_free(parent);
+  delete parent;
   document_free(doc);
 }
 
@@ -79,12 +79,12 @@ TEST(node, sibling)
   child1 = test_helper_new_node(doc, "child1");
   child2 = test_helper_new_node(doc, "child2");
 
-  node_append_child(parent, child1);
-  node_append_child(parent, child2);
+  parent->append_child(child1);
+  parent->append_child(child2);
 
-  POINTERS_EQUAL(child2, node_next_sibling(child1));
+  POINTERS_EQUAL(child2, child1->next_sibling());
 
-  node_free(parent);
+  delete parent;
   document_free(doc);
 }
 
@@ -95,23 +95,23 @@ TEST(node, insert_next_sibling)
   node_t *b = test_helper_new_node(doc, "b");
   node_t *c = test_helper_new_node(doc, "c");
 
-  node_insert_next_sibling(a, c);
-  POINTERS_EQUAL(NULL, node_prev_sibling(a));
-  POINTERS_EQUAL(c, node_next_sibling(a));
-  POINTERS_EQUAL(a, node_prev_sibling(c));
-  POINTERS_EQUAL(NULL, node_next_sibling(c));
+  a->insert_next_sibling(c);
+  POINTERS_EQUAL(NULL, a->prev_sibling());
+  POINTERS_EQUAL(c, a->next_sibling());
+  POINTERS_EQUAL(a, c->prev_sibling());
+  POINTERS_EQUAL(NULL, c->next_sibling());
 
-  node_insert_next_sibling(a, b);
-  POINTERS_EQUAL(NULL, node_prev_sibling(a));
-  POINTERS_EQUAL(b, node_next_sibling(a));
-  POINTERS_EQUAL(a, node_prev_sibling(b));
-  POINTERS_EQUAL(c, node_next_sibling(b));
-  POINTERS_EQUAL(b, node_prev_sibling(c));
-  POINTERS_EQUAL(NULL, node_next_sibling(c));
+  a->insert_next_sibling(b);
+  POINTERS_EQUAL(NULL, a->prev_sibling());
+  POINTERS_EQUAL(b, a->next_sibling());
+  POINTERS_EQUAL(a, b->prev_sibling());
+  POINTERS_EQUAL(c, b->next_sibling());
+  POINTERS_EQUAL(b, c->prev_sibling());
+  POINTERS_EQUAL(NULL, c->next_sibling());
 
-  node_free(a);
-  node_free(b);
-  node_free(c);
+  delete a;
+  delete b;
+  delete c;
   document_free(doc);
 }
 
@@ -123,25 +123,25 @@ TEST(node, append_child_siblings)
   node_t *b = test_helper_new_node(doc, "b");
   node_t *c = test_helper_new_node(doc, "c");
 
-  node_append_child(parent, a);
-  POINTERS_EQUAL(NULL, node_prev_sibling(a));
-  POINTERS_EQUAL(NULL, node_next_sibling(a));
+  parent->append_child(a);
+  POINTERS_EQUAL(NULL, a->prev_sibling());
+  POINTERS_EQUAL(NULL, a->next_sibling());
 
-  node_append_child(parent, b);
-  POINTERS_EQUAL(NULL, node_prev_sibling(a));
-  POINTERS_EQUAL(b, node_next_sibling(a));
-  POINTERS_EQUAL(a, node_prev_sibling(b));
-  POINTERS_EQUAL(NULL, node_next_sibling(b));
+  parent->append_child(b);
+  POINTERS_EQUAL(NULL, a->prev_sibling());
+  POINTERS_EQUAL(b, a->next_sibling());
+  POINTERS_EQUAL(a, b->prev_sibling());
+  POINTERS_EQUAL(NULL, b->next_sibling());
 
-  node_append_child(parent, c);
-  POINTERS_EQUAL(NULL, node_prev_sibling(a));
-  POINTERS_EQUAL(b, node_next_sibling(a));
-  POINTERS_EQUAL(a, node_prev_sibling(b));
-  POINTERS_EQUAL(c, node_next_sibling(b));
-  POINTERS_EQUAL(b, node_prev_sibling(c));
-  POINTERS_EQUAL(NULL, node_next_sibling(c));
+  parent->append_child(c);
+  POINTERS_EQUAL(NULL, a->prev_sibling());
+  POINTERS_EQUAL(b, a->next_sibling());
+  POINTERS_EQUAL(a, b->prev_sibling());
+  POINTERS_EQUAL(c, b->next_sibling());
+  POINTERS_EQUAL(b, c->prev_sibling());
+  POINTERS_EQUAL(NULL, c->next_sibling());
 
-  node_free(parent);
+  delete parent;
   document_free(doc);
 }
 

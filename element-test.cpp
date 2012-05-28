@@ -42,7 +42,7 @@ TEST(element, cast_to_node)
   n = element_cast_to_node(e);
   POINTERS_EQUAL(e, n);
   CHECK(n != NULL);
-  POINTERS_EQUAL(node_document(n), doc);
+  POINTERS_EQUAL(n->document(), doc);
 
   element_free(e);
   document_free(doc);
@@ -120,7 +120,7 @@ TEST(element, output_basic)
   doc = document_new();
   element = document_element_new(doc, "one");
 
-  element_output(element, &to.out);
+  element->output(&to.out);
   STRCMP_EQUAL("<one />", to.string->str);
 
   element_free(element);
@@ -140,7 +140,7 @@ TEST(element, output_attribute)
   element = document_element_new(doc, "one");
   element_set_attribute(element, "hi", "there");
 
-  element_output(element, &to.out);
+  element->output(&to.out);
   STRCMP_EQUAL("<one hi=\"there\" />", to.string->str);
 
   element_free(element);
@@ -160,9 +160,9 @@ TEST(element, output_child)
   doc = document_new();
   element = document_element_new(doc, "one");
   child = document_element_new(doc, "two");
-  node_append_child(element_cast_to_node(element), element_cast_to_node(child));
+  element->append_child(child);
 
-  element_output(element, &to.out);
+  element->output(&to.out);
   STRCMP_EQUAL("<one><two /></one>", to.string->str);
 
   element_free(element);

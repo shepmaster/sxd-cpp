@@ -6,23 +6,10 @@
 #include "element-internal.h"
 #include "node-internal.h"
 
-struct elementS {
-  node_t node;
-  Element *e;
-};
-
 void
 element_free(element_t *e)
 {
-  if (! e) return;
-  delete e->e;
-  free(e);
-}
-
-static void
-element_free_node(node_t *node)
-{
-  element_free((element_t *)node);
+  delete e;
 }
 
 static GHashTable *
@@ -34,23 +21,19 @@ element_attributes_new(void)
 element_t *
 element_new(document_t *doc, const char * const name)
 {
-  element_t *e;
-
-  e = (element_t *)calloc(1, sizeof(*e));
-  e->e = new Element(doc, &e->node, name);
-  return e;
+  return new Element(doc, name);
 }
 
 node_t *
 element_cast_to_node(element_t *e)
 {
-  return (node_t *)e;
+  return e;
 }
 
 const char *
 element_name(element_t *e)
 {
-  return e->e->name();
+  return e->name();
 }
 
 static void
@@ -65,13 +48,13 @@ element_set_attribute1(document_t *doc, GHashTable *attributes, const char * con
 void
 element_set_attribute(element_t *element, const char * const name, const char * const value)
 {
-  element->e->set_attribute(name, value);
+  element->set_attribute(name, value);
 }
 
 const char *
 element_get_attribute(element_t *element, const char * const name)
 {
-  return element->e->get_attribute(name);
+  return element->get_attribute(name);
 }
 
 typedef struct {
@@ -94,7 +77,7 @@ element_change_document(node_t *node, document_t *doc)
 {
   element_t *element;
   element = (element_t *)node;
-  element->e->change_document(doc);
+  element->change_document(doc);
 }
 
 static void
@@ -120,26 +103,15 @@ fprintf_wrapper(void *data, const char *format, ...)
   va_end(params);
 }
 
-void
-element_output(element_t *element, output_t *output)
+Element::Element(document_t *doc, const char * const name) :
+  Node(doc, NODE_TYPE_ELEMENT),
+  name_(document_intern(doc, name)),
+  attributes(element_attributes_new())
 {
-  element->e->output(output);
-}
-
-Element::Element(document_t *doc, node_t *node, const char * const name) :
-  node(node), attributes(NULL)
-{
-  node_init(node, doc);
-  node->type = NODE_TYPE_ELEMENT;
-  node->fn.free_node = element_free_node;
-  node->fn.change_document = element_change_document;
-  name_ = document_intern(node->doc, name);
-  attributes = element_attributes_new();
 }
 
 Element::~Element()
 {
-  node_destroy(node);
   g_hash_table_destroy(this->attributes);
 }
 
@@ -156,9 +128,9 @@ Element::output(output_t *output)
 
   output->fn(output->data, "<%s", name_);
   g_hash_table_foreach(this->attributes, element_output_attribute, output);
-  if (node_first_child(node)) {
+  if (first_child()) {
     output->fn(output->data, ">");
-    node_output_children(node, output);
+    output_children(output);
     output->fn(output->data, "</%s>", name_);
   } else {
     output->fn(output->data, " />");
@@ -168,7 +140,7 @@ Element::output(output_t *output)
 void
 Element::set_attribute(const char * const name, const char * const value)
 {
-  element_set_attribute1(node->doc, attributes, name, value);
+  element_set_attribute1(doc, attributes, name, value);
 }
 
 const char *
@@ -182,10 +154,12 @@ Element::change_document(document_t *doc)
 {
   change_attributes_t ca;
 
+  Node::change_document(doc);
+
   this->name_ = document_intern(doc, name_);
 
   ca.new_attributes = element_attributes_new();
-  ca.doc = node->doc;
+  ca.doc = doc;
   g_hash_table_foreach(attributes, element_change_document_attributes, &ca);
   g_hash_table_destroy(attributes);
   this->attributes = ca.new_attributes;

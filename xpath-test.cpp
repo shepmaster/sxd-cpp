@@ -6,6 +6,7 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
+#include "document.h"
 #include "xpath-internal.h"
 #include "xpath-functions.h"
 #include "test-utilities.h"
@@ -104,14 +105,14 @@ init_xpath_test(xpath_test_data_t *d)
   d->e = test_helper_new_node(d->doc, "child1");
   d->tn = test_helper_new_text_node(d->doc, "child2");
 
-  node_append_child(d->parent, d->e);
-  node_append_child(d->parent, d->tn);
+  d->parent->append_child(d->e);
+  d->parent->append_child(d->tn);
 }
 
 static void
 destroy_xpath_test(xpath_test_data_t *d)
 {
-  node_free(d->parent);
+  delete d->parent;
   document_free(d->doc);
 }
 
@@ -222,22 +223,22 @@ init_xpath_axis_test(xpath_axis_test_t *d)
   d->y = test_helper_new_node(d->doc, "y");
   d->z = test_helper_new_node(d->doc, "z");
 
-  node_append_child(d->alpha, d->one);
-  node_append_child(d->one, d->a);
-  node_append_child(d->one, d->b);
-  node_append_child(d->one, d->c);
-  node_append_child(d->one, d->d);
-  node_append_child(d->alpha, d->two);
-  node_append_child(d->two, d->w);
-  node_append_child(d->two, d->x);
-  node_append_child(d->two, d->y);
-  node_append_child(d->two, d->z);
+  d->alpha->append_child(d->one);
+  d->one->append_child(d->a);
+  d->one->append_child(d->b);
+  d->one->append_child(d->c);
+  d->one->append_child(d->d);
+  d->alpha->append_child(d->two);
+  d->two->append_child(d->w);
+  d->two->append_child(d->x);
+  d->two->append_child(d->y);
+  d->two->append_child(d->z);
 }
 
 static void
 destroy_xpath_axis_test(xpath_axis_test_t *d)
 {
-  node_free(d->alpha);
+  delete d->alpha;
   document_free(d->doc);
 }
 
@@ -605,7 +606,7 @@ TEST(xpath_predicate, predicate_position_1)
     element_t *__e;					     \
     node_t *__n;					     \
     __n = nodeset_get(_nodeset, _index);		     \
-    CHECK_EQUAL(NODE_TYPE_ELEMENT, node_type(__n));		     \
+    CHECK_EQUAL(NODE_TYPE_ELEMENT, __n->type());             \
     __e = (element_t *)__n;				     \
     STRCMP_EQUAL(_name, element_name(__e));		     \
   }
@@ -624,10 +625,10 @@ TEST(xpath, apply_element)
   children[2] = test_helper_new_node(doc, "one");
   children[3] = test_helper_new_node(doc, "four");
 
-  node_append_child(parent, children[0]);
-  node_append_child(parent, children[1]);
-  node_append_child(parent, children[2]);
-  node_append_child(parent, children[3]);
+  parent->append_child(children[0]);
+  parent->append_child(children[1]);
+  parent->append_child(children[2]);
+  parent->append_child(children[3]);
 
   nodes = xpath_apply_xpath(parent, name);
 
@@ -636,7 +637,7 @@ TEST(xpath, apply_element)
   CHECK_nodeset_element_name(nodes, 1, name);
 
   nodeset_free(nodes);
-  node_free(parent);
+  delete parent;
   document_free(doc);
 }
 

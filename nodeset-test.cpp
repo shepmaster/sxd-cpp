@@ -6,6 +6,7 @@
 #include <CppUTest/CommandLineTestRunner.h>
 
 #include "test-utilities.h"
+#include "document.h"
 #include "nodeset.h"
 
 TEST_GROUP(nodeset)
@@ -33,7 +34,7 @@ TEST(nodeset, add_node)
   CHECK_EQUAL(1, nodeset_count(ns));
 
   nodeset_free(ns);
-  node_free(n);
+  delete n;
   document_free(doc);
 }
 
@@ -54,7 +55,7 @@ TEST(nodeset, get_node)
   POINTERS_EQUAL(n, n2);
 
   nodeset_free(ns);  
-  node_free(n);
+  delete n;
   document_free(doc);
 }
 
@@ -82,8 +83,8 @@ TEST(nodeset, add_nodeset)
 
   nodeset_free(ns);
   nodeset_free(ns2);
-  node_free(n);
-  node_free(n2);
+  delete n;
+  delete n2;
   document_free(doc);
 }
 

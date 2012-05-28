@@ -6,6 +6,7 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
 
+#include "document.h"
 #include "element.h"
 #include "xpath-internal.h"
 #include "xpath-functions.h"
@@ -151,9 +152,9 @@ TEST_GROUP(xpath)
   {
     xpath_result_destroy(&res);
     if (parameters) cleanup_params(parameters);
-    node_free(el_1);
-    node_free(el_2);
-    node_free(el_3);
+    delete el_1;
+    delete el_2;
+    delete el_3;
     document_free(doc);
   }
 };

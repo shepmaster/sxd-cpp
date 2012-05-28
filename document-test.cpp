@@ -34,8 +34,8 @@ TEST(document, managed_count)
   n3 = document_element_new(doc, "omega");
   CHECK_EQUAL(3, document_managed_node_count(doc));
 
-  node_append_child(element_cast_to_node(n1), element_cast_to_node(n2));
-  node_append_child(element_cast_to_node(n2), element_cast_to_node(n3));
+  n1->append_child(n2);
+  n2->append_child(n3);
 
   element_free(n3);
   CHECK_EQUAL(2, document_managed_node_count(doc));
@@ -109,13 +109,13 @@ _check_parse_error(GError *error, const char *file, int line)
 
 #define CHECK_ELEMENT_NAME(_node, _name)                        \
 {                                                               \
-  CHECK_EQUAL(NODE_TYPE_ELEMENT, node_type(_node));             \
+  CHECK_EQUAL(NODE_TYPE_ELEMENT, _node->type());             \
   STRCMP_EQUAL(_name, element_name((element_t *)_node));        \
 }
 
 #define CHECK_TEXT_NODE(_node, _content)                        \
 {                                                               \
-  CHECK_EQUAL(NODE_TYPE_TEXT_NODE, node_type(_node));           \
+  CHECK_EQUAL(NODE_TYPE_TEXT_NODE, _node->type());           \
   STRCMP_EQUAL(_content, text_node_text((text_node_t *)_node)); \
 }
 
@@ -249,7 +249,7 @@ TEST(document_parse, element_with_child)
   doc = document_parse("<hello><world /></hello>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  node = node_first_child(element_cast_to_node(root));
+  node = root->first_child();
   STRCMP_EQUAL("hello", element_name(root));
   CHECK_ELEMENT_NAME(node, "world");
 }
@@ -262,10 +262,10 @@ TEST(document_parse, element_with_two_children)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child(element_cast_to_node(root));
+  node = root->first_child();
   CHECK_ELEMENT_NAME(node, "world");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_ELEMENT_NAME(node, "cool");
 }
 
@@ -277,10 +277,10 @@ TEST(document_parse, element_with_two_children_first_empty)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child(element_cast_to_node(root));
+  node = root->first_child();
   CHECK_ELEMENT_NAME(node, "b");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_ELEMENT_NAME(node, "c");
 }
 
@@ -292,10 +292,10 @@ TEST(document_parse, element_with_two_children_whitespace)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child(element_cast_to_node(root));
+  node = root->first_child();
   CHECK_ELEMENT_NAME(node, "world");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_ELEMENT_NAME(node, "cool");
 }
 
@@ -307,10 +307,10 @@ TEST(document_parse, element_with_grandchild)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
+  node = root->first_child();
   CHECK_ELEMENT_NAME(node, "world");
 
-  node = node_first_child(node);
+  node = node->first_child();
   CHECK_ELEMENT_NAME(node, "cool");
 }
 
@@ -322,7 +322,7 @@ TEST(document_parse, element_with_text)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
+  node = root->first_child();
   CHECK_TEXT_NODE(node, "world");
 }
 
@@ -334,19 +334,19 @@ TEST(document_parse, element_with_entities)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
+  node = root->first_child();
   CHECK_TEXT_NODE(node, "<");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_TEXT_NODE(node, ">");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_TEXT_NODE(node, "&");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_TEXT_NODE(node, "\"");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_TEXT_NODE(node, "'");
 }
 
@@ -358,7 +358,7 @@ TEST(document_parse, element_with_char_ref)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
+  node = root->first_child();
   CHECK_TEXT_NODE(node, "M");
 }
 
@@ -370,7 +370,7 @@ TEST(document_parse, element_with_char_ref_hex)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
+  node = root->first_child();
   CHECK_TEXT_NODE(node, "M");
 }
 
@@ -382,7 +382,7 @@ TEST(document_parse, element_with_nonalpha_text)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
+  node = root->first_child();
   CHECK_TEXT_NODE(node, "one, 2");
 }
 
@@ -395,10 +395,10 @@ TEST(document_parse, element_with_mixed_content)
 
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
+  node = root->first_child();
   CHECK_ELEMENT_NAME(node, "one");
 
-  node = node_next_sibling(node);
+  node = node->next_sibling();
   CHECK_TEXT_NODE(node, "b");
 }
 
@@ -411,8 +411,8 @@ TEST(document_parse, comment)
 
   root = document_root(doc);
 
-  node = node_first_child((node_t *)root);
-  CHECK_EQUAL(NODE_TYPE_COMMENT, node_type(node));
+  node = root->first_child();
+  CHECK_EQUAL(NODE_TYPE_COMMENT, node->type());
 }
 
 int

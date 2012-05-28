@@ -22,7 +22,7 @@ TEST(comment, new_comment)
 
   CHECK(c != NULL);
   STRCMP_EQUAL("hello", comment_text(c));
-  CHECK_EQUAL(NODE_TYPE_COMMENT, node_type(comment_cast_to_node(c)));
+  CHECK_EQUAL(NODE_TYPE_COMMENT, c->type());
 
   comment_free(c);
   document_free(doc);

@@ -1,15 +1,10 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
-typedef struct elementS element_t;
-
-typedef void (*output_fn_t)(void *data, const char * format, ...);
-typedef struct {
-  output_fn_t fn;
-  void *data;
-} output_t;
+typedef class Element element_t;
 
 #include "node.h"
+#include "output.h"
 
 void
 element_free(element_t *e);
@@ -26,12 +21,9 @@ element_set_attribute(element_t *e, const char * const name, const char * const 
 const char *
 element_get_attribute(element_t *e, const char * const name);
 
-void
-element_output(element_t *element, output_t *output);
-
-class Element {
+class Element : public Node {
 public:
-  Element(document_t *doc, node_t *node, const char * const name);
+  Element(document_t *doc, const char * const name);
   ~Element();
 
   const char *name();
@@ -41,7 +33,6 @@ public:
   void change_document(document_t *doc);
 
 private:
-  node_t *node;
   const char * name_;
   GHashTable *attributes;
 };

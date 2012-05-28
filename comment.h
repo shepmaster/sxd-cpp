@@ -1,7 +1,7 @@
 #ifndef COMMENT_H
 #define COMMENT_H
 
-typedef struct commentS comment_t;
+typedef class Comment comment_t;
 
 #include "document.h"
 
@@ -17,16 +17,14 @@ comment_free(comment_t *comment);
 comment_t *
 comment_new(document_t *doc, const char * const text);
 
-class Comment {
+class Comment : public Node {
 public:
-  Comment(node_t *node, document_t *doc, const char * const text);
-
   Comment(document_t *doc, const char * const text);
   ~Comment();
 
   const char *text();
+  void output(output_t *output);
 private:
-  node_t *node;
   char *text_;
 };
 
