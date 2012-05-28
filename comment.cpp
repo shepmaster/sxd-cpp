@@ -7,13 +7,13 @@
 
 struct commentS {
   node_t node;
-  char *text;
+  Comment *c;
 };
 
 const char *
 comment_text(comment_t *c)
 {
-  return c->text;
+  return c->c->text();
 }
 
 node_t *
@@ -25,7 +25,7 @@ comment_cast_to_node(comment_t *c)
 void
 comment_free(comment_t *c)
 {
-  free(c->text);
+  delete c->c;
   free(c);
 }
 
@@ -41,11 +41,25 @@ comment_new(document_t *doc, const char * const text)
   comment_t *c;
 
   c = (comment_t *)calloc(sizeof(*c), 1);
-
-  node_init(&c->node, doc);
-  c->node.type = NODE_TYPE_COMMENT;
-  c->node.fn.free_node = comment_free_node;
-
-  c->text = strdup(text);
+  c->c = new Comment(&c->node, doc, text);
   return c;
+}
+
+Comment::Comment(node_t *node, document_t *doc, const char * const text) :
+  node(node), text_(strdup(text))
+{
+  node_init(node, doc);
+  node->type = NODE_TYPE_COMMENT;
+  node->fn.free_node = comment_free_node;
+}
+
+Comment::~Comment()
+{
+  free(text_);
+}
+
+const char *
+Comment::text()
+{
+  return text_;
 }
