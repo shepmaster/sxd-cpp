@@ -265,7 +265,7 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
 }
 
 static void
-xpath_test_step(node_t *node, xpath_test_step_t *data)
+xpath_test_step(Node *node, xpath_test_step_t *data)
 {
   int should_add = FALSE;
 
@@ -290,14 +290,14 @@ xpath_test_step(node_t *node, xpath_test_step_t *data)
 }
 
 static void
-xpath_test_step_wrapper(node_t *node, gpointer data_as_gp)
+xpath_test_step_wrapper(Node *node, gpointer data_as_gp)
 {
   xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   xpath_test_step(node, data);
 }
 
 static void
-xpath_test_and_recur_down(node_t *node, gpointer data_as_gp)
+xpath_test_and_recur_down(Node *node, gpointer data_as_gp)
 {
   xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   xpath_test_step(node, data);
@@ -305,7 +305,7 @@ xpath_test_and_recur_down(node_t *node, gpointer data_as_gp)
 }
 
 static void
-xpath_test_following_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
+xpath_test_following_siblings_and_recur_up(Node *node, gpointer data_as_gp)
 {
   xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   node->foreach_following_sibling(xpath_test_and_recur_down, data);
@@ -313,7 +313,7 @@ xpath_test_following_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
 }
 
 static void
-xpath_test_preceding_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
+xpath_test_preceding_siblings_and_recur_up(Node *node, gpointer data_as_gp)
 {
   xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
   node->foreach_preceding_sibling(xpath_test_and_recur_down, data);
@@ -321,7 +321,7 @@ xpath_test_preceding_siblings_and_recur_up(node_t *node, gpointer data_as_gp)
 }
 
 nodeset_t *
-xpath_select_xpath_no_predicates(node_t *node, xpath_step_t *step)
+xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
 {
   xpath_test_step_t data;
 
@@ -374,7 +374,7 @@ xpath_select_xpath_no_predicates(node_t *node, xpath_step_t *step)
 }
 
 nodeset_t *
-xpath_select_xpath_steps(node_t *node, GArray *steps)
+xpath_select_xpath_steps(Node *node, GArray *steps)
 {
   nodeset_t *result_nodes;
   int i;
@@ -391,7 +391,7 @@ xpath_select_xpath_steps(node_t *node, GArray *steps)
     step = &g_array_index(steps, xpath_step_t, i);
 
     for (j = 0; j < nodeset_count(result_nodes); j++) {
-      node_t *current_node;
+      Node *current_node;
       nodeset_t *selected_nodes;
 
       current_node = nodeset_get(result_nodes, j);
@@ -408,7 +408,7 @@ xpath_select_xpath_steps(node_t *node, GArray *steps)
 }
 
 nodeset_t *
-xpath_apply_xpath(node_t *node, const char * const xpath)
+xpath_apply_xpath(Node *node, const char * const xpath)
 {
   xpath_compiled_t *compiled;
   nodeset_t *nodes;

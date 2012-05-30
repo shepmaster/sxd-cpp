@@ -76,7 +76,7 @@ typedef struct {
 } xpath_result_t;
 
 typedef struct {
-  node_t *node;
+  Node *node;
   nodeset_t *nodeset;
 } xpath_evaluation_context_t;
 
@@ -121,16 +121,16 @@ xpath_compiled_t *
 xpath_compile(const char * const xpath);
 
 nodeset_t *
-xpath_select_xpath_no_predicates(node_t *node, xpath_step_t *step);
+xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step);
 
 nodeset_t *
 xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step);
 
 nodeset_t *
-xpath_select_xpath_steps(node_t *node, GArray *steps);
+xpath_select_xpath_steps(Node *node, GArray *steps);
 
 nodeset_t *
-xpath_apply_xpath(node_t *node, const char * const xpath);
+xpath_apply_xpath(Node *node, const char * const xpath);
 
 void
 xpath_result_destroy(xpath_result_t *result);

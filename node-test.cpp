@@ -15,8 +15,8 @@ TEST_GROUP(node)
 TEST(node, append_child)
 {
   document_t *doc;
-  node_t *parent;
-  node_t *child;
+  Node *parent;
+  Node *child;
 
   doc = document_new();
   parent = test_helper_new_node(doc, "parent");
@@ -33,8 +33,8 @@ TEST(node, append_child)
 TEST(node, remove_child)
 {
   document_t *doc;
-  node_t *parent;
-  node_t *child;
+  Node *parent;
+  Node *child;
 
   doc = document_new();
   parent = test_helper_new_node(doc, "parent");
@@ -52,8 +52,8 @@ TEST(node, remove_child)
 TEST(node, free_child)
 {
   document_t *doc;
-  node_t *parent;
-  node_t *child;
+  Node *parent;
+  Node *child;
 
   doc = document_new();
   parent = test_helper_new_node(doc, "parent");
@@ -70,9 +70,9 @@ TEST(node, free_child)
 TEST(node, sibling)
 {
   document_t *doc;
-  node_t *parent;
-  node_t *child1;
-  node_t *child2;
+  Node *parent;
+  Node *child1;
+  Node *child2;
 
   doc = document_new();
   parent = test_helper_new_node(doc, "parent");
@@ -91,9 +91,9 @@ TEST(node, sibling)
 TEST(node, insert_next_sibling)
 {
   document_t *doc = document_new();
-  node_t *a = test_helper_new_node(doc, "a");
-  node_t *b = test_helper_new_node(doc, "b");
-  node_t *c = test_helper_new_node(doc, "c");
+  Node *a = test_helper_new_node(doc, "a");
+  Node *b = test_helper_new_node(doc, "b");
+  Node *c = test_helper_new_node(doc, "c");
 
   a->insert_next_sibling(c);
   POINTERS_EQUAL(NULL, a->prev_sibling());
@@ -118,10 +118,10 @@ TEST(node, insert_next_sibling)
 TEST(node, append_child_siblings)
 {
   document_t *doc = document_new();
-  node_t *parent = test_helper_new_node(doc, "parent");
-  node_t *a = test_helper_new_node(doc, "a");
-  node_t *b = test_helper_new_node(doc, "b");
-  node_t *c = test_helper_new_node(doc, "c");
+  Node *parent = test_helper_new_node(doc, "parent");
+  Node *a = test_helper_new_node(doc, "a");
+  Node *b = test_helper_new_node(doc, "b");
+  Node *c = test_helper_new_node(doc, "c");
 
   parent->append_child(a);
   POINTERS_EQUAL(NULL, a->prev_sibling());

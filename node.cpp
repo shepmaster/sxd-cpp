@@ -8,11 +8,11 @@
 void
 Node::foreach_child(node_foreach_fn_t fn, gpointer user_data)
 {
-  node_t *child;
+  Node *child;
 
   child = first_child_;
   while (child) {
-    node_t *next = child->next_sibling_;
+    Node *next = child->next_sibling_;
     fn(child, user_data);
     child = next;
   }
@@ -21,11 +21,11 @@ Node::foreach_child(node_foreach_fn_t fn, gpointer user_data)
 void
 Node::foreach_preceding_sibling(node_foreach_fn_t fn, gpointer user_data)
 {
-  node_t *sibling;
+  Node *sibling;
 
   sibling = prev_sibling_;
   while (sibling) {
-    node_t *next = sibling->prev_sibling_;
+    Node *next = sibling->prev_sibling_;
     fn(sibling, user_data);
     sibling = next;
   }
@@ -34,11 +34,11 @@ Node::foreach_preceding_sibling(node_foreach_fn_t fn, gpointer user_data)
 void
 Node::foreach_following_sibling(node_foreach_fn_t fn, gpointer user_data)
 {
-  node_t *sibling;
+  Node *sibling;
 
   sibling = next_sibling_;
   while (sibling) {
-    node_t *next = sibling->next_sibling_;
+    Node *next = sibling->next_sibling_;
     fn(sibling, user_data);
     sibling = next;
   }
@@ -47,14 +47,14 @@ Node::foreach_following_sibling(node_foreach_fn_t fn, gpointer user_data)
 void
 Node::foreach_ancestor(node_foreach_fn_t fn, gpointer user_data)
 {
-  node_t *parent;
+  Node *parent;
   for (parent = parent_; parent; parent = parent->parent_) {
     fn(parent, user_data);
   }
 }
 
 static void
-node_free_children(node_t *node, gpointer user_data_unused)
+node_free_children(Node *node, gpointer user_data_unused)
 {
   delete node;
 }
@@ -85,16 +85,16 @@ Node::type()
   return type_;
 }
 
-node_t *
-node_cast_to_node(node_t *n)
+Node *
+node_cast_to_node(Node *n)
 {
   return n;
 }
 
 void
-Node::append_child(node_t *child)
+Node::append_child(Node *child)
 {
-  node_t *my_child;
+  Node *my_child;
 
   my_child = first_child_;
   if (my_child) {
@@ -109,7 +109,7 @@ Node::append_child(node_t *child)
 }
 
 void
-Node::remove_child(node_t *child)
+Node::remove_child(Node *child)
 {
   if (child->prev_sibling_) {
     child->prev_sibling_->next_sibling_ = child->next_sibling_;
@@ -125,32 +125,32 @@ Node::remove_child(node_t *child)
   child->parent_ = NULL;
 }
 
-node_t *
+Node *
 Node::first_child()
 {
   return first_child_;
 }
 
-node_t *
+Node *
 Node::parent()
 {
   return parent_;
 }
 
-node_t *
+Node *
 Node::prev_sibling()
 {
   return prev_sibling_;
 }
 
-node_t *
+Node *
 Node::next_sibling()
 {
   return next_sibling_;
 }
 
 void
-Node::insert_next_sibling(node_t *new_sibling)
+Node::insert_next_sibling(Node *new_sibling)
 {
   if (next_sibling_) {
     next_sibling_->prev_sibling_ = new_sibling;
@@ -169,7 +169,7 @@ Node::document()
 }
 
 static void
-node_change_document_children(node_t *node, gpointer doc_as_gp)
+node_change_document_children(Node *node, gpointer doc_as_gp)
 {
   document_t *doc = (document_t *)doc_as_gp;
 
@@ -187,7 +187,7 @@ Node::change_document(document_t *doc)
 }
 
 static void
-node_output_wrapper(node_t *node, gpointer output_as_gp)
+node_output_wrapper(Node *node, gpointer output_as_gp)
 {
   node->output((output_t *)output_as_gp);
 }

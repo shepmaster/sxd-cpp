@@ -23,7 +23,7 @@ TEST(nodeset, new_nodeset)
 TEST(nodeset, add_node)
 {
   document_t *doc;
-  node_t *n;
+  Node *n;
   nodeset_t *ns;
 
   doc = document_new();
@@ -41,8 +41,8 @@ TEST(nodeset, add_node)
 TEST(nodeset, get_node)
 {
   document_t *doc;
-  node_t *n;
-  const node_t *n2;
+  Node *n;
+  const Node *n2;
   nodeset_t *ns;
 
   doc = document_new();
@@ -62,8 +62,8 @@ TEST(nodeset, get_node)
 TEST(nodeset, add_nodeset)
 {
   document_t *doc;
-  node_t *n;
-  node_t *n2;
+  Node *n;
+  Node *n2;
   nodeset_t *ns;
   nodeset_t *ns2;
 

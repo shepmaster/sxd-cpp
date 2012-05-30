@@ -245,7 +245,7 @@ TEST(document_parse, element_with_attribute_with_char_ref_hex)
 
 TEST(document_parse, element_with_child)
 {
-  node_t *node;
+  Node *node;
   doc = document_parse("<hello><world /></hello>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
@@ -256,7 +256,7 @@ TEST(document_parse, element_with_child)
 
 TEST(document_parse, element_with_two_children)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<hello><world /><cool /></hello>", &error);
   CHECK_PARSE_ERROR(error);
@@ -271,7 +271,7 @@ TEST(document_parse, element_with_two_children)
 
 TEST(document_parse, element_with_two_children_first_empty)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<a><b></b><c/></a>", &error);
   CHECK_PARSE_ERROR(error);
@@ -286,7 +286,7 @@ TEST(document_parse, element_with_two_children_first_empty)
 
 TEST(document_parse, element_with_two_children_whitespace)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<hello>\r\n\t<world />\n  <cool />\n</hello>", &error);
   CHECK_PARSE_ERROR(error);
@@ -301,7 +301,7 @@ TEST(document_parse, element_with_two_children_whitespace)
 
 TEST(document_parse, element_with_grandchild)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<hello><world><cool /></world></hello>", &error);
   CHECK_PARSE_ERROR(error);
@@ -316,7 +316,7 @@ TEST(document_parse, element_with_grandchild)
 
 TEST(document_parse, element_with_text)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<hello>world</hello>", &error);
   CHECK_PARSE_ERROR(error);
@@ -328,7 +328,7 @@ TEST(document_parse, element_with_text)
 
 TEST(document_parse, element_with_entities)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<a>&lt;&gt;&amp;&quot;&apos;</a>", &error);
   CHECK_PARSE_ERROR(error);
@@ -352,7 +352,7 @@ TEST(document_parse, element_with_entities)
 
 TEST(document_parse, element_with_char_ref)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<a>&#77;</a>", &error);
   CHECK_PARSE_ERROR(error);
@@ -364,7 +364,7 @@ TEST(document_parse, element_with_char_ref)
 
 TEST(document_parse, element_with_char_ref_hex)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<a>&#x4d;</a>", &error);
   CHECK_PARSE_ERROR(error);
@@ -376,7 +376,7 @@ TEST(document_parse, element_with_char_ref_hex)
 
 TEST(document_parse, element_with_nonalpha_text)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<a>one, 2</a>", &error);
   CHECK_PARSE_ERROR(error);
@@ -388,7 +388,7 @@ TEST(document_parse, element_with_nonalpha_text)
 
 TEST(document_parse, element_with_mixed_content)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<hello><one />b</hello>", &error);
   CHECK_PARSE_ERROR(error);
@@ -404,7 +404,7 @@ TEST(document_parse, element_with_mixed_content)
 
 TEST(document_parse, comment)
 {
-  node_t *node;
+  Node *node;
 
   doc = document_parse("<a><!--alert--></a>", &error);
   CHECK_PARSE_ERROR(error);

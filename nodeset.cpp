@@ -26,7 +26,7 @@ nodeset_count(nodeset_t *nodeset)
 }
 
 void
-nodeset_add(nodeset_t *nodeset, node_t *node)
+nodeset_add(nodeset_t *nodeset, Node *node)
 {
   g_ptr_array_add((GPtrArray *)nodeset, node);
 }
@@ -43,9 +43,9 @@ nodeset_add_nodeset(nodeset_t *nodeset, nodeset_t *to_add)
   }
 }
 
-node_t *
+Node *
 nodeset_get(nodeset_t *nodeset, unsigned int i)
 {
   GPtrArray *garray = (GPtrArray *)nodeset;
-  return (node_t *)garray->pdata[i];
+  return (Node *)garray->pdata[i];
 }

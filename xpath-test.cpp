@@ -92,9 +92,9 @@ TEST(xpath, compile_element)
 
 typedef struct {
   document_t *doc;
-  node_t *parent;
-  node_t *e;
-  node_t *tn;
+  Node *parent;
+  Node *e;
+  Node *tn;
 } xpath_test_data_t;
 
 static void
@@ -135,7 +135,7 @@ TEST(xpath, element)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
-  const node_t *n;
+  const Node *n;
   xpath_step_t step;
 
   init_xpath_test(&d);
@@ -154,7 +154,7 @@ TEST(xpath, text_node)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
-  const node_t *n;
+  const Node *n;
   xpath_step_t step;
 
   init_xpath_test(&d);
@@ -174,7 +174,7 @@ TEST(xpath, element_and_text_node)
 {
   xpath_test_data_t d;
   nodeset_t *ns;
-  const node_t *n;
+  const Node *n;
   xpath_step_t step;
 
   init_xpath_test(&d);
@@ -194,17 +194,17 @@ TEST(xpath, element_and_text_node)
 
 typedef struct {
   document_t *doc;
-  node_t *alpha;
-  node_t *one;
-  node_t *a;
-  node_t *b;
-  node_t *c;
-  node_t *d;
-  node_t *two;
-  node_t *w;
-  node_t *x;
-  node_t *y;
-  node_t *z;
+  Node *alpha;
+  Node *one;
+  Node *a;
+  Node *b;
+  Node *c;
+  Node *d;
+  Node *two;
+  Node *w;
+  Node *x;
+  Node *y;
+  Node *z;
 } xpath_axis_test_t;
 
 static void
@@ -604,7 +604,7 @@ TEST(xpath_predicate, predicate_position_1)
 #define CHECK_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
     Element *__e;					     \
-    node_t *__n;					     \
+    Node *__n;					     \
     __n = nodeset_get(_nodeset, _index);		     \
     CHECK_EQUAL(NODE_TYPE_ELEMENT, __n->type());             \
     __e = (Element *)__n;				     \
@@ -616,8 +616,8 @@ TEST(xpath, apply_element)
   const char * const name = "one";
 
   document_t *doc = document_new();
-  node_t *parent = test_helper_new_node(doc, "parent");
-  node_t *children[4];
+  Node *parent = test_helper_new_node(doc, "parent");
+  Node *children[4];
   nodeset_t *nodes;
 
   children[0] = test_helper_new_node(doc, "one");

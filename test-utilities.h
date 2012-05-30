@@ -5,10 +5,10 @@
 
 #include "element.h"
 
-node_t *
+Node *
 test_helper_new_node(document_t *doc, const char * const name);
 
-node_t *
+Node *
 test_helper_new_text_node(document_t *doc, const char * const text);
 
 typedef struct {
@@ -23,6 +23,6 @@ void
 test_output_destroy(test_output_t *to);
 
 nodeset_t *
-nodeset_new_with_nodes(node_t *first, ...);
+nodeset_new_with_nodes(Node *first, ...);
 
 #endif

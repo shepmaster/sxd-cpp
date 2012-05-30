@@ -136,9 +136,9 @@ TEST_GROUP(xpath)
   xpath_result_t res;
 
   document_t *doc;
-  node_t *el_1;
-  node_t *el_2;
-  node_t *el_3;
+  Node *el_1;
+  Node *el_2;
+  Node *el_3;
 
   void setup(void)
   {

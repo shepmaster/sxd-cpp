@@ -64,13 +64,13 @@ document_managed_node_count(document_t *doc)
 }
 
 void
-document_stop_managing_node(document_t *doc, node_t *node)
+document_stop_managing_node(document_t *doc, Node *node)
 {
   doc->managed_node_count--;
 }
 
 void
-document_manage_node(document_t *doc, node_t *node)
+document_manage_node(document_t *doc, Node *node)
 {
   node->change_document(doc);
   doc->managed_node_count++;
@@ -218,9 +218,9 @@ static void
 add_entity_text(void *user, const char *entity_text)
 {
   entity_text_t *info = (entity_text_t *)user;
-  node_t *text;
+  Node *text;
 
-  text = (node_t *)document_text_node_new(info->doc, entity_text);
+  text = (Node *)document_text_node_new(info->doc, entity_text);
   info->element->append_child(text);
 }
 

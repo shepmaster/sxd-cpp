@@ -8,7 +8,7 @@
 #include "text-node.h"
 #include "test-utilities.h"
 
-node_t *
+Node *
 test_helper_new_node(document_t *doc, const char * const name)
 {
   Element *e;
@@ -16,7 +16,7 @@ test_helper_new_node(document_t *doc, const char * const name)
   return e;
 }
 
-node_t *
+Node *
 test_helper_new_text_node(document_t *doc, const char * const text)
 {
   return document_text_node_new(doc, text);
@@ -48,17 +48,17 @@ test_output_destroy(test_output_t *to)
 }
 
 nodeset_t *
-nodeset_new_with_nodes(node_t *first, ...)
+nodeset_new_with_nodes(Node *first, ...)
 {
   nodeset_t *ns;
-  node_t *node;
+  Node *node;
   va_list ap;
 
   ns = nodeset_new();
   nodeset_add(ns, first);
 
   va_start(ap, first);
-  while ((node = va_arg(ap, node_t *))) {
+  while ((node = va_arg(ap, Node *))) {
     nodeset_add(ns, node);
   }
   va_end(ap);

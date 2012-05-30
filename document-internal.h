@@ -8,6 +8,6 @@ const char *
 document_intern(document_t *doc, const char * const string);
 
 void
-document_stop_managing_node(document_t *doc, node_t *node);
+document_stop_managing_node(document_t *doc, Node *node);
 
 #endif

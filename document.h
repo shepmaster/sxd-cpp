@@ -26,7 +26,7 @@ Comment *
 document_comment_new(document_t *doc, const char * const text);
 
 void
-document_manage_node(document_t *doc, node_t *node);
+document_manage_node(document_t *doc, Node *node);
 
 unsigned int
 document_managed_node_count(document_t *doc);
