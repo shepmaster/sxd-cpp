@@ -49,7 +49,7 @@ document_text_node_new(document_t *doc, const char * const text)
 comment_t *
 document_comment_new(document_t *doc, const char * const text)
 {
-  return comment_new(doc, text);
+  return new Comment(doc, text);
 }
 
 const char *

@@ -21,10 +21,10 @@ TEST(comment, new_comment)
   c = document_comment_new(doc, "hello");
 
   CHECK(c != NULL);
-  STRCMP_EQUAL("hello", comment_text(c));
+  STRCMP_EQUAL("hello", c->text());
   CHECK_EQUAL(NODE_TYPE_COMMENT, c->type());
 
-  comment_free(c);
+  delete c;
   document_free(doc);
 }
 
