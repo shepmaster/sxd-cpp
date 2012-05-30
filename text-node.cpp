@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "text-node.h"
-#include "node-internal.h"
 #include "document-internal.h"
 
 TextNode::TextNode(document_t *doc, const char *text) :

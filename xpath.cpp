@@ -3,7 +3,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "node-internal.h"
+#include <glib.h>
+
+#include "element.h"
 #include "xpath-internal.h"
 #include "xpath-functions.h"
 

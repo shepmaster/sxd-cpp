@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "document-internal.h"
-#include "node-internal.h"
 #include "intern.h"
 
 struct documentS {

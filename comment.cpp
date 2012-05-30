@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "node-internal.h"
 #include "comment.h"
 
 Comment::Comment(document_t *doc, const char * const text) :

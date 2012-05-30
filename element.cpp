@@ -3,7 +3,6 @@
 #include <glib.h>
 
 #include "document-internal.h"
-#include "node-internal.h"
 
 static GHashTable *
 element_attributes_new(void)

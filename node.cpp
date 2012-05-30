@@ -3,7 +3,6 @@
 #include <string.h>
 #include <glib.h>
 
-#include "node-internal.h"
 #include "document-internal.h"
 
 void
