@@ -272,7 +272,7 @@ xpath_test_step(node_t *node, xpath_test_step_t *data)
     should_add = (data->step->type & XPATH_NODE_TYPE_ELEMENT);
     if (should_add && data->step->name) {
       element_t *element = (element_t *)node;
-      should_add = strcmp(data->step->name, element_name(element)) == 0;
+      should_add = strcmp(data->step->name, element->name()) == 0;
     }
     break;
   case NODE_TYPE_TEXT_NODE:

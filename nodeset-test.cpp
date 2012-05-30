@@ -27,7 +27,7 @@ TEST(nodeset, add_node)
   nodeset_t *ns;
 
   doc = document_new();
-  n = element_cast_to_node(document_element_new(doc, "one"));
+  n = document_element_new(doc, "one");
   ns = nodeset_new();
 
   nodeset_add(ns, n);
@@ -46,7 +46,7 @@ TEST(nodeset, get_node)
   nodeset_t *ns;
 
   doc = document_new();
-  n = element_cast_to_node(document_element_new(doc, "one"));
+  n = document_element_new(doc, "one");
   ns = nodeset_new();
 
   nodeset_add(ns, n);

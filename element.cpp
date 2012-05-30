@@ -3,37 +3,12 @@
 #include <glib.h>
 
 #include "document-internal.h"
-#include "element-internal.h"
 #include "node-internal.h"
-
-void
-element_free(element_t *e)
-{
-  delete e;
-}
 
 static GHashTable *
 element_attributes_new(void)
 {
   return g_hash_table_new(g_str_hash, g_str_equal);
-}
-
-element_t *
-element_new(document_t *doc, const char * const name)
-{
-  return new Element(doc, name);
-}
-
-node_t *
-element_cast_to_node(element_t *e)
-{
-  return e;
-}
-
-const char *
-element_name(element_t *e)
-{
-  return e->name();
 }
 
 static void
@@ -43,18 +18,6 @@ element_set_attribute1(document_t *doc, GHashTable *attributes, const char * con
   const char *v = document_intern(doc, value);
 
   g_hash_table_insert(attributes, (gpointer)n, (gpointer)v);
-}
-
-void
-element_set_attribute(element_t *element, const char * const name, const char * const value)
-{
-  element->set_attribute(name, value);
-}
-
-const char *
-element_get_attribute(element_t *element, const char * const name)
-{
-  return element->get_attribute(name);
 }
 
 typedef struct {
@@ -70,14 +33,6 @@ element_change_document_attributes(gpointer name_as_gp, gpointer value_as_gp, gp
   change_attributes_t *ca = (change_attributes_t *)ca_as_gp;
 
   element_set_attribute1(ca->doc, ca->new_attributes, name, value);
-}
-
-void
-element_change_document(node_t *node, document_t *doc)
-{
-  element_t *element;
-  element = (element_t *)node;
-  element->change_document(doc);
 }
 
 static void

@@ -4,7 +4,6 @@
 
 #include "document-internal.h"
 #include "node-internal.h"
-#include "element-internal.h"
 #include "intern.h"
 
 struct documentS {
@@ -36,10 +35,8 @@ document_new(void)
 element_t *
 document_element_new(document_t *doc, const char * const name)
 {
-  element_t *e = element_new(doc, name);
-  if (e) {
-    doc->managed_node_count++;
-  }
+  element_t *e = new Element(doc, name);
+  doc->managed_node_count++;
   return e;
 }
 
@@ -468,7 +465,7 @@ parse_element_attributes1(gpointer key_gp, gpointer value_gp, gpointer user_gp)
   const char *value = (const char *)value_gp;
   element_t *element = (element_t *)user_gp;
 
-  element_set_attribute(element, name, value);
+  element->set_attribute(name, value);
 }
 
 void

@@ -37,9 +37,9 @@ TEST(document, managed_count)
   n1->append_child(n2);
   n2->append_child(n3);
 
-  element_free(n3);
+  delete n3;
   CHECK_EQUAL(2, document_managed_node_count(doc));
-  element_free(n1);
+  delete n1;
   CHECK_EQUAL(0, document_managed_node_count(doc));
 
   document_free(doc);
@@ -55,22 +55,22 @@ TEST(document, move_node_between_documents)
   d2 = document_new();
 
   n = document_element_new(d1, "hello");
-  element_set_attribute(n, "enabled", "false");
-  orig_name = element_name(n);
-  orig_attr_value = element_get_attribute(n, "enabled");
+  n->set_attribute("enabled", "false");
+  orig_name = n->name();
+  orig_attr_value = n->get_attribute("enabled");
 
   CHECK_EQUAL(1, document_managed_node_count(d1));
   CHECK_EQUAL(0, document_managed_node_count(d2));
 
-  document_manage_node(d2, element_cast_to_node(n));
+  document_manage_node(d2, n);
   CHECK_EQUAL(0, document_managed_node_count(d1));
   CHECK_EQUAL(1, document_managed_node_count(d2));
-  STRCMP_EQUAL(element_name(n), "hello");
-  STRCMP_EQUAL(element_get_attribute(n, "enabled"), "false");
-  CHECK(element_name(n) != orig_name);
-  CHECK(element_get_attribute(n, "enabled") != orig_attr_value);
+  STRCMP_EQUAL(n->name(), "hello");
+  STRCMP_EQUAL(n->get_attribute("enabled"), "false");
+  CHECK(n->name() != orig_name);
+  CHECK(n->get_attribute("enabled") != orig_attr_value);
 
-  element_free(n);
+  delete n;
   document_free(d1);
   document_free(d2);
 }
@@ -83,7 +83,7 @@ TEST_GROUP(document_parse_error)
   void teardown(void)
   {
     if (doc) {
-      element_free(document_root(doc));
+      delete document_root(doc);
       document_free(doc);
     }
     if (error) g_error_free(error);
@@ -110,7 +110,7 @@ _check_parse_error(GError *error, const char *file, int line)
 #define CHECK_ELEMENT_NAME(_node, _name)                        \
 {                                                               \
   CHECK_EQUAL(NODE_TYPE_ELEMENT, _node->type());             \
-  STRCMP_EQUAL(_name, element_name((element_t *)_node));        \
+  STRCMP_EQUAL(_name, ((element_t *)_node)->name());         \
 }
 
 #define CHECK_TEXT_NODE(_node, _content)                        \
@@ -128,7 +128,7 @@ TEST_GROUP(document_parse)
   void teardown(void)
   {
     if (doc) {
-      element_free(document_root(doc));
+      delete document_root(doc);
       document_free(doc);
     }
     if (error) g_error_free(error);
@@ -140,7 +140,7 @@ TEST(document_parse, empty)
   doc = document_parse("<hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
 }
 
 TEST(document_parse, empty_with_space)
@@ -148,7 +148,7 @@ TEST(document_parse, empty_with_space)
   doc = document_parse("<hello />", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
 }
 
 TEST(document_parse, empty_with_end_tag)
@@ -156,7 +156,7 @@ TEST(document_parse, empty_with_end_tag)
   doc = document_parse("<hello></hello>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
 }
 
 TEST(document_parse, preamble)
@@ -164,7 +164,7 @@ TEST(document_parse, preamble)
   doc = document_parse("<?xml?><hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
 }
 
 TEST(document_parse, preamble_with_space)
@@ -172,7 +172,7 @@ TEST(document_parse, preamble_with_space)
   doc = document_parse("<?xml?>\n<hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
 }
 
 TEST(document_parse, preamble_with_version)
@@ -180,7 +180,7 @@ TEST(document_parse, preamble_with_version)
   doc = document_parse("<?xml version='1.0' ?><hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
 }
 
 TEST(document_parse, empty_with_leading_whitespace)
@@ -188,7 +188,7 @@ TEST(document_parse, empty_with_leading_whitespace)
   doc = document_parse("\n\r \t<hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
 }
 
 TEST(document_parse, element_with_attribute)
@@ -196,8 +196,8 @@ TEST(document_parse, element_with_attribute)
   doc = document_parse("<hello one='two' />", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
-  STRCMP_EQUAL("two", element_get_attribute(root, "one"));
+  STRCMP_EQUAL("hello", root->name());
+  STRCMP_EQUAL("two", root->get_attribute("one"));
 }
 
 TEST(document_parse, element_with_attributes)
@@ -205,9 +205,9 @@ TEST(document_parse, element_with_attributes)
   doc = document_parse("<hello one='two' three='four' />", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
-  STRCMP_EQUAL("two", element_get_attribute(root, "one"));
-  STRCMP_EQUAL("four", element_get_attribute(root, "three"));
+  STRCMP_EQUAL("hello", root->name());
+  STRCMP_EQUAL("two", root->get_attribute("one"));
+  STRCMP_EQUAL("four", root->get_attribute("three"));
 }
 
 TEST(document_parse, element_with_attribute_with_nonalpha)
@@ -215,8 +215,8 @@ TEST(document_parse, element_with_attribute_with_nonalpha)
   doc = document_parse("<hello one=\"check one, 2\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("hello", element_name(root));
-  STRCMP_EQUAL("check one, 2", element_get_attribute(root, "one"));
+  STRCMP_EQUAL("hello", root->name());
+  STRCMP_EQUAL("check one, 2", root->get_attribute("one"));
 }
 
 TEST(document_parse, element_with_attribute_with_entity)
@@ -224,7 +224,7 @@ TEST(document_parse, element_with_attribute_with_entity)
   doc = document_parse("<hello one=\"&lt;\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("<", element_get_attribute(root, "one"));
+  STRCMP_EQUAL("<", root->get_attribute("one"));
 }
 
 TEST(document_parse, element_with_attribute_with_char_ref)
@@ -232,7 +232,7 @@ TEST(document_parse, element_with_attribute_with_char_ref)
   doc = document_parse("<hello one=\"&#114;\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("r", element_get_attribute(root, "one"));
+  STRCMP_EQUAL("r", root->get_attribute("one"));
 }
 
 TEST(document_parse, element_with_attribute_with_char_ref_hex)
@@ -240,7 +240,7 @@ TEST(document_parse, element_with_attribute_with_char_ref_hex)
   doc = document_parse("<hello one=\"&#x63;\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
-  STRCMP_EQUAL("c", element_get_attribute(root, "one"));
+  STRCMP_EQUAL("c", root->get_attribute("one"));
 }
 
 TEST(document_parse, element_with_child)
@@ -250,7 +250,7 @@ TEST(document_parse, element_with_child)
   CHECK_PARSE_ERROR(error);
   root = document_root(doc);
   node = root->first_child();
-  STRCMP_EQUAL("hello", element_name(root));
+  STRCMP_EQUAL("hello", root->name());
   CHECK_ELEMENT_NAME(node, "world");
 }
 

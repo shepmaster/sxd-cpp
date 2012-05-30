@@ -608,7 +608,7 @@ TEST(xpath_predicate, predicate_position_1)
     __n = nodeset_get(_nodeset, _index);		     \
     CHECK_EQUAL(NODE_TYPE_ELEMENT, __n->type());             \
     __e = (element_t *)__n;				     \
-    STRCMP_EQUAL(_name, element_name(__e));		     \
+    STRCMP_EQUAL(_name, __e->name());                        \
   }
 
 TEST(xpath, apply_element)

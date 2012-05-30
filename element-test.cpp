@@ -24,27 +24,8 @@ TEST(element, new_element)
   doc = document_new();
   e = document_element_new(doc, name);
   CHECK(e != NULL);
-  STRCMP_EQUAL(element_name(e), name);
-  element_free(e);
-  document_free(doc);
-}
-
-TEST(element, cast_to_node)
-{
-  document_t *doc;
-  element_t *e;
-  node_t *n;
-  const char * const name = "hello";
-
-  doc = document_new();
-  e = document_element_new(doc, name);
-
-  n = element_cast_to_node(e);
-  POINTERS_EQUAL(e, n);
-  CHECK(n != NULL);
-  POINTERS_EQUAL(n->document(), doc);
-
-  element_free(e);
+  STRCMP_EQUAL(e->name(), name);
+  delete e;
   document_free(doc);
 }
 
@@ -59,9 +40,9 @@ TEST(element, mutated_name)
   element = document_element_new(doc, name);
 
   name[0] = 'y';
-  STRCMP_EQUAL(element_name(element), "hello");
+  STRCMP_EQUAL(element->name(), "hello");
 
-  element_free(element);
+  delete element;
   document_free(doc);
   free(name);
 }
@@ -77,10 +58,10 @@ TEST(element, set_attribute)
   doc = document_new();
   element = document_element_new(doc, element_name);
 
-  element_set_attribute(element, attr_name, attr_value);
-  STRCMP_EQUAL(element_get_attribute(element, attr_name), attr_value);
+  element->set_attribute(attr_name, attr_value);
+  STRCMP_EQUAL(element->get_attribute(attr_name), attr_value);
 
-  element_free(element);
+  delete element;
   document_free(doc);
 }
 
@@ -97,13 +78,13 @@ TEST(element, mutated_attribute)
   doc = document_new();
   element = document_element_new(doc, element_name);
 
-  element_set_attribute(element, attr_name, attr_value);
+  element->set_attribute(attr_name, attr_value);
   
   attr_name[0] = 'h';
   attr_value[0] = 'y';
-  STRCMP_EQUAL(element_get_attribute(element, "type"), "world");
+  STRCMP_EQUAL(element->get_attribute("type"), "world");
 
-  element_free(element);
+  delete element;
   document_free(doc);
   free(attr_name);
   free(attr_value);
@@ -123,7 +104,7 @@ TEST(element, output_basic)
   element->output(&to.out);
   STRCMP_EQUAL("<one />", to.string->str);
 
-  element_free(element);
+  delete element;
   document_free(doc);
   test_output_destroy(&to);
 }
@@ -138,12 +119,12 @@ TEST(element, output_attribute)
 
   doc = document_new();
   element = document_element_new(doc, "one");
-  element_set_attribute(element, "hi", "there");
+  element->set_attribute("hi", "there");
 
   element->output(&to.out);
   STRCMP_EQUAL("<one hi=\"there\" />", to.string->str);
 
-  element_free(element);
+  delete element;
   document_free(doc);
   test_output_destroy(&to);
 }
@@ -165,7 +146,7 @@ TEST(element, output_child)
   element->output(&to.out);
   STRCMP_EQUAL("<one><two /></one>", to.string->str);
 
-  element_free(element);
+  delete element;
   document_free(doc);
   test_output_destroy(&to);
 }
