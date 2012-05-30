@@ -603,11 +603,11 @@ TEST(xpath_predicate, predicate_position_1)
 
 #define CHECK_nodeset_element_name(_nodeset, _index, _name) \
   {							     \
-    element_t *__e;					     \
+    Element *__e;					     \
     node_t *__n;					     \
     __n = nodeset_get(_nodeset, _index);		     \
     CHECK_EQUAL(NODE_TYPE_ELEMENT, __n->type());             \
-    __e = (element_t *)__n;				     \
+    __e = (Element *)__n;				     \
     STRCMP_EQUAL(_name, __e->name());                        \
   }
 

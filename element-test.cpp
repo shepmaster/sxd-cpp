@@ -18,7 +18,7 @@ TEST_GROUP(element)
 TEST(element, new_element)
 {
   document_t *doc;
-  element_t *e;
+  Element *e;
   const char * const name = "hello";
 
   doc = document_new();
@@ -32,7 +32,7 @@ TEST(element, new_element)
 TEST(element, mutated_name)
 {
   document_t *doc;
-  element_t *element;
+  Element *element;
   char * name;
  
   name = strdup("hello");
@@ -50,7 +50,7 @@ TEST(element, mutated_name)
 TEST(element, set_attribute)
 {
   document_t *doc;
-  element_t *element;
+  Element *element;
   const char * const element_name = "hello";
   const char * const attr_name = "type";
   const char * const attr_value = "world";
@@ -68,7 +68,7 @@ TEST(element, set_attribute)
 TEST(element, mutated_attribute)
 {
   document_t *doc;
-  element_t *element;
+  Element *element;
   const char * const element_name = "hello";
   char *attr_name;
   char *attr_value;
@@ -93,7 +93,7 @@ TEST(element, mutated_attribute)
 TEST(element, output_basic)
 {
   document_t *doc;
-  element_t *element;
+  Element *element;
   test_output_t to;
 
   test_output_init(&to);
@@ -112,7 +112,7 @@ TEST(element, output_basic)
 TEST(element, output_attribute)
 {
   document_t *doc;
-  element_t *element;
+  Element *element;
   test_output_t to;
 
   test_output_init(&to);
@@ -132,8 +132,8 @@ TEST(element, output_attribute)
 TEST(element, output_child)
 {
   document_t *doc;
-  element_t *element;
-  element_t *child;
+  Element *element;
+  Element *child;
   test_output_t to;
 
   test_output_init(&to);

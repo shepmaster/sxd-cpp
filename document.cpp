@@ -6,7 +6,7 @@
 #include "intern.h"
 
 struct documentS {
-  element_t *root;
+  Element *root;
   intern_t *dict;
   unsigned int managed_node_count;
 };
@@ -31,10 +31,10 @@ document_new(void)
   return doc;
 }
 
-element_t *
+Element *
 document_element_new(document_t *doc, const char * const name)
 {
-  element_t *e = new Element(doc, name);
+  Element *e = new Element(doc, name);
   doc->managed_node_count++;
   return e;
 }
@@ -150,11 +150,11 @@ _expect_token(
 
 /* Forward declarations */
 
-element_t *
+Element *
 parse_element(document_t *document, tokenizer_t *tokenizer, GError **error);
 
 void
-parse_text_node(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_text_node(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   char *str;
@@ -211,7 +211,7 @@ parse_entity(tokenizer_t *tokenizer, GError **error, entity_callback_t callback,
 
 typedef struct {
   document_t *doc;
-  element_t *element;
+  Element *element;
 } entity_text_t;
 
 static void
@@ -225,7 +225,7 @@ add_entity_text(void *user, const char *entity_text)
 }
 
 void
-parse_entity_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_entity_text(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
@@ -274,7 +274,7 @@ parse_char_ref(tokenizer_t *tokenizer, GError **error, entity_callback_t callbac
 }
 
 void
-parse_char_ref_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_char_ref_text(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
@@ -316,7 +316,7 @@ parse_char_ref_hex(tokenizer_t *tokenizer, GError **error, entity_callback_t cal
 }
 
 void
-parse_char_ref_hex_text(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_char_ref_hex_text(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
@@ -331,7 +331,7 @@ parse_char_ref_hex_attribute(GString *string, tokenizer_t *tokenizer, GError **e
 }
 
 void
-parse_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_end_tag(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
 
@@ -347,7 +347,7 @@ parse_end_tag(document_t *doc, element_t *element, tokenizer_t *tokenizer, GErro
 }
 
 void
-parse_comment(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_comment(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   comment_t *comment;
   token_t token;
@@ -366,9 +366,9 @@ parse_comment(document_t *doc, element_t *element, tokenizer_t *tokenizer, GErro
 }
 
 void
-parse_child_element(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_child_element(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
-  element_t *child;
+  Element *child;
 
   child = parse_element(doc, tokenizer, error);
   if (*error) return;
@@ -462,13 +462,13 @@ parse_element_attributes1(gpointer key_gp, gpointer value_gp, gpointer user_gp)
 {
   const char *name = (const char *)key_gp;
   const char *value = (const char *)value_gp;
-  element_t *element = (element_t *)user_gp;
+  Element *element = (Element *)user_gp;
 
   element->set_attribute(name, value);
 }
 
 void
-parse_element_attributes(document_t *doc, element_t *element, tokenizer_t *tokenizer, GError **error)
+parse_element_attributes(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   GHashTable *attrs;
 
@@ -479,11 +479,11 @@ parse_element_attributes(document_t *doc, element_t *element, tokenizer_t *token
   g_hash_table_destroy(attrs);
 }
 
-element_t *
+Element *
 parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
-  element_t *element;
+  Element *element;
   char *name;
 
   token = tokenizer_next_string(tokenizer, NAME);
@@ -577,7 +577,7 @@ document_parse(const char *input, GError **error)
   tokenizer_t *tokenizer;
   token_t token;
   document_t *doc;
-  element_t *element;
+  Element *element;
 
   doc = document_new();
 
@@ -618,7 +618,7 @@ document_parse(const char *input, GError **error)
   goto cleanup;
 }
 
-element_t *
+Element *
 document_root(document_t *doc)
 {
   return doc->root;

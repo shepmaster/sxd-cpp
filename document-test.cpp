@@ -23,7 +23,7 @@ TEST(document, new_document)
 TEST(document, managed_count)
 {
   document_t *doc;
-  element_t *n1, *n2, *n3;
+  Element *n1, *n2, *n3;
 
   doc = document_new();
 
@@ -48,7 +48,7 @@ TEST(document, managed_count)
 TEST(document, move_node_between_documents)
 {
   document_t *d1, *d2;
-  element_t *n;
+  Element *n;
   const char *orig_name, *orig_attr_value;
 
   d1 = document_new();
@@ -110,7 +110,7 @@ _check_parse_error(GError *error, const char *file, int line)
 #define CHECK_ELEMENT_NAME(_node, _name)                        \
 {                                                               \
   CHECK_EQUAL(NODE_TYPE_ELEMENT, _node->type());             \
-  STRCMP_EQUAL(_name, ((element_t *)_node)->name());         \
+  STRCMP_EQUAL(_name, ((Element *)_node)->name());         \
 }
 
 #define CHECK_TEXT_NODE(_node, _content)                        \
@@ -122,7 +122,7 @@ _check_parse_error(GError *error, const char *file, int line)
 TEST_GROUP(document_parse)
 {
   document_t *doc;
-  element_t *root;
+  Element *root;
   GError *error;
 
   void teardown(void)

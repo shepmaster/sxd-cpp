@@ -11,7 +11,7 @@
 node_t *
 test_helper_new_node(document_t *doc, const char * const name)
 {
-  element_t *e;
+  Element *e;
   e = document_element_new(doc, name);
   return e;
 }

@@ -16,7 +16,7 @@ document_free(document_t *doc);
 document_t *
 document_new(void);
 
-element_t *
+Element *
 document_element_new(document_t *doc, const char * const name);
 
 text_node_t *
@@ -43,7 +43,7 @@ typedef enum {
 document_t *
 document_parse(const char *input, GError **error);
 
-element_t *
+Element *
 document_root(document_t *doc);
 
 #endif

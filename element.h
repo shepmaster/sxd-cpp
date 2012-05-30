@@ -1,8 +1,6 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
-typedef class Element element_t;
-
 #include "node.h"
 #include "output.h"
 
