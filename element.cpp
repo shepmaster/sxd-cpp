@@ -106,12 +106,11 @@ Element::get_attribute(const char * const name)
 void
 Element::change_document(document_t *doc)
 {
-  change_attributes_t ca;
-
   Node::change_document(doc);
 
   this->name_ = document_intern(doc, name_);
 
+  change_attributes_t ca;
   ca.new_attributes = element_attributes_new();
   ca.doc = doc;
   g_hash_table_foreach(attributes, element_change_document_attributes, &ca);

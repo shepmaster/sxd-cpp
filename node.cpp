@@ -8,9 +8,7 @@
 void
 Node::foreach_child(node_foreach_fn_t fn, gpointer user_data)
 {
-  Node *child;
-
-  child = first_child_;
+  Node *child = first_child_;
   while (child) {
     Node *next = child->next_sibling_;
     fn(child, user_data);
@@ -21,9 +19,7 @@ Node::foreach_child(node_foreach_fn_t fn, gpointer user_data)
 void
 Node::foreach_preceding_sibling(node_foreach_fn_t fn, gpointer user_data)
 {
-  Node *sibling;
-
-  sibling = prev_sibling_;
+  Node *sibling = prev_sibling_;
   while (sibling) {
     Node *next = sibling->prev_sibling_;
     fn(sibling, user_data);
@@ -34,9 +30,7 @@ Node::foreach_preceding_sibling(node_foreach_fn_t fn, gpointer user_data)
 void
 Node::foreach_following_sibling(node_foreach_fn_t fn, gpointer user_data)
 {
-  Node *sibling;
-
-  sibling = next_sibling_;
+  Node *sibling = next_sibling_;
   while (sibling) {
     Node *next = sibling->next_sibling_;
     fn(sibling, user_data);
@@ -65,7 +59,7 @@ Node::~Node()
     parent_->remove_child(this);
   }
 
-  foreach_child(node_free_children, NULL);
+  foreach_child(node_free_children, nullptr);
 
   document_stop_managing_node(doc, this);
 }
@@ -94,9 +88,7 @@ node_cast_to_node(Node *n)
 void
 Node::append_child(Node *child)
 {
-  Node *my_child;
-
-  my_child = first_child_;
+  Node *my_child = first_child_;
   if (my_child) {
     while (my_child->next_sibling_) {
       my_child = my_child->next_sibling_;
@@ -122,7 +114,7 @@ Node::remove_child(Node *child)
   if (child->parent_ && child->parent_->first_child_ == child) {
     child->parent_->first_child_ = child->next_sibling_;
   }
-  child->parent_ = NULL;
+  child->parent_ = nullptr;
 }
 
 Node *
