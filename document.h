@@ -22,7 +22,7 @@ document_element_new(document_t *doc, const char * const name);
 text_node_t *
 document_text_node_new(document_t *doc, const char * const text);
 
-comment_t *
+Comment *
 document_comment_new(document_t *doc, const char * const text);
 
 void

@@ -15,7 +15,7 @@ TEST_GROUP(comment)
 TEST(comment, new_comment)
 {
   document_t *doc;
-  comment_t *c;
+  Comment *c;
 
   doc = document_new();
   c = document_comment_new(doc, "hello");

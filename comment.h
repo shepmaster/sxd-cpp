@@ -1,8 +1,6 @@
 #ifndef COMMENT_H
 #define COMMENT_H
 
-typedef class Comment comment_t;
-
 #include "document.h"
 
 class Comment : public Node {

@@ -45,7 +45,7 @@ document_text_node_new(document_t *doc, const char * const text)
   return new TextNode(doc, text);
 }
 
-comment_t *
+Comment *
 document_comment_new(document_t *doc, const char * const text)
 {
   return new Comment(doc, text);
@@ -349,7 +349,7 @@ parse_end_tag(document_t *doc, Element *element, tokenizer_t *tokenizer, GError 
 void
 parse_comment(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
-  comment_t *comment;
+  Comment *comment;
   token_t token;
   char *text;
 
