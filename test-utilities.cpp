@@ -19,9 +19,7 @@ test_helper_new_node(document_t *doc, const char * const name)
 node_t *
 test_helper_new_text_node(document_t *doc, const char * const text)
 {
-  text_node_t *tn;
-  tn = document_text_node_new(doc, text);
-  return text_node_cast_to_node(tn);
+  return document_text_node_new(doc, text);
 }
 
 static void

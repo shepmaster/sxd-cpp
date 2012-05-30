@@ -43,7 +43,7 @@ document_element_new(document_t *doc, const char * const name)
 text_node_t *
 document_text_node_new(document_t *doc, const char * const text)
 {
-  return text_node_new(doc, text);
+  return new TextNode(doc, text);
 }
 
 comment_t *

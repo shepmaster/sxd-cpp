@@ -20,8 +20,8 @@ TEST(text_node, new_text_node)
 
   doc = document_new();
   tn = document_text_node_new(doc, "I am text");
-  STRCMP_EQUAL("I am text", text_node_text(tn));
-  text_node_free(tn);
+  STRCMP_EQUAL("I am text", tn->text());
+  delete tn;
   document_free(doc);
 }
 
@@ -36,10 +36,10 @@ TEST(text_node, output)
   doc = document_new();
   tn = document_text_node_new(doc, "I am text");
 
-  text_node_output(tn, &to.out);
+  tn->output(&to.out);
   STRCMP_EQUAL("I am text", to.string->str);
 
-  text_node_free(tn);
+  delete tn;
   document_free(doc);
   test_output_destroy(&to);
 }
