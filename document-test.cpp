@@ -116,7 +116,7 @@ _check_parse_error(GError *error, const char *file, int line)
 #define CHECK_TEXT_NODE(_node, _content)                        \
 {                                                               \
   CHECK_EQUAL(NODE_TYPE_TEXT_NODE, _node->type());           \
-  STRCMP_EQUAL(_content, ((text_node_t *)_node)->text());    \
+  STRCMP_EQUAL(_content, ((TextNode *)_node)->text());    \
 }
 
 TEST_GROUP(document_parse)

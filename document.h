@@ -19,7 +19,7 @@ document_new(void);
 Element *
 document_element_new(document_t *doc, const char * const name);
 
-text_node_t *
+TextNode *
 document_text_node_new(document_t *doc, const char * const text);
 
 Comment *

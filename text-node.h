@@ -1,9 +1,7 @@
 #ifndef TEXT_NODE_H
 #define TEXT_NODE_H
 
-typedef class TextNode text_node_t;
-
-#include "document.h"
+#include "node.h"
 
 class TextNode : public Node {
 public:

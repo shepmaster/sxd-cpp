@@ -16,7 +16,7 @@ TEST_GROUP(text_node)
 TEST(text_node, new_text_node)
 {
   document_t *doc;
-  text_node_t *tn;
+  TextNode *tn;
 
   doc = document_new();
   tn = document_text_node_new(doc, "I am text");
@@ -28,7 +28,7 @@ TEST(text_node, new_text_node)
 TEST(text_node, output)
 {
   document_t *doc;
-  text_node_t *tn;
+  TextNode *tn;
   test_output_t to;
 
   test_output_init(&to);

@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <glib.h>
+
 typedef class Node node_t;
 typedef enum {
   NODE_TYPE_ELEMENT,
