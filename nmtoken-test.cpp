@@ -12,28 +12,18 @@ TEST_GROUP(nmtoken)
 
 TEST(nmtoken, new_nmtoken)
 {
-  nmtoken_t *nm;
+  NMToken nm("xs:boolean");
 
-  nm = nmtoken_new("xs:boolean");
-
-  CHECK(nm != NULL);
-  STRCMP_EQUAL("boolean", nmtoken_name(nm));
-  STRCMP_EQUAL("xs", nmtoken_namespace(nm));
-
-  nmtoken_free(nm);
+  STRCMP_EQUAL("boolean", nm.name());
+  STRCMP_EQUAL("xs", nm.ns());
 }
 
 TEST(nmtoken, new_name_only)
 {
-  nmtoken_t *nm;
+  NMToken nm("string");
 
-  nm = nmtoken_new("string");
-
-  CHECK(nm != NULL);
-  STRCMP_EQUAL( "string", nmtoken_name(nm));
-  POINTERS_EQUAL(NULL, nmtoken_namespace(nm));
-
-  nmtoken_free(nm);
+  STRCMP_EQUAL("string", nm.name());
+  POINTERS_EQUAL(NULL, nm.ns());
 }
 
 int

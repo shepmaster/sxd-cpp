@@ -4,48 +4,37 @@
 
 #include "nmtoken.h"
 
-struct nmtokenS {
-  char *namespace_;
-  char *name;
-};
-
-void
-nmtoken_free(nmtoken_t *nm)
+NMToken::NMToken(const char * const name)
 {
-  free(nm->namespace_);
-  free(nm->name);
-  free(nm);
-}
-
-nmtoken_t *
-nmtoken_new(const char * const name)
-{
-  nmtoken_t *nm;
   const char * colon;
 
-  nm = (nmtoken_t *)calloc(1, sizeof(*nm));
   colon = strchr(name, ':');
 
   if (colon) {
     char *modified = strdup(name);
     modified[colon - name] = '\0';
-    nm->namespace_ = modified;
-    nm->name = strdup(colon+1);
+    ns_ = modified;
+    name_ = strdup(colon+1);
   } else {
-    nm->name = strdup(name);
+    ns_ = nullptr;
+    name_ = strdup(name);
   }
+}
 
-  return nm;
+NMToken::~NMToken()
+{
+  free(ns_);
+  free(name_);
 }
 
 const char *
-nmtoken_name(nmtoken_t *nm)
+NMToken::name()
 {
-  return nm->name;
+  return name_;
 }
 
 const char *
-nmtoken_namespace(nmtoken_t *nm)
+NMToken::ns()
 {
-  return nm->namespace_;
+  return ns_;
 }
