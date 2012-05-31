@@ -22,12 +22,11 @@ TEST(nodeset, new_nodeset)
 
 TEST(nodeset, add_node)
 {
-  document_t *doc;
+  Document doc;
   Node *n;
   nodeset_t *ns;
 
-  doc = document_new();
-  n = document_element_new(doc, "one");
+  n = doc.new_element("one");
   ns = nodeset_new();
 
   nodeset_add(ns, n);
@@ -35,18 +34,16 @@ TEST(nodeset, add_node)
 
   nodeset_free(ns);
   delete n;
-  document_free(doc);
 }
 
 TEST(nodeset, get_node)
 {
-  document_t *doc;
+  Document doc;
   Node *n;
   const Node *n2;
   nodeset_t *ns;
 
-  doc = document_new();
-  n = document_element_new(doc, "one");
+  n = doc.new_element("one");
   ns = nodeset_new();
 
   nodeset_add(ns, n);
@@ -56,18 +53,16 @@ TEST(nodeset, get_node)
 
   nodeset_free(ns);  
   delete n;
-  document_free(doc);
 }
 
 TEST(nodeset, add_nodeset)
 {
-  document_t *doc;
+  Document doc;
   Node *n;
   Node *n2;
   nodeset_t *ns;
   nodeset_t *ns2;
 
-  doc = document_new();
   n = test_helper_new_node(doc, "one");
   n2 = test_helper_new_node(doc, "two");
   ns = nodeset_new();
@@ -85,7 +80,6 @@ TEST(nodeset, add_nodeset)
   nodeset_free(ns2);
   delete n;
   delete n2;
-  document_free(doc);
 }
 
 int

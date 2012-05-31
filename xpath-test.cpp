@@ -91,7 +91,7 @@ TEST(xpath, compile_element)
 }
 
 typedef struct {
-  document_t *doc;
+  Document *doc;
   Node *parent;
   Node *e;
   Node *tn;
@@ -100,9 +100,9 @@ typedef struct {
 static void
 init_xpath_test(xpath_test_data_t *d)
 {
-  d->doc = document_new();
-  d->parent = test_helper_new_node(d->doc, "parent");
-  d->e = test_helper_new_node(d->doc, "child1");
+  d->doc = new Document();
+  d->parent = test_helper_new_node(*d->doc, "parent");
+  d->e = test_helper_new_node(*d->doc, "child1");
   d->tn = test_helper_new_text_node(d->doc, "child2");
 
   d->parent->append_child(d->e);
@@ -113,7 +113,7 @@ static void
 destroy_xpath_test(xpath_test_data_t *d)
 {
   delete d->parent;
-  document_free(d->doc);
+  delete d->doc;
 }
 
 static void
@@ -210,18 +210,18 @@ typedef struct {
 static void
 init_xpath_axis_test(xpath_axis_test_t *d)
 {
-  d->doc = document_new();
-  d->alpha = test_helper_new_node(d->doc, "alpha");
-  d->one = test_helper_new_node(d->doc, "one");
-  d->a = test_helper_new_node(d->doc, "a");
-  d->b = test_helper_new_node(d->doc, "b");
-  d->c = test_helper_new_node(d->doc, "c");
-  d->d = test_helper_new_node(d->doc, "d");
-  d->two = test_helper_new_node(d->doc, "two");
-  d->w = test_helper_new_node(d->doc, "w");
-  d->x = test_helper_new_node(d->doc, "x");
-  d->y = test_helper_new_node(d->doc, "y");
-  d->z = test_helper_new_node(d->doc, "z");
+  d->doc = new Document();
+  d->alpha = test_helper_new_node(*d->doc, "alpha");
+  d->one = test_helper_new_node(*d->doc, "one");
+  d->a = test_helper_new_node(*d->doc, "a");
+  d->b = test_helper_new_node(*d->doc, "b");
+  d->c = test_helper_new_node(*d->doc, "c");
+  d->d = test_helper_new_node(*d->doc, "d");
+  d->two = test_helper_new_node(*d->doc, "two");
+  d->w = test_helper_new_node(*d->doc, "w");
+  d->x = test_helper_new_node(*d->doc, "x");
+  d->y = test_helper_new_node(*d->doc, "y");
+  d->z = test_helper_new_node(*d->doc, "z");
 
   d->alpha->append_child(d->one);
   d->one->append_child(d->a);
@@ -239,7 +239,7 @@ static void
 destroy_xpath_axis_test(xpath_axis_test_t *d)
 {
   delete d->alpha;
-  document_free(d->doc);
+  delete d->doc;
 }
 
 #define CHECK_nodeset_item(_node, _nodeset, _index) \
@@ -615,7 +615,7 @@ TEST(xpath, apply_element)
 {
   const char * const name = "one";
 
-  document_t *doc = document_new();
+  Document doc;
   Node *parent = test_helper_new_node(doc, "parent");
   Node *children[4];
   nodeset_t *nodes;
@@ -638,7 +638,6 @@ TEST(xpath, apply_element)
 
   nodeset_free(nodes);
   delete parent;
-  document_free(doc);
 }
 
 static void

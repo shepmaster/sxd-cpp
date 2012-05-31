@@ -14,18 +14,16 @@ TEST_GROUP(comment)
 
 TEST(comment, new_comment)
 {
-  document_t *doc;
+  Document doc;
   Comment *c;
 
-  doc = document_new();
-  c = document_comment_new(doc, "hello");
+  c = doc.new_comment("hello");
 
   CHECK(c != NULL);
   STRCMP_EQUAL("hello", c->text());
   CHECK_EQUAL(NODE_TYPE_COMMENT, c->type());
 
   delete c;
-  document_free(doc);
 }
 
 int

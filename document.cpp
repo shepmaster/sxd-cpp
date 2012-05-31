@@ -2,78 +2,64 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "document-internal.h"
-#include "intern.h"
+#include "document.h"
+#include "tokenizer.h"
 
-struct documentS {
-  Element *root;
-  intern_t *dict;
-  unsigned int managed_node_count;
-};
-
-void
-document_free(document_t *doc)
+Document::Document() :
+  root_(nullptr),
+  dict(intern_new()),
+  managed_node_count_(0)
 {
-  if (! doc) return;
-
-  intern_free(doc->dict);
-  free(doc);
 }
 
-document_t *
-document_new(void)
+Document::~Document()
 {
-  document_t *doc;
-
-  doc = (document_t *)calloc(1, sizeof(*doc));
-  doc->dict = intern_new();
-
-  return doc;
+  intern_free(dict);
 }
 
 Element *
-document_element_new(document_t *doc, const char * const name)
+Document::new_element(const char * const name)
 {
-  Element *e = new Element(doc, name);
-  doc->managed_node_count++;
+  Element *e = new Element(this, name);
+  managed_node_count_++;
   return e;
 }
 
 TextNode *
-document_text_node_new(document_t *doc, const char * const text)
+Document::new_text_node(const char * const text)
 {
-  return new TextNode(doc, text);
+  return new TextNode(this, text);
 }
 
 Comment *
-document_comment_new(document_t *doc, const char * const text)
+Document::new_comment(const char * const text)
 {
-  return new Comment(doc, text);
+  return new Comment(this, text);
 }
 
 const char *
-document_intern(document_t *doc, const char * const string)
+Document::intern(const char * const string)
 {
-  return intern_intern(doc->dict, string);
+  return intern_intern(dict, string);
 }
 
 unsigned int
-document_managed_node_count(document_t *doc)
+Document::managed_node_count()
 {
-  return doc->managed_node_count;
+  return managed_node_count_;
 }
 
 void
-document_stop_managing_node(document_t *doc, Node *node)
+Document::stop_managing_node(Node *node)
 {
-  doc->managed_node_count--;
+  managed_node_count_--;
 }
 
 void
-document_manage_node(document_t *doc, Node *node)
+Document::manage_node(Node *node)
 {
-  node->change_document(doc);
-  doc->managed_node_count++;
+  node->change_document(this);
+  managed_node_count_++;
 }
 
 GQuark
@@ -170,7 +156,7 @@ parse_text_node(document_t *doc, Element *element, tokenizer_t *tokenizer, GErro
   }
 
   str = dup_token_string(token);
-  element->append_child(document_text_node_new(doc, str));
+  element->append_child(doc->new_text_node(str));
   free(str);
 }
 
@@ -218,9 +204,7 @@ static void
 add_entity_text(void *user, const char *entity_text)
 {
   entity_text_t *info = (entity_text_t *)user;
-  Node *text;
-
-  text = (Node *)document_text_node_new(info->doc, entity_text);
+  Node *text = info->doc->new_text_node(entity_text);
   info->element->append_child(text);
 }
 
@@ -357,7 +341,7 @@ parse_comment(document_t *doc, Element *element, tokenizer_t *tokenizer, GError 
   if (! expect_token(STRING, tokenize, error)) return;
 
   text = dup_token_string(token);
-  comment = document_comment_new(doc, text);
+  comment = doc->new_comment(text);
 
   element->append_child(comment);
 
@@ -490,7 +474,7 @@ parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
   if (! expect_token(STRING, tokenizer, error)) return NULL;
 
   name = dup_token_string(token);
-  element = document_element_new(doc, name);
+  element = doc->new_element(name);
   free(name);
 
   parse_element_attributes(doc, element, tokenizer, error);
@@ -572,14 +556,12 @@ parse_preamble(tokenizer_t *tokenizer, GError **error)
 }
 
 document_t *
-document_parse(const char *input, GError **error)
+Document::parse(const char *input, GError **error)
 {
   tokenizer_t *tokenizer;
   token_t token;
-  document_t *doc;
+  Document *doc = new Document();
   Element *element;
-
-  doc = document_new();
 
   tokenizer = tokenizer_new(input);
   token = tokenizer_next_string(tokenizer, CHARDATA);
@@ -603,7 +585,7 @@ document_parse(const char *input, GError **error)
   if (! expect_token(LT, tokenizer, error)) goto error;
   element = parse_element(doc, tokenizer, error);
   if (*error) goto error;
-  doc->root = element;
+  doc->root_ = element;
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(END, tokenizer, error)) goto error;
@@ -613,13 +595,13 @@ document_parse(const char *input, GError **error)
   return doc;
 
  error:
-  document_free(doc);
+  delete doc;
   doc = NULL;
   goto cleanup;
 }
 
 Element *
-document_root(document_t *doc)
+Document::root()
 {
-  return doc->root;
+  return root_;
 }

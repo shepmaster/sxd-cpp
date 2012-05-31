@@ -142,10 +142,11 @@ TEST_GROUP(xpath)
 
   void setup(void)
   {
-    doc = document_new();
-    el_1 = test_helper_new_node(doc, "first");
-    el_2 = test_helper_new_node(doc, "second");
-    el_3 = test_helper_new_node(doc, "third");
+    doc = new Document();
+    el_1 = test_helper_new_node(*doc, "first");
+    el_2 = test_helper_new_node(*doc, "second");
+    el_3 = test_helper_new_node(*
+doc, "third");
   }
 
   void teardown(void)
@@ -155,7 +156,7 @@ TEST_GROUP(xpath)
     delete el_1;
     delete el_2;
     delete el_3;
-    document_free(doc);
+    delete doc;
   }
 };
 

@@ -14,11 +14,10 @@ TEST_GROUP(node)
 
 TEST(node, append_child)
 {
-  document_t *doc;
+  Document doc;
   Node *parent;
   Node *child;
 
-  doc = document_new();
   parent = test_helper_new_node(doc, "parent");
   child = test_helper_new_node(doc, "child");
 
@@ -27,16 +26,14 @@ TEST(node, append_child)
   POINTERS_EQUAL(parent, child->parent());
 
   delete parent;
-  document_free(doc);
 }
 
 TEST(node, remove_child)
 {
-  document_t *doc;
+  Document doc;
   Node *parent;
   Node *child;
 
-  doc = document_new();
   parent = test_helper_new_node(doc, "parent");
   child = test_helper_new_node(doc, "child");
 
@@ -46,16 +43,14 @@ TEST(node, remove_child)
 
   delete parent;
   delete child;
-  document_free(doc);
 }
 
 TEST(node, free_child)
 {
-  document_t *doc;
+  Document doc;
   Node *parent;
   Node *child;
 
-  doc = document_new();
   parent = test_helper_new_node(doc, "parent");
   child = test_helper_new_node(doc, "child");
 
@@ -64,17 +59,15 @@ TEST(node, free_child)
   POINTERS_EQUAL(NULL, parent->first_child());
 
   delete parent;
-  document_free(doc);
 }
 
 TEST(node, sibling)
 {
-  document_t *doc;
+  Document doc;
   Node *parent;
   Node *child1;
   Node *child2;
 
-  doc = document_new();
   parent = test_helper_new_node(doc, "parent");
   child1 = test_helper_new_node(doc, "child1");
   child2 = test_helper_new_node(doc, "child2");
@@ -85,12 +78,11 @@ TEST(node, sibling)
   POINTERS_EQUAL(child2, child1->next_sibling());
 
   delete parent;
-  document_free(doc);
 }
 
 TEST(node, insert_next_sibling)
 {
-  document_t *doc = document_new();
+  Document doc;
   Node *a = test_helper_new_node(doc, "a");
   Node *b = test_helper_new_node(doc, "b");
   Node *c = test_helper_new_node(doc, "c");
@@ -112,12 +104,11 @@ TEST(node, insert_next_sibling)
   delete a;
   delete b;
   delete c;
-  document_free(doc);
 }
 
 TEST(node, append_child_siblings)
 {
-  document_t *doc = document_new();
+  Document doc;
   Node *parent = test_helper_new_node(doc, "parent");
   Node *a = test_helper_new_node(doc, "a");
   Node *b = test_helper_new_node(doc, "b");
@@ -142,7 +133,6 @@ TEST(node, append_child_siblings)
   POINTERS_EQUAL(NULL, c->next_sibling());
 
   delete parent;
-  document_free(doc);
 }
 
 int

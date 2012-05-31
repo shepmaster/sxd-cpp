@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#include "document-internal.h"
+#include "document.h"
 
 static GHashTable *
 element_attributes_new(void)
@@ -13,8 +13,8 @@ element_attributes_new(void)
 static void
 element_set_attribute1(document_t *doc, GHashTable *attributes, const char * const name, const char * const value)
 {
-  const char *n = document_intern(doc, name);
-  const char *v = document_intern(doc, value);
+  const char *n = doc->intern(name);
+  const char *v = doc->intern(value);
 
   g_hash_table_insert(attributes, (gpointer)n, (gpointer)v);
 }
@@ -46,7 +46,7 @@ element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer out
 
 Element::Element(document_t *doc, const char * const name) :
   Node(doc, NODE_TYPE_ELEMENT),
-  name_(document_intern(doc, name)),
+  name_(doc->intern(name)),
   attributes(element_attributes_new())
 {
 }
@@ -87,7 +87,7 @@ Element::change_document(document_t *doc)
 {
   Node::change_document(doc);
 
-  this->name_ = document_intern(doc, name_);
+  this->name_ = doc->intern(name_);
 
   change_attributes_t ca;
   ca.new_attributes = element_attributes_new();

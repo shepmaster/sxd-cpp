@@ -6,7 +6,7 @@
 #include "element.h"
 
 Node *
-test_helper_new_node(document_t *doc, const char * const name);
+test_helper_new_node(Document &doc, const char * const name);
 
 Node *
 test_helper_new_text_node(document_t *doc, const char * const text);

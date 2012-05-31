@@ -9,17 +9,15 @@
 #include "test-utilities.h"
 
 Node *
-test_helper_new_node(document_t *doc, const char * const name)
+test_helper_new_node(Document &doc, const char * const name)
 {
-  Element *e;
-  e = document_element_new(doc, name);
-  return e;
+  return doc.new_element(name);
 }
 
 Node *
 test_helper_new_text_node(document_t *doc, const char * const text)
 {
-  return document_text_node_new(doc, text);
+  return doc->new_text_node(text);
 }
 
 StringOutput::StringOutput() :

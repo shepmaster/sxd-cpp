@@ -3,11 +3,11 @@
 #include <string.h>
 
 #include "text-node.h"
-#include "document-internal.h"
+#include "document.h"
 
 TextNode::TextNode(document_t *doc, const char *text) :
   Node(doc, NODE_TYPE_TEXT_NODE),
-  text_(document_intern(doc, text))
+  text_(doc->intern(text))
 {
 }
 
@@ -31,5 +31,5 @@ void
 TextNode::change_document(document_t *doc)
 {
   Node::change_document(doc);
-  text_ = document_intern(doc, text_);
+  text_ = doc->intern(text_);
 }

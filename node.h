@@ -13,7 +13,7 @@ typedef enum {
   NODE_TYPE_COMMENT
 } node_type_t;
 
-typedef struct documentS document_t;
+typedef class Document document_t;
 
 typedef void (*node_foreach_fn_t)(Node *node, gpointer user_data);
 

@@ -3,7 +3,7 @@
 #include <string.h>
 #include <glib.h>
 
-#include "document-internal.h"
+#include "document.h"
 
 void
 Node::foreach_child(node_foreach_fn_t fn, gpointer user_data)
@@ -61,7 +61,7 @@ Node::~Node()
 
   foreach_child(node_free_children, nullptr);
 
-  document_stop_managing_node(doc, this);
+  doc->stop_managing_node(this);
 }
 
 Node::Node(document_t *doc, node_type_t type) :
@@ -171,7 +171,7 @@ node_change_document_children(Node *node, gpointer doc_as_gp)
 void
 Node::change_document(document_t *doc)
 {
-  document_stop_managing_node(this->doc, this);
+  this->doc->stop_managing_node(this);
 
   this->doc = doc;
 
