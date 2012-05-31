@@ -8,6 +8,7 @@
 #include "element.h"
 #include "xpath-internal.h"
 #include "xpath-functions.h"
+#include "nodeset.h"
 
 static void
 not_implemented(void)

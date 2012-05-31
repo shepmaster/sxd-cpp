@@ -4,7 +4,6 @@
 class Node;
 
 #include <glib.h>
-#include "nodeset.h"
 #include "output.h"
 
 typedef enum {

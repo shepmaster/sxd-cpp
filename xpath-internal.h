@@ -4,6 +4,7 @@
 #include <glib.h>
 #include "xpath.h"
 #include "node.h"
+#include "nodeset.h"
 
 typedef enum {
   SLASH,

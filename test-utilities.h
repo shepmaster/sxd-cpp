@@ -2,8 +2,8 @@
 #define TEST_UTILITIES_H
 
 #include <glib.h>
-
 #include "element.h"
+#include "nodeset.h"
 
 Node *
 test_helper_new_node(Document &doc, const char * const name);
