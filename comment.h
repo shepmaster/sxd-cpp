@@ -5,7 +5,7 @@
 
 class Comment : public Node {
 public:
-  Comment(document_t *doc, const char * const text);
+  Comment(Document *doc, const char * const text);
   ~Comment();
 
   const char *text();

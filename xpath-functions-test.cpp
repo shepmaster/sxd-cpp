@@ -135,7 +135,7 @@ TEST_GROUP(xpath)
   GArray *parameters;
   xpath_result_t res;
 
-  document_t *doc;
+  Document *doc;
   Node *el_1;
   Node *el_2;
   Node *el_3;

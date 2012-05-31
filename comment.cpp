@@ -4,7 +4,7 @@
 
 #include "comment.h"
 
-Comment::Comment(document_t *doc, const char * const text) :
+Comment::Comment(Document *doc, const char * const text) :
   Node(doc, NODE_TYPE_COMMENT),
   text_(strdup(text))
 {

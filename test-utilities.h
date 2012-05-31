@@ -9,7 +9,7 @@ Node *
 test_helper_new_node(Document &doc, const char * const name);
 
 Node *
-test_helper_new_text_node(document_t *doc, const char * const text);
+test_helper_new_text_node(Document *doc, const char * const text);
 
 class StringOutput : public Output {
 public:

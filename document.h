@@ -32,8 +32,6 @@ private:
   unsigned int managed_node_count_;
 };
 
-typedef class Document document_t;
-
 #define DOCUMENT_PARSE_ERROR document_parse_error_quark()
 
 GQuark

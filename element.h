@@ -5,14 +5,14 @@
 
 class Element : public Node {
 public:
-  Element(document_t *doc, const char * const name);
+  Element(Document *doc, const char * const name);
   ~Element();
 
   const char *name();
   void output(Output &output);
   void set_attribute(const char * const name, const char * const value);
   const char *get_attribute(const char * const name);
-  void change_document(document_t *doc);
+  void change_document(Document *doc);
 
 private:
   const char * name_;

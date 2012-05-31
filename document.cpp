@@ -137,10 +137,10 @@ _expect_token(
 /* Forward declarations */
 
 Element *
-parse_element(document_t *document, tokenizer_t *tokenizer, GError **error);
+parse_element(Document *document, tokenizer_t *tokenizer, GError **error);
 
 void
-parse_text_node(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_text_node(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   char *str;
@@ -196,7 +196,7 @@ parse_entity(tokenizer_t *tokenizer, GError **error, entity_callback_t callback,
 }
 
 typedef struct {
-  document_t *doc;
+  Document *doc;
   Element *element;
 } entity_text_t;
 
@@ -209,7 +209,7 @@ add_entity_text(void *user, const char *entity_text)
 }
 
 void
-parse_entity_text(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_entity_text(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
@@ -258,7 +258,7 @@ parse_char_ref(tokenizer_t *tokenizer, GError **error, entity_callback_t callbac
 }
 
 void
-parse_char_ref_text(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_char_ref_text(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
@@ -300,7 +300,7 @@ parse_char_ref_hex(tokenizer_t *tokenizer, GError **error, entity_callback_t cal
 }
 
 void
-parse_char_ref_hex_text(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_char_ref_hex_text(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   entity_text_t info;
   info.doc = doc;
@@ -315,7 +315,7 @@ parse_char_ref_hex_attribute(GString *string, tokenizer_t *tokenizer, GError **e
 }
 
 void
-parse_end_tag(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_end_tag(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
 
@@ -331,7 +331,7 @@ parse_end_tag(document_t *doc, Element *element, tokenizer_t *tokenizer, GError 
 }
 
 void
-parse_comment(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_comment(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   Comment *comment;
   token_t token;
@@ -350,7 +350,7 @@ parse_comment(document_t *doc, Element *element, tokenizer_t *tokenizer, GError 
 }
 
 void
-parse_child_element(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_child_element(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   Element *child;
 
@@ -452,7 +452,7 @@ parse_element_attributes1(gpointer key_gp, gpointer value_gp, gpointer user_gp)
 }
 
 void
-parse_element_attributes(document_t *doc, Element *element, tokenizer_t *tokenizer, GError **error)
+parse_element_attributes(Document *doc, Element *element, tokenizer_t *tokenizer, GError **error)
 {
   GHashTable *attrs;
 
@@ -464,7 +464,7 @@ parse_element_attributes(document_t *doc, Element *element, tokenizer_t *tokeniz
 }
 
 Element *
-parse_element(document_t *doc, tokenizer_t *tokenizer, GError **error)
+parse_element(Document *doc, tokenizer_t *tokenizer, GError **error)
 {
   token_t token;
   Element *element;
@@ -555,7 +555,7 @@ parse_preamble(tokenizer_t *tokenizer, GError **error)
   if (! expect_token(PI_END, tokenizer, error)) return;
 }
 
-document_t *
+Document *
 Document::parse(const char *input, GError **error)
 {
   tokenizer_t *tokenizer;

@@ -64,7 +64,7 @@ Node::~Node()
   doc->stop_managing_node(this);
 }
 
-Node::Node(document_t *doc, node_type_t type) :
+Node::Node(Document *doc, node_type_t type) :
   type_(type), doc(doc),
   parent_(nullptr),
   first_child_(nullptr),
@@ -154,7 +154,7 @@ Node::insert_next_sibling(Node *new_sibling)
   next_sibling_ = new_sibling;
 }
 
-document_t *
+Document *
 Node::document()
 {
   return doc;
@@ -163,13 +163,13 @@ Node::document()
 static void
 node_change_document_children(Node *node, gpointer doc_as_gp)
 {
-  document_t *doc = (document_t *)doc_as_gp;
+  Document *doc = (Document *)doc_as_gp;
 
   node->change_document(doc);
 }
 
 void
-Node::change_document(document_t *doc)
+Node::change_document(Document *doc)
 {
   this->doc->stop_managing_node(this);
 

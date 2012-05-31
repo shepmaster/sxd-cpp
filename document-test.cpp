@@ -59,7 +59,7 @@ TEST(document, move_node_between_documents)
 
 TEST_GROUP(document_parse_error)
 {
-  document_t *doc;
+  Document *doc;
   GError *error;
 
   void teardown(void)
@@ -103,7 +103,7 @@ _check_parse_error(GError *error, const char *file, int line)
 
 TEST_GROUP(document_parse)
 {
-  document_t *doc;
+  Document *doc;
   Element *root;
   GError *error;
 

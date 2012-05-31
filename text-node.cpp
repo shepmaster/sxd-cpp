@@ -5,7 +5,7 @@
 #include "text-node.h"
 #include "document.h"
 
-TextNode::TextNode(document_t *doc, const char *text) :
+TextNode::TextNode(Document *doc, const char *text) :
   Node(doc, NODE_TYPE_TEXT_NODE),
   text_(doc->intern(text))
 {
@@ -28,7 +28,7 @@ TextNode::output(Output &output)
 }
 
 void
-TextNode::change_document(document_t *doc)
+TextNode::change_document(Document *doc)
 {
   Node::change_document(doc);
   text_ = doc->intern(text_);

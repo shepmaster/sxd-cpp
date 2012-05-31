@@ -1,6 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+class Document;
 class Node;
 
 #include <glib.h>
@@ -12,15 +13,13 @@ typedef enum {
   NODE_TYPE_COMMENT
 } node_type_t;
 
-typedef class Document document_t;
-
 typedef void (*node_foreach_fn_t)(Node *node, gpointer user_data);
 
 class Node {
 public:
-  Node(document_t *document, node_type_t type);
+  Node(Document *document, node_type_t type);
   virtual ~Node();
-  virtual void change_document(document_t *doc);
+  virtual void change_document(Document *doc);
   virtual void output(Output &output) = 0;
   void output_children(Output &output);
 
@@ -33,7 +32,7 @@ public:
   Node *next_sibling();
   void insert_next_sibling(Node *new_sibling);
 
-  document_t *document();
+  Document *document();
 
   void foreach_child(node_foreach_fn_t fn, gpointer user_data);
   void foreach_preceding_sibling(node_foreach_fn_t fn, gpointer user_data);
@@ -44,7 +43,7 @@ public:
 
 protected:
   node_type_t type_;
-  document_t *doc;
+  Document *doc;
   Node *parent_;
   Node *first_child_;
   Node *prev_sibling_;

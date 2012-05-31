@@ -193,7 +193,7 @@ TEST(xpath, element_and_text_node)
 }
 
 typedef struct {
-  document_t *doc;
+  Document *doc;
   Node *alpha;
   Node *one;
   Node *a;

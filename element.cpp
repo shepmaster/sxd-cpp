@@ -11,7 +11,7 @@ element_attributes_new(void)
 }
 
 static void
-element_set_attribute1(document_t *doc, GHashTable *attributes, const char * const name, const char * const value)
+element_set_attribute1(Document *doc, GHashTable *attributes, const char * const name, const char * const value)
 {
   const char *n = doc->intern(name);
   const char *v = doc->intern(value);
@@ -20,7 +20,7 @@ element_set_attribute1(document_t *doc, GHashTable *attributes, const char * con
 }
 
 typedef struct {
-  document_t *doc;
+  Document *doc;
   GHashTable *new_attributes;
 } change_attributes_t;
 
@@ -44,7 +44,7 @@ element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer out
   output->output(" %s=\"%s\"", name, value);
 }
 
-Element::Element(document_t *doc, const char * const name) :
+Element::Element(Document *doc, const char * const name) :
   Node(doc, NODE_TYPE_ELEMENT),
   name_(doc->intern(name)),
   attributes(element_attributes_new())
@@ -83,7 +83,7 @@ Element::get_attribute(const char * const name)
 }
 
 void
-Element::change_document(document_t *doc)
+Element::change_document(Document *doc)
 {
   Node::change_document(doc);
 
