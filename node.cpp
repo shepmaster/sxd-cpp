@@ -181,11 +181,12 @@ Node::change_document(document_t *doc)
 static void
 node_output_wrapper(Node *node, gpointer output_as_gp)
 {
-  node->output((output_t *)output_as_gp);
+  Output *x = (Output *)output_as_gp;
+  node->output(*x);
 }
 
 void
-Node::output_children(output_t *output)
+Node::output_children(Output &output)
 {
-  foreach_child(node_output_wrapper, output);
+  foreach_child(node_output_wrapper, &output);
 }

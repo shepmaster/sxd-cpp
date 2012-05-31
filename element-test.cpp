@@ -94,39 +94,33 @@ TEST(element, output_basic)
 {
   document_t *doc;
   Element *element;
-  test_output_t to;
-
-  test_output_init(&to);
+  StringOutput out;
 
   doc = document_new();
   element = document_element_new(doc, "one");
 
-  element->output(&to.out);
-  STRCMP_EQUAL("<one />", to.string->str);
+  element->output(out);
+  STRCMP_EQUAL("<one />", out.string());
 
   delete element;
   document_free(doc);
-  test_output_destroy(&to);
 }
 
 TEST(element, output_attribute)
 {
   document_t *doc;
   Element *element;
-  test_output_t to;
-
-  test_output_init(&to);
+  StringOutput out;
 
   doc = document_new();
   element = document_element_new(doc, "one");
   element->set_attribute("hi", "there");
 
-  element->output(&to.out);
-  STRCMP_EQUAL("<one hi=\"there\" />", to.string->str);
+  element->output(out);
+  STRCMP_EQUAL("<one hi=\"there\" />", out.string());
 
   delete element;
   document_free(doc);
-  test_output_destroy(&to);
 }
 
 TEST(element, output_child)
@@ -134,21 +128,18 @@ TEST(element, output_child)
   document_t *doc;
   Element *element;
   Element *child;
-  test_output_t to;
-
-  test_output_init(&to);
+  StringOutput out;
 
   doc = document_new();
   element = document_element_new(doc, "one");
   child = document_element_new(doc, "two");
   element->append_child(child);
 
-  element->output(&to.out);
-  STRCMP_EQUAL("<one><two /></one>", to.string->str);
+  element->output(out);
+  STRCMP_EQUAL("<one><two /></one>", out.string());
 
   delete element;
   document_free(doc);
-  test_output_destroy(&to);
 }
 
 int

@@ -9,7 +9,7 @@ public:
   ~Comment();
 
   const char *text();
-  void output(output_t *output);
+  void output(Output &output);
 private:
   char *text_;
 };

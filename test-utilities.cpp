@@ -22,30 +22,31 @@ test_helper_new_text_node(document_t *doc, const char * const text)
   return document_text_node_new(doc, text);
 }
 
-static void
-test_output_fn(void *string_as_void, const char *format, ...)
+StringOutput::StringOutput() :
+  string_(g_string_new(NULL))
+{}
+
+StringOutput::~StringOutput()
 {
-  GString *string = (GString *)string_as_void;
+  g_string_free(string_, TRUE);
+}
+
+void
+StringOutput::output(const char *format, ...)
+{
   va_list params;
 
   va_start(params, format);
-  g_string_append_vprintf(string, format, params);
+  g_string_append_vprintf(string_, format, params);
   va_end(params);
 }
 
-void
-test_output_init(test_output_t *to)
+const char *
+StringOutput::string()
 {
-  to->string = g_string_new(NULL);
-  to->out.fn = test_output_fn;
-  to->out.data = to->string;
+  return string_->str;
 }
 
-void
-test_output_destroy(test_output_t *to)
-{
-  g_string_free(to->string, TRUE);
-}
 
 nodeset_t *
 nodeset_new_with_nodes(Node *first, ...)

@@ -22,9 +22,9 @@ TextNode::text()
 }
 
 void
-TextNode::output(output_t *output)
+TextNode::output(Output &output)
 {
-  output->fn(output->data, "%s", text_);
+  output.output("%s", text_);
 }
 
 void

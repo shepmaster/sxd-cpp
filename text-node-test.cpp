@@ -29,19 +29,16 @@ TEST(text_node, output)
 {
   document_t *doc;
   TextNode *tn;
-  test_output_t to;
-
-  test_output_init(&to);
+  StringOutput out;
 
   doc = document_new();
   tn = document_text_node_new(doc, "I am text");
 
-  tn->output(&to.out);
-  STRCMP_EQUAL("I am text", to.string->str);
+  tn->output(out);
+  STRCMP_EQUAL("I am text", out.string());
 
   delete tn;
   document_free(doc);
-  test_output_destroy(&to);
 }
 
 int

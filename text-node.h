@@ -8,7 +8,7 @@ public:
   TextNode(document_t *doc, const char *text);
   ~TextNode();
   const char *text();
-  void output(output_t *output);
+  void output(Output &output);
   void change_document(document_t *doc);
 private:
 

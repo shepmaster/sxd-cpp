@@ -22,6 +22,6 @@ Comment::text()
 }
 
 void
-Comment::output(output_t *output)
+Comment::output(Output &output)
 {
 }

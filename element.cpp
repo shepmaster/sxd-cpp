@@ -39,22 +39,9 @@ element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer out
 {
   const char * const name = (const char * const)name_as_gp;
   const char * const value = (const char * const)value_as_gp;
-  output_t *output = (output_t *)output_as_gp;
+  Output *output = (Output *)output_as_gp;
 
-  output->fn(output->data, " %s=\"%s\"", name, value);
-}
-
-#include <stdarg.h>
-
-static void
-fprintf_wrapper(void *data, const char *format, ...)
-{
-  FILE *stream = (FILE *)data;
-  va_list params;
-
-  va_start(params, format);
-  vfprintf(stream, format, params);
-  va_end(params);
+  output->output(" %s=\"%s\"", name, value);
 }
 
 Element::Element(document_t *doc, const char * const name) :
@@ -70,24 +57,16 @@ Element::~Element()
 }
 
 void
-Element::output(output_t *output)
+Element::output(Output &output)
 {
-  output_t def_output;
-
-  if (output == NULL) {
-    def_output.fn = fprintf_wrapper;
-    def_output.data = stderr;
-    output = &def_output;
-  }
-
-  output->fn(output->data, "<%s", name_);
-  g_hash_table_foreach(this->attributes, element_output_attribute, output);
+  output.output("<%s", name_);
+  g_hash_table_foreach(this->attributes, element_output_attribute, &output);
   if (first_child()) {
-    output->fn(output->data, ">");
+    output.output(">");
     output_children(output);
-    output->fn(output->data, "</%s>", name_);
+    output.output("</%s>", name_);
   } else {
-    output->fn(output->data, " />");
+    output.output(" />");
   }
 }
 
