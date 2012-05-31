@@ -6,52 +6,50 @@
 #include "document.h"
 
 void
-Node::foreach_child(node_foreach_fn_t fn, gpointer user_data)
+Node::foreach_child(foreach_fn_t fn)
 {
   Node *child = first_child_;
   while (child) {
     Node *next = child->next_sibling_;
-    fn(child, user_data);
+    fn(child);
     child = next;
   }
 }
 
 void
-Node::foreach_preceding_sibling(node_foreach_fn_t fn, gpointer user_data)
+Node::foreach_preceding_sibling(foreach_fn_t fn)
 {
   Node *sibling = prev_sibling_;
   while (sibling) {
     Node *next = sibling->prev_sibling_;
-    fn(sibling, user_data);
+    fn(sibling);
     sibling = next;
   }
 }
 
 void
-Node::foreach_following_sibling(node_foreach_fn_t fn, gpointer user_data)
+Node::foreach_following_sibling(foreach_fn_t fn)
 {
   Node *sibling = next_sibling_;
   while (sibling) {
     Node *next = sibling->next_sibling_;
-    fn(sibling, user_data);
+    fn(sibling);
     sibling = next;
   }
 }
 
 void
-Node::foreach_ancestor(node_foreach_fn_t fn, gpointer user_data)
+Node::foreach_ancestor(foreach_fn_t fn)
 {
   Node *parent;
   for (parent = parent_; parent; parent = parent->parent_) {
-    fn(parent, user_data);
+    fn(parent);
   }
 }
 
-static void
-node_free_children(Node *node, gpointer user_data_unused)
-{
-  delete node;
-}
+struct FreeChildren {
+  virtual void operator() (Node *node) { delete node; }
+};
 
 Node::~Node()
 {
@@ -59,7 +57,7 @@ Node::~Node()
     parent_->remove_child(this);
   }
 
-  foreach_child(node_free_children, nullptr);
+  foreach_child(FreeChildren());
 
   doc->stop_managing_node(this);
 }
@@ -160,13 +158,11 @@ Node::document()
   return doc;
 }
 
-static void
-node_change_document_children(Node *node, gpointer doc_as_gp)
-{
-  Document *doc = (Document *)doc_as_gp;
-
-  node->change_document(doc);
-}
+struct ChangeDocumentChildren {
+  ChangeDocumentChildren(Document *doc) : doc(doc) {}
+  void operator()(Node *node) {  node->change_document(doc); }
+  Document *doc;
+};
 
 void
 Node::change_document(Document *doc)
@@ -175,18 +171,17 @@ Node::change_document(Document *doc)
 
   this->doc = doc;
 
-  foreach_child(node_change_document_children, doc);
+  foreach_child(ChangeDocumentChildren(doc));
 }
 
-static void
-node_output_wrapper(Node *node, gpointer output_as_gp)
-{
-  Output *x = (Output *)output_as_gp;
-  node->output(*x);
-}
+struct OutputWrapper {
+  OutputWrapper(Output &output) : output(output) {}
+  void operator() (Node *node) { node->output(output); }
+  Output &output;
+};
 
 void
 Node::output_children(Output &output)
 {
-  foreach_child(node_output_wrapper, &output);
+  foreach_child(OutputWrapper(output));
 }

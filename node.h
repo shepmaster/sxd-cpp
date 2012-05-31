@@ -4,7 +4,7 @@
 class Document;
 class Node;
 
-#include <glib.h>
+#include <functional>
 #include "output.h"
 
 typedef enum {
@@ -13,9 +13,9 @@ typedef enum {
   NODE_TYPE_COMMENT
 } node_type_t;
 
-typedef void (*node_foreach_fn_t)(Node *node, gpointer user_data);
-
 class Node {
+  typedef std::function<void (Node *)> foreach_fn_t;
+
 public:
   Node(Document *document, node_type_t type);
   virtual ~Node();
@@ -34,10 +34,10 @@ public:
 
   Document *document();
 
-  void foreach_child(node_foreach_fn_t fn, gpointer user_data);
-  void foreach_preceding_sibling(node_foreach_fn_t fn, gpointer user_data);
-  void foreach_following_sibling(node_foreach_fn_t fn, gpointer user_data);
-  void foreach_ancestor(node_foreach_fn_t fn, gpointer user_data);
+  void foreach_child(foreach_fn_t fn);
+  void foreach_preceding_sibling(foreach_fn_t fn);
+  void foreach_following_sibling(foreach_fn_t fn);
+  void foreach_ancestor(foreach_fn_t fn);
 
   node_type_t type();
 

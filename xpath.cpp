@@ -290,36 +290,38 @@ xpath_test_step(Node *node, xpath_test_step_t *data)
   }
 }
 
-static void
-xpath_test_step_wrapper(Node *node, gpointer data_as_gp)
-{
-  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
-  xpath_test_step(node, data);
-}
+struct StepTester {
+  StepTester(xpath_test_step_t *data) : data(data) {}
+  void operator() (Node *node) { xpath_test_step(node, data); }
+  xpath_test_step_t *data;
+};
 
-static void
-xpath_test_and_recur_down(Node *node, gpointer data_as_gp)
-{
-  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
-  xpath_test_step(node, data);
-  node->foreach_child(xpath_test_and_recur_down, data);
-}
+struct DownwardRecursiveTester {
+  DownwardRecursiveTester(xpath_test_step_t *data) : data(data) {}
+  void operator() (Node *node) {
+    xpath_test_step(node, data);
+    node->foreach_child(*this);
+  }
+  xpath_test_step_t *data;
+};
 
-static void
-xpath_test_following_siblings_and_recur_up(Node *node, gpointer data_as_gp)
-{
-  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
-  node->foreach_following_sibling(xpath_test_and_recur_down, data);
-  node->foreach_ancestor(xpath_test_following_siblings_and_recur_up, data);
-}
+struct FollowingSiblingAndAncestorTester {
+  FollowingSiblingAndAncestorTester(xpath_test_step_t *data) : data(data) {}
+  void operator() (Node *node) {
+    node->foreach_following_sibling(DownwardRecursiveTester(data));
+    node->foreach_ancestor(*this);
+  }
+  xpath_test_step_t *data;
+};
 
-static void
-xpath_test_preceding_siblings_and_recur_up(Node *node, gpointer data_as_gp)
-{
-  xpath_test_step_t *data = (xpath_test_step_t *)data_as_gp;
-  node->foreach_preceding_sibling(xpath_test_and_recur_down, data);
-  node->foreach_ancestor(xpath_test_preceding_siblings_and_recur_up, data);
-}
+struct PrecedingSiblingAndAncestorTester {
+  PrecedingSiblingAndAncestorTester(xpath_test_step_t *data) : data(data) {}
+  void operator() (Node *node) {
+    node->foreach_preceding_sibling(DownwardRecursiveTester(data));
+    node->foreach_ancestor(*this);
+  }
+  xpath_test_step_t *data;
+};
 
 nodeset_t *
 xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
@@ -334,38 +336,38 @@ xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
     xpath_test_step(node, &data);
     break;
   case XPATH_AXIS_CHILD:
-    node->foreach_child(xpath_test_step_wrapper, &data);
+    node->foreach_child(StepTester(&data));
     break;
   case XPATH_AXIS_PARENT:
     xpath_test_step(node->parent(), &data);
     break;
   case XPATH_AXIS_FOLLOWING_SIBLING:
-    node->foreach_following_sibling(xpath_test_step_wrapper, &data);
+    node->foreach_following_sibling(StepTester(&data));
     break;
   case XPATH_AXIS_PRECEDING_SIBLING:
-    node->foreach_preceding_sibling(xpath_test_step_wrapper, &data);
+    node->foreach_preceding_sibling(StepTester(&data));
     break;
   case XPATH_AXIS_DESCENDANT:
-    node->foreach_child(xpath_test_and_recur_down, &data);
+    node->foreach_child(DownwardRecursiveTester(&data));
     break;
   case XPATH_AXIS_DESCENDANT_OR_SELF:
     xpath_test_step(node, &data);
-    node->foreach_child(xpath_test_and_recur_down, &data);
+    node->foreach_child(DownwardRecursiveTester(&data));
     break;
   case XPATH_AXIS_ANCESTOR:
-    node->foreach_ancestor(xpath_test_step_wrapper, &data);
+    node->foreach_ancestor(StepTester(&data));
     break;
   case XPATH_AXIS_ANCESTOR_OR_SELF:
     xpath_test_step(node, &data);
-    node->foreach_ancestor(xpath_test_step_wrapper, &data);
+    node->foreach_ancestor(StepTester(&data));
     break;
   case XPATH_AXIS_FOLLOWING:
-    node->foreach_following_sibling(xpath_test_and_recur_down, &data);
-    node->foreach_ancestor(xpath_test_following_siblings_and_recur_up, &data);
+    node->foreach_following_sibling(DownwardRecursiveTester(&data));
+    node->foreach_ancestor(FollowingSiblingAndAncestorTester(&data));
     break;
   case XPATH_AXIS_PRECEDING:
-    node->foreach_preceding_sibling(xpath_test_and_recur_down, &data);
-    node->foreach_ancestor(xpath_test_preceding_siblings_and_recur_up, &data);
+    node->foreach_preceding_sibling(DownwardRecursiveTester(&data));
+    node->foreach_ancestor(PrecedingSiblingAndAncestorTester(&data));
     break;
   case XPATH_AXIS_ATTRIBUTE:
   case XPATH_AXIS_NAMESPACE:
