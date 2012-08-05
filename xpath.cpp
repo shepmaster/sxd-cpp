@@ -135,7 +135,6 @@ xpath_compile(const char * const xpath)
       step.axis = XPATH_AXIS_CHILD;
       step.type = XPATH_NODE_TYPE_ELEMENT;
       step.name = xpath_tokens_string(tokens, i);
-      step.predicates = NULL;
       compiled->steps.push_back(step);
       break;
     default:
@@ -219,18 +218,17 @@ nodeset_t *
 xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
 {
   nodeset_t *current_nodes;
-  GList *item;
 
   current_nodes = nodeset;
 
-  for (item = step->predicates; item; item = g_list_next(item)) {
+  for (int j = 0; j < step->predicates.size(); j++) {
     xpath_predicate_t *predicate;
     xpath_evaluation_context_t context;
     xpath_result_t result;
     nodeset_t *selected_nodes;
     int i;
 
-    predicate = (xpath_predicate_t *)item->data;
+    predicate = &step->predicates[j];
     context.nodeset = current_nodes;
     selected_nodes = nodeset_new();
 

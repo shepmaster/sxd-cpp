@@ -122,7 +122,6 @@ init_step(xpath_step_t *step)
   step->axis = XPATH_AXIS_CHILD;
   step->type = XPATH_NODE_TYPE_ELEMENT;
   step->name = NULL;
-  step->predicates = NULL;
 }
 
 static void
@@ -432,7 +431,6 @@ TEST_GROUP(xpath_predicate)
 
   void teardown(void)
   {
-    g_list_free(step.predicates);
     nodeset_free(ns);
     destroy_xpath_axis_test(&d);
   }
@@ -440,7 +438,7 @@ TEST_GROUP(xpath_predicate)
 
 TEST(xpath_predicate, predicate_true)
 {
-  step.predicates = g_list_append(step.predicates, &g_predicate_value_true);
+  step.predicates.push_back(g_predicate_value_true);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -449,7 +447,7 @@ TEST(xpath_predicate, predicate_true)
 
 TEST(xpath_predicate, predicate_false)
 {
-  step.predicates = g_list_append(step.predicates, &g_predicate_value_false);
+  step.predicates.push_back(g_predicate_value_false);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -463,7 +461,7 @@ TEST(xpath_predicate, predicate_value_3)
   pred_val_3.op = XPATH_PREDICATE_OP_VALUE;
   pred_val_3.info.value.type = XPATH_RESULT_TYPE_NUMERIC;
   pred_val_3.info.value.value.numeric = 3;
-  step.predicates = g_list_append(step.predicates, &pred_val_3);
+  step.predicates.push_back(pred_val_3);
 
   ns = nodeset_new_with_nodes(d.a, d.b, d.c, d.d, NULL);
 
@@ -479,7 +477,7 @@ TEST(xpath_predicate, predicate_fn_true)
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_true;
   pred.info.function.parameters = NULL;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates.push_back(pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -493,7 +491,7 @@ TEST(xpath_predicate, predicate_fn_false)
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_false;
   pred.info.function.parameters = NULL;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates.push_back(pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -514,7 +512,7 @@ TEST(xpath_predicate, predicate_fn_floor)
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_floor;
   pred.info.function.parameters = &parameters;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates.push_back(pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -534,7 +532,7 @@ TEST(xpath_predicate, predicate_fn_ceiling)
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_ceiling;
   pred.info.function.parameters = &parameters;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates.push_back(pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -548,7 +546,7 @@ TEST(xpath_predicate, predicate_equal_true)
   pred.op = XPATH_PREDICATE_OP_EQUAL;
   pred.info.child.left = &g_predicate_value_true;
   pred.info.child.right = &g_predicate_value_true;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates.push_back(pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -562,7 +560,7 @@ TEST(xpath_predicate, predicate_equal_false)
   pred.op = XPATH_PREDICATE_OP_EQUAL;
   pred.info.child.left = &g_predicate_value_true;
   pred.info.child.right = &g_predicate_value_false;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates.push_back(pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
@@ -586,7 +584,7 @@ TEST(xpath_predicate, predicate_position_1)
   pred.op = XPATH_PREDICATE_OP_EQUAL;
   pred.info.child.left = &pred_val_1;
   pred.info.child.right = &pred_fn_position;
-  step.predicates = g_list_append(step.predicates, &pred);
+  step.predicates.push_back(pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);

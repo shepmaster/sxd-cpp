@@ -48,11 +48,13 @@ typedef enum {
 #define XPATH_NODE_TYPE_TEXT_NODE (1 << 1)
 typedef unsigned char xpath_node_type_t;
 
+typedef struct xpath_predicateS xpath_predicate_t;
+
 typedef struct {
   xpath_axis_t axis;
   xpath_node_type_t type;
   char *name;
-  GList *predicates;
+  std::vector<xpath_predicate_t> predicates;
 } xpath_step_t;
 
 typedef struct {
@@ -106,8 +108,6 @@ struct xpath_predicateS {
     } child;
   } info;
 };
-
-typedef struct xpath_predicateS xpath_predicate_t;
 
 void
 xpath_tokens_free(xpath_tokens_t *tokens);
