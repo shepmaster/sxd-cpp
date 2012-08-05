@@ -19,7 +19,7 @@ xpath_fn_last(xpath_evaluation_context_t *context, xpath_parameters_t &parameter
   xpath_result_t result;
 
   result.type = XPATH_RESULT_TYPE_NUMERIC;
-  result.value.numeric = nodeset_count(context->nodeset);
+  result.value.numeric = context->nodeset->count();
 
   return result;
 }
@@ -33,8 +33,8 @@ xpath_fn_position(xpath_evaluation_context_t *context, xpath_parameters_t &param
   result.type = XPATH_RESULT_TYPE_NUMERIC;
   result.value.numeric = 0;
 
-  for (i = 0; i < nodeset_count(context->nodeset); i++) {
-    if (context->node == nodeset_get(context->nodeset, i)) {
+  for (i = 0; i < context->nodeset->count(); i++) {
+    if (context->node == (*context->nodeset)[i]) {
       /* Position is one-indexed, not zero */
       result.value.numeric = i + 1;
       break;
@@ -60,7 +60,7 @@ xpath_fn_count(xpath_evaluation_context_t *context_unused, xpath_parameters_t &p
   }
 
   result.type = XPATH_RESULT_TYPE_NUMERIC;
-  result.value.numeric = nodeset_count(nodeset->value.nodeset);
+  result.value.numeric = nodeset->value.nodeset->count();
 
   return result;
 }
@@ -296,7 +296,7 @@ xpath_fn_boolean(xpath_evaluation_context_t *context_unused, xpath_parameters_t 
     result.value.boolean = (value->value.string[0] != '\0');
     break;
   case XPATH_RESULT_TYPE_NODESET:
-    result.value.boolean = (nodeset_count(value->value.nodeset) > 0);
+    result.value.boolean = (value->value.nodeset->count() > 0);
     break;
   }
 

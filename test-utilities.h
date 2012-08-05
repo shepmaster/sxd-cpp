@@ -21,7 +21,7 @@ private:
   GString *string_;
 };
 
-nodeset_t *
+Nodeset *
 nodeset_new_with_nodes(Node *first, ...);
 
 #endif

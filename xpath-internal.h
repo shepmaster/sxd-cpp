@@ -75,13 +75,13 @@ typedef struct {
     unsigned int boolean:1;
     double numeric;
     char *string;
-    nodeset_t *nodeset;
+    Nodeset *nodeset;
   } value;
 } xpath_result_t;
 
 typedef struct {
   Node *node;
-  nodeset_t *nodeset;
+  Nodeset *nodeset;
 } xpath_evaluation_context_t;
 
 typedef std::vector<xpath_result_t> xpath_parameters_t;
@@ -124,16 +124,16 @@ xpath_compiled_free(xpath_compiled_t *compiled);
 xpath_compiled_t *
 xpath_compile(const char * const xpath);
 
-nodeset_t *
+Nodeset *
 xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step);
 
-nodeset_t *
-xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step);
+Nodeset *
+xpath_apply_predicates(Nodeset *nodeset, xpath_step_t *step);
 
-nodeset_t *
+Nodeset *
 xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps);
 
-nodeset_t *
+Nodeset *
 xpath_apply_xpath(Node *node, const char * const xpath);
 
 void

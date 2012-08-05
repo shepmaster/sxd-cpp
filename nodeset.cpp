@@ -1,51 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <glib.h>
 
 #include "nodeset.h"
 
-#define nodesetS GPtrArray
-
-void
-nodeset_free(nodeset_t *nodeset)
-{
-  g_ptr_array_free((GPtrArray *)nodeset, TRUE);
-}
-
-nodeset_t *
-nodeset_new(void)
-{
-  return (nodeset_t *)g_ptr_array_new();
-}
-
 unsigned int
-nodeset_count(nodeset_t *nodeset)
+Nodeset::count()
 {
-  GPtrArray *garray = (GPtrArray *)nodeset;
-  return garray->len;
+  return nodes.size();
 }
 
 void
-nodeset_add(nodeset_t *nodeset, Node *node)
+Nodeset::add(Node *node)
 {
-  g_ptr_array_add((GPtrArray *)nodeset, node);
+  nodes.push_back(node);
 }
 
 void
-nodeset_add_nodeset(nodeset_t *nodeset, nodeset_t *to_add)
+Nodeset::add_nodeset(Nodeset &to_add)
 {
-  GPtrArray *g_nodeset = (GPtrArray *)nodeset;
-  GPtrArray *g_to_add = (GPtrArray *)to_add;
-  int i;
-
-  for (i = 0; i < g_to_add->len; i++) {
-    g_ptr_array_add(g_nodeset, g_ptr_array_index(g_to_add, i));
-  }
+  nodes.insert(nodes.end(), to_add.nodes.begin(), to_add.nodes.end());
 }
 
 Node *
-nodeset_get(nodeset_t *nodeset, unsigned int i)
+Nodeset::operator[](unsigned int i)
 {
-  GPtrArray *garray = (GPtrArray *)nodeset;
-  return (Node *)garray->pdata[i];
+  return nodes[i];
 }

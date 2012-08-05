@@ -46,19 +46,19 @@ StringOutput::string()
 }
 
 
-nodeset_t *
+Nodeset *
 nodeset_new_with_nodes(Node *first, ...)
 {
-  nodeset_t *ns;
+  Nodeset *ns;
   Node *node;
   va_list ap;
 
-  ns = nodeset_new();
-  nodeset_add(ns, first);
+  ns = new Nodeset();
+  ns->add(first);
 
   va_start(ap, first);
   while ((node = va_arg(ap, Node *))) {
-    nodeset_add(ns, node);
+    ns->add(node);
   }
   va_end(ap);
 

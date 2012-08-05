@@ -1,26 +1,20 @@
 #ifndef NODESET_H
 #define NODESET_H
 
-typedef struct nodesetS nodeset_t;
-
+#include <vector>
 #include "node.h"
 
-void
-nodeset_free(nodeset_t *nodeset);
+class Nodeset {
+public:
+  unsigned int count();
 
-nodeset_t *
-nodeset_new(void);
+  void add(Node *node);
+  void add_nodeset(Nodeset &to_add);
 
-unsigned int
-nodeset_count(nodeset_t *nodeset);
+  Node *operator[](unsigned int i);
 
-void
-nodeset_add(nodeset_t *nodeset, Node *node);
-
-void
-nodeset_add_nodeset(nodeset_t *nodeset, nodeset_t *to_add);
-
-Node *
-nodeset_get(nodeset_t *nodeset, unsigned int i);
+private:
+  std::vector<Node *> nodes;
+};
 
 #endif

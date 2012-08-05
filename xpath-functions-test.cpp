@@ -79,7 +79,7 @@ add_boolean_param(xpath_parameters_t &params, int value)
  * freed after calling this function
  */
 static void
-add_nodeset_param(xpath_parameters_t &params, nodeset_t *value)
+add_nodeset_param(xpath_parameters_t &params, Nodeset *value)
 {
   xpath_result_t num;
 
@@ -133,7 +133,7 @@ TEST_GROUP(xpath)
 
 TEST(xpath, fn_last)
 {
-  nodeset_t *ns;
+  Nodeset *ns;
   xpath_evaluation_context_t context;
 
   ns = nodeset_new_with_nodes(el_1, el_2, el_3, NULL);
@@ -152,12 +152,12 @@ TEST(xpath, fn_last)
   res = xpath_fn_last(&context, parameters);
   CHECK_RESULT_NUMERIC(res, 3);
 
-  nodeset_free(ns);
+  delete ns;
 }
 
 TEST(xpath, fn_position)
 {
-  nodeset_t *ns;
+  Nodeset *ns;
   xpath_evaluation_context_t context;
 
   ns = nodeset_new_with_nodes(el_1, el_2, el_3, NULL);
@@ -176,12 +176,12 @@ TEST(xpath, fn_position)
   res = xpath_fn_position(&context, parameters);
   CHECK_RESULT_NUMERIC(res, 3);
 
-  nodeset_free(ns);
+  delete ns;
 }
 
 TEST(xpath, fn_count)
 {
-  nodeset_t *ns;
+  Nodeset *ns;
 
   ns = nodeset_new_with_nodes(el_1, el_2, el_3, NULL);
   add_nodeset_param(parameters, ns);
@@ -331,7 +331,7 @@ TEST(xpath, fn_boolean_number_nan)
 
 TEST(xpath, fn_boolean_nodeset)
 {
-  nodeset_t *ns;
+  Nodeset *ns;
 
   ns = nodeset_new_with_nodes(el_1, el_2, el_3, NULL);
   add_nodeset_param(parameters, ns);
@@ -342,9 +342,9 @@ TEST(xpath, fn_boolean_nodeset)
 
 TEST(xpath, fn_boolean_nodeset_empty)
 {
-  nodeset_t *ns;
+  Nodeset *ns;
 
-  ns = nodeset_new();
+  ns = new Nodeset();
   add_nodeset_param(parameters, ns);
 
   res = xpath_fn_boolean(NULL, parameters);

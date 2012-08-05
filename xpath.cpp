@@ -148,7 +148,7 @@ xpath_compile(const char * const xpath)
 
 typedef struct {
   xpath_step_t *step;
-  nodeset_t *nodeset;
+  Nodeset *nodeset;
 } xpath_test_step_t;
 
 static xpath_result_t
@@ -214,10 +214,10 @@ evaluate_as_position(xpath_result_t result_value, xpath_evaluation_context_t *co
   return eval_predicate(&pred_eq, context);
 }
 
-nodeset_t *
-xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
+Nodeset *
+xpath_apply_predicates(Nodeset *nodeset, xpath_step_t *step)
 {
-  nodeset_t *current_nodes;
+  Nodeset *current_nodes;
 
   current_nodes = nodeset;
 
@@ -225,15 +225,15 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
     xpath_predicate_t *predicate;
     xpath_evaluation_context_t context;
     xpath_result_t result;
-    nodeset_t *selected_nodes;
+    Nodeset *selected_nodes;
     int i;
 
     predicate = &step->predicates[j];
     context.nodeset = current_nodes;
-    selected_nodes = nodeset_new();
+    selected_nodes = new Nodeset();
 
-    for (i = 0; i < nodeset_count(current_nodes); i++) {
-      context.node = nodeset_get(current_nodes, i);
+    for (i = 0; i < current_nodes->count(); i++) {
+      context.node = (*current_nodes)[i];
       result = eval_predicate(predicate, &context);
 
       if (result.type == XPATH_RESULT_TYPE_NUMERIC) {
@@ -245,11 +245,11 @@ xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step)
       }
 
       if (result.value.boolean == TRUE) {
-	nodeset_add(selected_nodes, context.node);
+	selected_nodes->add(context.node);
       }
     }
 
-    nodeset_free(current_nodes);
+    delete current_nodes;
     current_nodes = selected_nodes;
   }
 
@@ -277,7 +277,7 @@ xpath_test_step(Node *node, xpath_test_step_t *data)
   }
 
   if (should_add) {
-    nodeset_add(data->nodeset, node);
+    data->nodeset->add(node);
   }
 }
 
@@ -314,12 +314,12 @@ struct PrecedingSiblingAndAncestorTester {
   xpath_test_step_t *data;
 };
 
-nodeset_t *
+Nodeset *
 xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
 {
   xpath_test_step_t data;
 
-  data.nodeset = nodeset_new();
+  data.nodeset = new Nodeset();
   data.step = step;
 
   switch (step->axis) {
@@ -367,44 +367,44 @@ xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
   return data.nodeset;
 }
 
-nodeset_t *
+Nodeset *
 xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps)
 {
-  nodeset_t *result_nodes;
+  Nodeset *result_nodes;
   int i;
 
-  result_nodes = nodeset_new();
-  nodeset_add(result_nodes, node);
+  result_nodes = new Nodeset();
+  result_nodes->add(node);
 
   for (i = 0; i < steps.size(); i++) {
     xpath_step_t *step = &steps[i];
-    nodeset_t *current_nodes;
+    Nodeset *current_nodes;
     int j;
 
-    current_nodes = nodeset_new();
+    current_nodes = new Nodeset();
 
-    for (j = 0; j < nodeset_count(result_nodes); j++) {
+    for (j = 0; j < result_nodes->count(); j++) {
       Node *current_node;
-      nodeset_t *selected_nodes;
+      Nodeset *selected_nodes;
 
-      current_node = nodeset_get(result_nodes, j);
+      current_node = (*result_nodes)[j];
       selected_nodes = xpath_select_xpath_no_predicates(current_node, step);
-      nodeset_add_nodeset(current_nodes, selected_nodes);
-      nodeset_free(selected_nodes);
+      current_nodes->add_nodeset(*selected_nodes);
+      delete selected_nodes;
     }
 
-    nodeset_free(result_nodes);
+    delete result_nodes;
     result_nodes = xpath_apply_predicates(current_nodes, step);
   }
 
   return result_nodes;
 }
 
-nodeset_t *
+Nodeset *
 xpath_apply_xpath(Node *node, const char * const xpath)
 {
   xpath_compiled_t *compiled;
-  nodeset_t *nodes;
+  Nodeset *nodes;
 
   compiled = xpath_compile(xpath);
   nodes = xpath_select_xpath_steps(node, compiled->steps);
@@ -425,7 +425,7 @@ xpath_result_destroy(xpath_result_t *result)
     free(result->value.string);
     break;
   case XPATH_RESULT_TYPE_NODESET:
-    nodeset_free(result->value.nodeset);
+    delete result->value.nodeset;
     break;
   }
 }
