@@ -1,6 +1,7 @@
 #ifndef XPATH_INTERNAL_H
 #define XPATH_INTERNAL_H
 
+#include <vector>
 #include <glib.h>
 #include "xpath.h"
 #include "node.h"
@@ -55,7 +56,7 @@ typedef struct {
 } xpath_step_t;
 
 typedef struct {
-  GArray *steps;
+  std::vector<xpath_step_t> steps;
 } xpath_compiled_t;
 
 typedef enum {
@@ -128,7 +129,7 @@ nodeset_t *
 xpath_apply_predicates(nodeset_t *nodeset, xpath_step_t *step);
 
 nodeset_t *
-xpath_select_xpath_steps(Node *node, GArray *steps);
+xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps);
 
 nodeset_t *
 xpath_apply_xpath(Node *node, const char * const xpath);

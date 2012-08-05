@@ -3,8 +3,6 @@
 #include <string.h>
 #include <math.h>
 
-#include <glib.h>
-
 #include "element.h"
 #include "xpath-internal.h"
 #include "xpath-functions.h"
@@ -113,14 +111,12 @@ xpath_compiled_free(xpath_compiled_t *compiled)
 {
   int i;
 
-  for (i = 0; i < compiled->steps->len; i++) {
-    xpath_step_t *step;
-    step = &g_array_index(compiled->steps, xpath_step_t, i);
+  for (i = 0; i < compiled->steps.size(); i++) {
+    xpath_step_t *step = &compiled->steps[i];
     free(step->name);
   }
 
-  g_array_free(compiled->steps, TRUE);
-  free(compiled);
+  delete compiled;
 }
 
 xpath_compiled_t *
@@ -131,8 +127,7 @@ xpath_compile(const char * const xpath)
   xpath_step_t step;
   int i;
 
-  compiled = (xpath_compiled_t *)malloc(sizeof(*compiled));
-  compiled->steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
+  compiled = new xpath_compiled_t;
 
   tokens = xpath_tokenize(xpath);
   for (i = 0; i < tokens->tokens->len; i++) {
@@ -143,7 +138,7 @@ xpath_compile(const char * const xpath)
       step.type = XPATH_NODE_TYPE_ELEMENT;
       step.name = xpath_tokens_string(tokens, i);
       step.predicates = NULL;
-      g_array_append_val(compiled->steps, step);
+      compiled->steps.push_back(step);
       break;
     default:
       break;
@@ -377,7 +372,7 @@ xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
 }
 
 nodeset_t *
-xpath_select_xpath_steps(Node *node, GArray *steps)
+xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps)
 {
   nodeset_t *result_nodes;
   int i;
@@ -385,13 +380,12 @@ xpath_select_xpath_steps(Node *node, GArray *steps)
   result_nodes = nodeset_new();
   nodeset_add(result_nodes, node);
 
-  for (i = 0; i < steps->len; i++) {
-    xpath_step_t *step;
+  for (i = 0; i < steps.size(); i++) {
+    xpath_step_t *step = &steps[i];
     nodeset_t *current_nodes;
     int j;
 
     current_nodes = nodeset_new();
-    step = &g_array_index(steps, xpath_step_t, i);
 
     for (j = 0; j < nodeset_count(result_nodes); j++) {
       Node *current_node;

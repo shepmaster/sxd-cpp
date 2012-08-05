@@ -82,10 +82,10 @@ TEST(xpath, compile_element)
 
   compiled = xpath_compile(name);
 
-  CHECK_EQUAL(1, compiled->steps->len);
-  CHECK_EQUAL(XPATH_AXIS_CHILD, g_array_index(compiled->steps, xpath_step_t, 0).axis);
-  CHECK_EQUAL(XPATH_NODE_TYPE_ELEMENT, g_array_index(compiled->steps, xpath_step_t, 0).type);
-  STRCMP_EQUAL(name, g_array_index(compiled->steps, xpath_step_t, 0).name);
+  CHECK_EQUAL_C_INT(1, compiled->steps.size());
+  CHECK_EQUAL(XPATH_AXIS_CHILD, compiled->steps[0].axis);
+  CHECK_EQUAL(XPATH_NODE_TYPE_ELEMENT, compiled->steps[0].type);
+  STRCMP_EQUAL(name, compiled->steps[0].name);
 
   xpath_compiled_free(compiled);
 }
@@ -393,29 +393,27 @@ TEST(xpath, two_step)
 {
   nodeset_t *ns;
   xpath_step_t step;
-  GArray *steps;
+  std::vector<xpath_step_t> steps;
   xpath_axis_test_t d;
   unsigned int i;
 
   init_xpath_axis_test(&d);
-  steps = g_array_new(FALSE, FALSE, sizeof(xpath_step_t));
 
   init_step(&step);
   step.name = strdup("one");
-  g_array_append_val(steps, step);
+  steps.push_back(step);
   step.name = strdup("c");
-  g_array_append_val(steps, step);
+  steps.push_back(step);
 
   ns = xpath_select_xpath_steps(d.alpha, steps);
   CHECK_EQUAL(1, nodeset_count(ns));
   CHECK_nodeset_item(d.c, ns, 0);
 
-  for (i = 0; i < steps->len; i++) {
-    xpath_step_t *x;
-    x = &g_array_index(steps, xpath_step_t, i);
+  for (i = 0; i < steps.size(); i++) {
+    xpath_step_t *x = &steps[i];
     destroy_step(x);
   }
-  g_array_free(steps, TRUE);
+
   nodeset_free(ns);
   destroy_xpath_axis_test(&d);
 }

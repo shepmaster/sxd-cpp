@@ -1,6 +1,7 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
+#include <glib.h>
 #include "node.h"
 
 class Element : public Node {
