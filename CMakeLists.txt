@@ -29,3 +29,6 @@ foreach(program ${test_programs})
   target_link_libraries(${program}-test sxd test-utilities CppUTest)
   add_test(${program} ${program}-test)
 endforeach(program)
+
+add_executable(util util.cpp)
+target_link_libraries(util sxd)
