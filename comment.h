@@ -1,6 +1,7 @@
 #ifndef COMMENT_H
 #define COMMENT_H
 
+#include <string>
 #include "node.h"
 
 class Comment : public Node {
@@ -11,7 +12,7 @@ public:
   const char *text();
   void output(Output &output);
 private:
-  char *text_;
+  std::string text_;
 };
 
 #endif

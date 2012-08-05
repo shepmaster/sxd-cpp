@@ -6,19 +6,18 @@
 
 Comment::Comment(Document *doc, const char * const text) :
   Node(doc, NODE_TYPE_COMMENT),
-  text_(strdup(text))
+  text_(text)
 {
 }
 
 Comment::~Comment()
 {
-  free(text_);
 }
 
 const char *
 Comment::text()
 {
-  return text_;
+  return text_.c_str();
 }
 
 void
