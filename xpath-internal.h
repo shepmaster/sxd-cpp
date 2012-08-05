@@ -25,7 +25,7 @@ typedef struct {
 
 typedef struct {
   char *xpath;
-  GArray *tokens;
+  std::vector<xpath_token_t> tokens;
 } xpath_tokens_t;
 
 typedef enum {

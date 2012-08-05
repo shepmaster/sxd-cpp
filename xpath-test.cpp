@@ -21,19 +21,19 @@ void
 dump_xpath_tokens(xpath_tokens_t *tokens)
 {
   unsigned int i;
-  for (i = 0; i < tokens->tokens->len; i++) {
-    xpath_token_t *t = &g_array_index(tokens->tokens, xpath_token_t, i);
+  for (i = 0; i < tokens->tokens.size(); i++) {
+    xpath_token_t *t = &tokens->tokens[i];
     printf("%d\n", t->start);
   }
 }
 
-#define CHECK_token(_tokens, _index, _type, _start)			\
-  {									\
-    xpath_token_t *__token;						\
-    __token = &g_array_index(_tokens->tokens, xpath_token_t, _index);	\
-    CHECK_EQUAL(_type, __token->type);					\
-    CHECK_EQUAL(_start, __token->start);				\
-}
+#define CHECK_token(_tokens, _index, _type, _start)     \
+  {                                                     \
+    xpath_token_t *__token;                             \
+    __token = &_tokens->tokens[_index];                 \
+    CHECK_EQUAL(_type, __token->type);                  \
+    CHECK_EQUAL(_start, __token->start);                \
+  }
 
 TEST(xpath, tokenize)
 {
@@ -42,7 +42,7 @@ TEST(xpath, tokenize)
   tokens = xpath_tokenize(xpath);
 
   STRCMP_EQUAL(xpath, tokens->xpath);
-  CHECK_EQUAL(5, tokens->tokens->len);
+  CHECK_EQUAL_C_INT(5, tokens->tokens.size());
 
   CHECK_token(tokens, 0, SLASH, 0);
   CHECK_token(tokens, 1, SLASH, 1);

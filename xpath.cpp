@@ -18,8 +18,7 @@ void
 xpath_tokens_free(xpath_tokens_t *tokens)
 {
   free(tokens->xpath);
-  g_array_free(tokens->tokens, TRUE);
-  free(tokens);
+  delete tokens;
 }
 
 xpath_tokens_t *
@@ -30,15 +29,14 @@ xpath_tokenize(const char * const xpath)
   const char *token_start = NULL;
   const char *current;
 
-  tokens = (xpath_tokens_t *)malloc(sizeof(*tokens));
+  tokens = new xpath_tokens_t;
   tokens->xpath = strdup(xpath);
-  tokens->tokens = g_array_new(FALSE, FALSE, sizeof(xpath_token_t));
 
-#define ADD_TOKEN(_type, _start)		\
-  {						\
-    token.type = _type;				\
-    token.start = _start - xpath;		\
-    g_array_append_val(tokens->tokens, token);	\
+#define ADD_TOKEN(_type, _start)                \
+  {                                             \
+    token.type = _type;                         \
+    token.start = _start - xpath;               \
+    tokens->tokens.push_back(token);            \
   }
 
 #define FINISH_TEXT()				\
@@ -90,14 +88,14 @@ xpath_tokens_string(xpath_tokens_t *tokens, int index)
   xpath_token_t *token;
   char *start_of_string;
 
-  token = &g_array_index(tokens->tokens, xpath_token_t, index);
+  token = &tokens->tokens[index];
   start_of_string = tokens->xpath + token->start;
 
-  if (index + 1 < tokens->tokens->len) {
+  if (index + 1 < tokens->tokens.size()) {
     xpath_token_t *next_token;
     int len;
 
-    next_token = &g_array_index(tokens->tokens, xpath_token_t, index + 1);
+    next_token = &tokens->tokens[index + 1];
     len = next_token->start - token->start;
 
     return g_strndup(start_of_string, len);
@@ -130,8 +128,8 @@ xpath_compile(const char * const xpath)
   compiled = new xpath_compiled_t;
 
   tokens = xpath_tokenize(xpath);
-  for (i = 0; i < tokens->tokens->len; i++) {
-    xpath_token_t *token = &g_array_index(tokens->tokens, xpath_token_t, i);
+  for (i = 0; i < tokens->tokens.size(); i++) {
+    xpath_token_t *token = &tokens->tokens[i];
     switch (token->type) {
     case TEXT:
       step.axis = XPATH_AXIS_CHILD;
