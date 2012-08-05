@@ -504,47 +504,41 @@ TEST(xpath_predicate, predicate_fn_floor)
 {
   xpath_predicate_t pred;
   xpath_result_t value;
-  GArray *parameters;
+  xpath_parameters_t parameters;
 
   init_step(&step);
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
   value.type = XPATH_RESULT_TYPE_NUMERIC;
   value.value.numeric = 1.3;
-  g_array_append_val(parameters, value);
+  parameters.push_back(value);
 
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_floor;
-  pred.info.function.parameters = parameters;
+  pred.info.function.parameters = &parameters;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_array_free(parameters, TRUE);
 }
 
 TEST(xpath_predicate, predicate_fn_ceiling)
 {
   xpath_predicate_t pred;
   xpath_result_t value;
-  GArray *parameters;
+  xpath_parameters_t parameters;
 
-  parameters = g_array_new(FALSE, FALSE, sizeof(xpath_result_t));
   value.type = XPATH_RESULT_TYPE_NUMERIC;
   value.value.numeric = 0.1;
-  g_array_append_val(parameters, value);
+  parameters.push_back(value);
 
   pred.op = XPATH_PREDICATE_OP_FUNCTION;
   pred.info.function.fn = xpath_fn_ceiling;
-  pred.info.function.parameters = parameters;
+  pred.info.function.parameters = &parameters;
   step.predicates = g_list_append(step.predicates, &pred);
 
   ns = nodeset_new_with_nodes(d.alpha, NULL);
   ns = xpath_apply_predicates(ns, &step);
   CHECK_EQUAL(1, nodeset_count(ns));
-
-  g_array_free(parameters, TRUE);
 }
 
 TEST(xpath_predicate, predicate_equal_true)

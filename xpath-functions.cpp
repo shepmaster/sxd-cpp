@@ -14,7 +14,7 @@ not_implemented(void)
 /* 4.1 - Node Set Functions */
 
 xpath_result_t
-xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused)
+xpath_fn_last(xpath_evaluation_context_t *context, xpath_parameters_t &parameters_unused)
 {
   xpath_result_t result;
 
@@ -25,7 +25,7 @@ xpath_fn_last(xpath_evaluation_context_t *context, GArray *parameters_unused)
 }
 
 xpath_result_t
-xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused)
+xpath_fn_position(xpath_evaluation_context_t *context, xpath_parameters_t &parameters_unused)
 {
   xpath_result_t result;
   int i;
@@ -45,16 +45,16 @@ xpath_fn_position(xpath_evaluation_context_t *context, GArray *parameters_unused
 }
 
 xpath_result_t
-xpath_fn_count(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_count(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *nodeset;
   xpath_result_t result;
 
-  if (parameters->len != 1) {
+  if (parameters.size() != 1) {
     not_implemented();
   }
 
-  nodeset = &g_array_index(parameters, xpath_result_t, 0);
+  nodeset = &parameters[0];
   if (nodeset->type != XPATH_RESULT_TYPE_NODESET) {
     not_implemented();
   }
@@ -68,25 +68,25 @@ xpath_fn_count(xpath_evaluation_context_t *context_unused, GArray *parameters)
 /* 4.2 - String Functions */
 
 xpath_result_t
-xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_concat(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   GString *str;
   xpath_result_t *param;
   xpath_result_t result;
   int i;
 
-  if (parameters->len < 2) {
+  if (parameters.size() < 2) {
     not_implemented();
   }
 
-  param = &g_array_index(parameters, xpath_result_t, 0);
+  param = &parameters[0];
   if (param->type != XPATH_RESULT_TYPE_STRING) {
     not_implemented();
   }
   str = g_string_new(param->value.string);
 
-  for (i = 1; i < parameters->len; i++) {
-    param = &g_array_index(parameters, xpath_result_t, i);
+  for (i = 1; i < parameters.size(); i++) {
+    param = &parameters[i];
     if (param->type != XPATH_RESULT_TYPE_STRING) {
       not_implemented();
     }
@@ -99,18 +99,18 @@ xpath_fn_concat(xpath_evaluation_context_t *context_unused, GArray *parameters)
 }
 
 xpath_result_t
-xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_starts_with(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *string;
   xpath_result_t *prefix;
   xpath_result_t result;
 
-  if (parameters->len != 2) {
+  if (parameters.size() != 2) {
     not_implemented();
   }
 
-  string = &g_array_index(parameters, xpath_result_t, 0);
-  prefix = &g_array_index(parameters, xpath_result_t, 1);
+  string = &parameters[0];
+  prefix = &parameters[1];
 
   if (string->type != XPATH_RESULT_TYPE_STRING) {
     not_implemented();
@@ -131,14 +131,14 @@ typedef struct {
 } find_substring_t;
 
 static const char *
-find_substring(find_substring_t *find, GArray *parameters)
+find_substring(find_substring_t *find, xpath_parameters_t &parameters)
 {
-  if (parameters->len != 2) {
+  if (parameters.size() != 2) {
     not_implemented();
   }
 
-  find->haystack = &g_array_index(parameters, xpath_result_t, 0);
-  find->needle = &g_array_index(parameters, xpath_result_t, 1);
+  find->haystack = &parameters[0];
+  find->needle = &parameters[1];
 
   if (find->haystack->type != XPATH_RESULT_TYPE_STRING) {
     not_implemented();
@@ -152,7 +152,7 @@ find_substring(find_substring_t *find, GArray *parameters)
 }
 
 xpath_result_t
-xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_contains(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   find_substring_t find;
   xpath_result_t result;
@@ -163,7 +163,7 @@ xpath_fn_contains(xpath_evaluation_context_t *context_unused, GArray *parameters
 }
 
 xpath_result_t
-xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   find_substring_t find;
   const char *location;
@@ -183,7 +183,7 @@ xpath_fn_substring_before(xpath_evaluation_context_t *context_unused, GArray *pa
 }
 
 xpath_result_t
-xpath_fn_substring_after(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_substring_after(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   find_substring_t find;
   const char *location;
@@ -220,7 +220,7 @@ utf8_strndup(const char *str, gsize n)
 }
 
 xpath_result_t
-xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_substring(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *string;
   xpath_result_t *start;
@@ -229,18 +229,18 @@ xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameter
   const char *start_byte;
   xpath_result_t result;
 
-  if (parameters->len < 2) {
+  if (parameters.size() < 2) {
     not_implemented();
   }
 
-  if (parameters->len > 3) {
+  if (parameters.size() > 3) {
     not_implemented();
   }
 
-  string = &g_array_index(parameters, xpath_result_t, 0);
-  start = &g_array_index(parameters, xpath_result_t, 1);
-  if (parameters->len == 3) {
-    end = &g_array_index(parameters, xpath_result_t, 2);
+  string = &parameters[0];
+  start = &parameters[1];
+  if (parameters.size() == 3) {
+    end = &parameters[2];
   }
 
   if (string->type != XPATH_RESULT_TYPE_STRING) {
@@ -272,16 +272,16 @@ xpath_fn_substring(xpath_evaluation_context_t *context_unused, GArray *parameter
 /* 4.3 - Boolean Functions */
 
 xpath_result_t
-xpath_fn_boolean(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_boolean(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *value;
   xpath_result_t result;
 
-  if (parameters->len != 1) {
+  if (parameters.size() != 1) {
     not_implemented();
   }
 
-  value = &g_array_index(parameters, xpath_result_t, 0);
+  value = &parameters[0];
 
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
   switch (value->type) {
@@ -304,16 +304,16 @@ xpath_fn_boolean(xpath_evaluation_context_t *context_unused, GArray *parameters)
 }
 
 xpath_result_t
-xpath_fn_not(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_not(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *value;
   xpath_result_t result;
 
-  if (parameters->len != 1) {
+  if (parameters.size() != 1) {
     not_implemented();
   }
 
-  value = &g_array_index(parameters, xpath_result_t, 0);
+  value = &parameters[0];
   if (value->type != XPATH_RESULT_TYPE_BOOLEAN) {
     not_implemented();
   }
@@ -325,7 +325,7 @@ xpath_fn_not(xpath_evaluation_context_t *context_unused, GArray *parameters)
 }
 
 xpath_result_t
-xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
+xpath_fn_true(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -334,7 +334,7 @@ xpath_fn_true(xpath_evaluation_context_t *context_unused, GArray *parameters_unu
 }
 
 xpath_result_t
-xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_unused)
+xpath_fn_false(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters_unused)
 {
   xpath_result_t result;
   result.type = XPATH_RESULT_TYPE_BOOLEAN;
@@ -345,16 +345,16 @@ xpath_fn_false(xpath_evaluation_context_t *context_unused, GArray *parameters_un
 /* 4.4 - Number Functions */
 
 xpath_result_t
-xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_floor(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *value;
   xpath_result_t result;
 
-  if (parameters->len != 1) {
+  if (parameters.size() != 1) {
     not_implemented();
   }
 
-  value = &g_array_index(parameters, xpath_result_t, 0);
+  value = &parameters[0];
   if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
     not_implemented();
   }
@@ -366,16 +366,16 @@ xpath_fn_floor(xpath_evaluation_context_t *context_unused, GArray *parameters)
 }
 
 xpath_result_t
-xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *value;
   xpath_result_t result;
 
-  if (parameters->len != 1) {
+  if (parameters.size() != 1) {
     not_implemented();
   }
 
-  value = &g_array_index(parameters, xpath_result_t, 0);
+  value = &parameters[0];
   if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
     not_implemented();
   }
@@ -387,16 +387,16 @@ xpath_fn_ceiling(xpath_evaluation_context_t *context_unused, GArray *parameters)
 }
 
 xpath_result_t
-xpath_fn_round(xpath_evaluation_context_t *context_unused, GArray *parameters)
+xpath_fn_round(xpath_evaluation_context_t *context_unused, xpath_parameters_t &parameters)
 {
   xpath_result_t *value;
   xpath_result_t result;
 
-  if (parameters->len != 1) {
+  if (parameters.size() != 1) {
     not_implemented();
   }
 
-  value = &g_array_index(parameters, xpath_result_t, 0);
+  value = &parameters[0];
   if (value->type != XPATH_RESULT_TYPE_NUMERIC) {
     not_implemented();
   }

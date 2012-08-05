@@ -82,7 +82,9 @@ typedef struct {
   nodeset_t *nodeset;
 } xpath_evaluation_context_t;
 
-typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, GArray *parameters);
+typedef std::vector<xpath_result_t> xpath_parameters_t;
+
+typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, xpath_parameters_t &parameters);
 
 typedef enum {
   XPATH_PREDICATE_OP_VALUE,
@@ -96,7 +98,7 @@ struct xpath_predicateS {
     xpath_result_t value;
     struct {
       xpath_fn_t fn;
-      GArray *parameters;
+      xpath_parameters_t *parameters;
     } function;
     struct {
       struct xpath_predicateS *left;

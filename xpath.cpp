@@ -162,7 +162,7 @@ eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context
     result = predicate->info.value;
     break;
   case XPATH_PREDICATE_OP_FUNCTION:
-    result = predicate->info.function.fn(context, predicate->info.function.parameters);
+    result = predicate->info.function.fn(context, *predicate->info.function.parameters);
     break;
   case XPATH_PREDICATE_OP_EQUAL:
     {
