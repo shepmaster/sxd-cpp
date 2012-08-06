@@ -107,28 +107,15 @@ xpath_tokens_string(xpath_tokens_t *tokens, int index)
   }
 }
 
-void
-xpath_compiled_free(xpath_compiled_t *compiled)
-{
-  int i;
-
-  for (i = 0; i < compiled->steps.size(); i++) {
-    xpath_step_t *step = &compiled->steps[i];
-    free(step->name);
-  }
-
-  delete compiled;
-}
-
-xpath_compiled_t *
-xpath_compile(const char * const xpath)
+XPathCompiled *
+XPathCompiled::compile(const char * const xpath)
 {
   xpath_tokens_t *tokens;
-  xpath_compiled_t *compiled;
+  XPathCompiled *compiled;
   xpath_step_t step;
   int i;
 
-  compiled = new xpath_compiled_t;
+  compiled = new XPathCompiled;
 
   tokens = xpath_tokenize(xpath);
   for (i = 0; i < tokens->tokens.size(); i++) {
@@ -138,7 +125,7 @@ xpath_compile(const char * const xpath)
       step.axis = XPATH_AXIS_CHILD;
       step.type = XPATH_NODE_TYPE_ELEMENT;
       step.name = xpath_tokens_string(tokens, i);
-      compiled->steps.push_back(step);
+      compiled->add_step(step);
       break;
     default:
       break;
@@ -147,6 +134,26 @@ xpath_compile(const char * const xpath)
   xpath_tokens_free(tokens);
 
   return compiled;
+}
+
+XPathCompiled::~XPathCompiled()
+{
+  for (int i = 0; i < _steps.size(); i++) {
+    xpath_step_t *step = &_steps[i];
+    free(step->name);
+  }
+}
+
+void
+XPathCompiled::add_step(xpath_step_t step)
+{
+  _steps.push_back(step);
+}
+
+std::vector<xpath_step_t> &
+XPathCompiled::steps()
+{
+  return _steps;
 }
 
 typedef struct {
@@ -353,12 +360,12 @@ xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps)
 Nodeset *
 xpath_apply_xpath(Node *node, const char * const xpath)
 {
-  xpath_compiled_t *compiled;
+  XPathCompiled *compiled;
   Nodeset *nodes;
 
-  compiled = xpath_compile(xpath);
-  nodes = xpath_select_xpath_steps(node, compiled->steps);
-  xpath_compiled_free(compiled);
+  compiled = XPathCompiled::compile(xpath);
+  nodes = xpath_select_xpath_steps(node, compiled->steps());
+  delete compiled;
 
   return nodes;
 }

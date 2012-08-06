@@ -75,16 +75,17 @@ TEST(xpath, tokens_string)
 TEST(xpath, compile_element)
 {
   const char * const name = "one";
-  xpath_compiled_t *compiled;
+  XPathCompiled *compiled;
 
-  compiled = xpath_compile(name);
+  compiled = XPathCompiled::compile(name);
 
-  CHECK_EQUAL_C_INT(1, compiled->steps.size());
-  CHECK_EQUAL(XPATH_AXIS_CHILD, compiled->steps[0].axis);
-  CHECK_EQUAL(XPATH_NODE_TYPE_ELEMENT, compiled->steps[0].type);
-  STRCMP_EQUAL(name, compiled->steps[0].name);
+  std::vector<xpath_step_t> steps = compiled->steps();
+  CHECK_EQUAL_C_INT(1, steps.size());
+  CHECK_EQUAL(XPATH_AXIS_CHILD, steps[0].axis);
+  CHECK_EQUAL(XPATH_NODE_TYPE_ELEMENT, steps[0].type);
+  STRCMP_EQUAL(name, steps[0].name);
 
-  xpath_compiled_free(compiled);
+  delete compiled;
 }
 
 typedef struct {

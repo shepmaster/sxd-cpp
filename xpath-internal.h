@@ -63,9 +63,17 @@ typedef struct {
   std::vector<XPathPredicate *> predicates;
 } xpath_step_t;
 
-typedef struct {
-  std::vector<xpath_step_t> steps;
-} xpath_compiled_t;
+class XPathCompiled {
+public:
+  static XPathCompiled *compile(const char * const xpath);
+  ~XPathCompiled();
+
+  void add_step(xpath_step_t step);
+  std::vector<xpath_step_t> &steps();
+
+private:
+  std::vector<xpath_step_t> _steps;
+};
 
 typedef enum {
   XPATH_RESULT_TYPE_BOOLEAN,
@@ -102,12 +110,6 @@ xpath_tokenize(const char * const xpath);
 
 char *
 xpath_tokens_string(xpath_tokens_t *tokens, int index);
-
-void
-xpath_compiled_free(xpath_compiled_t *compiled);
-
-xpath_compiled_t *
-xpath_compile(const char * const xpath);
 
 Nodeset *
 xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step);
