@@ -11,45 +11,6 @@
 #include "xpath-functions.h"
 #include "test-utilities.h"
 
-class PredicateBooleanValue : public XPathPredicate
-{
-public:
-  PredicateBooleanValue(bool value)
-  {
-    _value.type = XPATH_RESULT_TYPE_BOOLEAN;
-    _value.value.boolean = value;
-  }
-
-  xpath_result_t eval(xpath_evaluation_context_t *context)
-  {
-    return _value;
-  }
-
-private:
-  xpath_result_t _value;
-};
-
-class PredicateNumericValue : public XPathPredicate
-{
-public:
-  PredicateNumericValue(double value)
-  {
-    _value.type = XPATH_RESULT_TYPE_NUMERIC;
-    _value.value.numeric = value;
-  }
-
-  xpath_result_t eval(xpath_evaluation_context_t *context)
-  {
-    return _value;
-  }
-
-private:
-  xpath_result_t _value;
-};
-
-static PredicateBooleanValue g_predicate_value_true(true);
-static PredicateBooleanValue g_predicate_value_false(false);
-
 TEST_GROUP(xpath)
 {};
 
@@ -472,119 +433,15 @@ TEST_GROUP(xpath_predicate)
   }
 };
 
-TEST(xpath_predicate, predicate_true)
-{
-  step.predicates.push_back(&g_predicate_value_true);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
-}
-
-TEST(xpath_predicate, predicate_false)
-{
-  step.predicates.push_back(&g_predicate_value_false);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(0, ns->count());
-}
-
-TEST(xpath_predicate, predicate_value_3)
-{
-  PredicateNumericValue pred_val_3(3);
-  step.predicates.push_back(&pred_val_3);
-
-  ns = nodeset_new_with_nodes(d.a, d.b, d.c, d.d, NULL);
-
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
-  CHECK_nodeset_item(d.c, ns, 0);
-}
-
-TEST(xpath_predicate, predicate_fn_true)
-{
-  xpath_parameters_t parameters;
-
-  PredicateFunction pred(xpath_fn_true, parameters);
-  step.predicates.push_back(&pred);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
-}
-
-TEST(xpath_predicate, predicate_fn_false)
-{
-  xpath_parameters_t parameters;
-
-  PredicateFunction pred(xpath_fn_false, parameters);
-  step.predicates.push_back(&pred);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(0, ns->count());
-}
-
-TEST(xpath_predicate, predicate_fn_floor)
-{
-  xpath_result_t value;
-  xpath_parameters_t parameters;
-
-  init_step(&step);
-  value.type = XPATH_RESULT_TYPE_NUMERIC;
-  value.value.numeric = 1.3;
-  parameters.push_back(value);
-
-  PredicateFunction pred(xpath_fn_floor, parameters);
-  step.predicates.push_back(&pred);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
-}
-
-TEST(xpath_predicate, predicate_fn_ceiling)
-{
-  xpath_result_t value;
-  xpath_parameters_t parameters;
-
-  value.type = XPATH_RESULT_TYPE_NUMERIC;
-  value.value.numeric = 0.1;
-  parameters.push_back(value);
-
-  PredicateFunction pred(xpath_fn_ceiling, parameters);
-  step.predicates.push_back(&pred);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
-}
-
-TEST(xpath_predicate, predicate_equal_true)
-{
-  PredicateEquals pred(g_predicate_value_true, g_predicate_value_true);
-  step.predicates.push_back(&pred);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
-}
-
-TEST(xpath_predicate, predicate_equal_false)
-{
-  PredicateEquals pred(g_predicate_value_true, g_predicate_value_false);
-  step.predicates.push_back(&pred);
-
-  ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(0, ns->count());
-}
+#include "predicate-value.h"
+#include "predicate-function.h"
+#include "predicate-equals.h"
+// Where does this test really belong?
 
 TEST(xpath_predicate, predicate_position_1)
 {
   xpath_parameters_t parameters;
-  PredicateNumericValue pred_val_1(1);
+  PredicateValue pred_val_1 = PredicateValue::numeric(1);
   PredicateFunction pred_fn_position(xpath_fn_position, parameters);
   PredicateEquals pred(pred_val_1, pred_fn_position);
 

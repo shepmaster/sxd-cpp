@@ -1,6 +1,8 @@
 #ifndef XPATH_FUNCTIONS_H
 #define XPATH_FUNCTIONS_H
 
+#include "xpath-internal.h"
+
 /* XPath 1.0 Core Function Library */
 
 /* 4.1 - Node Set Functions */

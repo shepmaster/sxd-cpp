@@ -7,6 +7,9 @@
 #include "xpath-internal.h"
 #include "xpath-functions.h"
 #include "nodeset.h"
+#include "predicate-value.h"
+#include "predicate-function.h"
+#include "predicate-equals.h"
 
 static void
 not_implemented(void)
