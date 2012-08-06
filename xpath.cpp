@@ -152,66 +152,14 @@ typedef struct {
 } xpath_test_step_t;
 
 static xpath_result_t
-eval_predicate(xpath_predicate_t *predicate, xpath_evaluation_context_t *context)
-{
-  xpath_result_t result;
-
-  switch (predicate->op) {
-  case XPATH_PREDICATE_OP_VALUE:
-    result = predicate->info.value;
-    break;
-  case XPATH_PREDICATE_OP_FUNCTION:
-    result = predicate->info.function.fn(context, *predicate->info.function.parameters);
-    break;
-  case XPATH_PREDICATE_OP_EQUAL:
-    {
-      xpath_result_t lresult = eval_predicate(predicate->info.child.left, context);
-      xpath_result_t rresult = eval_predicate(predicate->info.child.right, context);
-
-      result.type = XPATH_RESULT_TYPE_BOOLEAN;
-      if (lresult.type != rresult.type) {
-	not_implemented();
-      }
-      switch (lresult.type) {
-      case XPATH_RESULT_TYPE_BOOLEAN:
-	result.value.boolean = lresult.value.boolean == rresult.value.boolean;
-	break;
-      case XPATH_RESULT_TYPE_NUMERIC:
-	result.value.boolean = lresult.value.numeric == rresult.value.numeric;
-	break;
-      case XPATH_RESULT_TYPE_STRING:
-	result.value.boolean = (strcmp(lresult.value.string, rresult.value.string) == 0);
-	break;
-      case XPATH_RESULT_TYPE_NODESET:
-	not_implemented();
-	break;
-      }
-    }
-    break;
-  }
-
-  return result;
-}
-
-static xpath_result_t
 evaluate_as_position(xpath_result_t result_value, xpath_evaluation_context_t *context)
 {
-  xpath_predicate_t pred_val;
-  xpath_predicate_t pred_fn_position;
-  xpath_predicate_t pred_eq;
+  xpath_parameters_t empty;
+  PredicateValue val(result_value);
+  PredicateFunction fn_position(xpath_fn_position, empty);
+  PredicateEquals eq(val, fn_position);
 
-  pred_val.op = XPATH_PREDICATE_OP_VALUE;
-  pred_val.info.value = result_value;
-
-  pred_fn_position.op = XPATH_PREDICATE_OP_FUNCTION;
-  pred_fn_position.info.function.fn = xpath_fn_position;
-  pred_fn_position.info.function.parameters = NULL;
-
-  pred_eq.op = XPATH_PREDICATE_OP_EQUAL;
-  pred_eq.info.child.left = &pred_val;
-  pred_eq.info.child.right = &pred_fn_position;
-
-  return eval_predicate(&pred_eq, context);
+  return eq.eval(context);
 }
 
 Nodeset *
@@ -222,19 +170,18 @@ xpath_apply_predicates(Nodeset *nodeset, xpath_step_t *step)
   current_nodes = nodeset;
 
   for (int j = 0; j < step->predicates.size(); j++) {
-    xpath_predicate_t *predicate;
     xpath_evaluation_context_t context;
     xpath_result_t result;
     Nodeset *selected_nodes;
     int i;
 
-    predicate = &step->predicates[j];
+    XPathPredicate *predicate = step->predicates[j];
     context.nodeset = current_nodes;
     selected_nodes = new Nodeset();
 
     for (i = 0; i < current_nodes->count(); i++) {
       context.node = (*current_nodes)[i];
-      result = eval_predicate(predicate, &context);
+      result = predicate->eval(&context);
 
       if (result.type == XPATH_RESULT_TYPE_NUMERIC) {
 	result = evaluate_as_position(result, &context);

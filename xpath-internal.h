@@ -48,13 +48,19 @@ typedef enum {
 #define XPATH_NODE_TYPE_TEXT_NODE (1 << 1)
 typedef unsigned char xpath_node_type_t;
 
-typedef struct xpath_predicateS xpath_predicate_t;
+typedef struct xpath_resultS xpath_result_t;
+typedef struct xpath_evaluation_contextS xpath_evaluation_context_t;
+
+class XPathPredicate {
+public:
+  virtual xpath_result_t eval(xpath_evaluation_context_t *context) = 0;
+};
 
 typedef struct {
   xpath_axis_t axis;
   xpath_node_type_t type;
   char *name;
-  std::vector<xpath_predicate_t> predicates;
+  std::vector<XPathPredicate *> predicates;
 } xpath_step_t;
 
 typedef struct {
@@ -68,7 +74,7 @@ typedef enum {
   XPATH_RESULT_TYPE_NODESET
 } xpath_result_type_t;
 
-typedef struct {
+typedef struct xpath_resultS {
   xpath_result_type_t type;
 
   union {
@@ -79,7 +85,7 @@ typedef struct {
   } value;
 } xpath_result_t;
 
-typedef struct {
+typedef struct xpath_evaluation_contextS {
   Node *node;
   Nodeset *nodeset;
 } xpath_evaluation_context_t;
@@ -87,27 +93,6 @@ typedef struct {
 typedef std::vector<xpath_result_t> xpath_parameters_t;
 
 typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, xpath_parameters_t &parameters);
-
-typedef enum {
-  XPATH_PREDICATE_OP_VALUE,
-  XPATH_PREDICATE_OP_FUNCTION,
-  XPATH_PREDICATE_OP_EQUAL
-} xpath_predicate_op_t;
-
-struct xpath_predicateS {
-  xpath_predicate_op_t op;
-  union {
-    xpath_result_t value;
-    struct {
-      xpath_fn_t fn;
-      xpath_parameters_t *parameters;
-    } function;
-    struct {
-      struct xpath_predicateS *left;
-      struct xpath_predicateS *right;
-    } child;
-  } info;
-};
 
 void
 xpath_tokens_free(xpath_tokens_t *tokens);
@@ -138,5 +123,75 @@ xpath_apply_xpath(Node *node, const char * const xpath);
 
 void
 xpath_result_destroy(xpath_result_t *result);
+
+class PredicateValue : public XPathPredicate {
+public:
+  PredicateValue(xpath_result_t value) :
+    _value(value)
+  {
+  }
+
+  xpath_result_t eval(xpath_evaluation_context_t *context) {
+    return _value;
+  }
+
+private:
+  xpath_result_t _value;
+};
+
+class PredicateFunction : public XPathPredicate {
+public:
+  PredicateFunction(xpath_fn_t fn, xpath_parameters_t params) :
+    _fn(fn), _params(params)
+  {
+  }
+
+  xpath_result_t eval(xpath_evaluation_context_t *context) {
+    return _fn(context, _params);
+  }
+
+private:
+  xpath_fn_t _fn;
+  xpath_parameters_t _params;
+};
+
+class PredicateEquals : public XPathPredicate {
+public:
+  PredicateEquals(XPathPredicate &left, XPathPredicate &right) :
+    _left(left), _right(right)
+  {
+  }
+
+  xpath_result_t eval(xpath_evaluation_context_t *context) {
+    xpath_result_t result;
+    xpath_result_t lresult = _left.eval(context);
+    xpath_result_t rresult = _right.eval(context);
+
+    result.type = XPATH_RESULT_TYPE_BOOLEAN;
+    if (lresult.type != rresult.type) {
+      abort();
+    }
+    switch (lresult.type) {
+    case XPATH_RESULT_TYPE_BOOLEAN:
+      result.value.boolean = lresult.value.boolean == rresult.value.boolean;
+      break;
+    case XPATH_RESULT_TYPE_NUMERIC:
+      result.value.boolean = lresult.value.numeric == rresult.value.numeric;
+      break;
+    case XPATH_RESULT_TYPE_STRING:
+      result.value.boolean = (strcmp(lresult.value.string, rresult.value.string) == 0);
+      break;
+    case XPATH_RESULT_TYPE_NODESET:
+      abort();
+      break;
+    }
+
+    return result;
+  }
+
+  private:
+      XPathPredicate &_left;
+      XPathPredicate &_right;
+};
 
 #endif
