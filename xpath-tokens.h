@@ -3,6 +3,22 @@
 
 #include "xpath-internal.h"
 
+typedef enum {
+  SLASH,
+  LBRACKET,
+  RBRACKET,
+  LPAREN,
+  RPAREN,
+  QUOTE,
+  APOS,
+  TEXT
+} xpath_token_type_t;
+
+typedef struct {
+  xpath_token_type_t type;
+  unsigned int start;
+} xpath_token_t;
+
 class XPathTokens {
 public:
   ~XPathTokens();
