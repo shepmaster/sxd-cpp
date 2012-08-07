@@ -45,13 +45,12 @@ xpath_apply_predicates(Nodeset *nodeset, xpath_step_t *step)
     xpath_evaluation_context_t context;
     xpath_result_t result;
     Nodeset *selected_nodes;
-    int i;
 
     XPathPredicate *predicate = step->predicates[j];
     context.nodeset = current_nodes;
     selected_nodes = new Nodeset();
 
-    for (i = 0; i < current_nodes->count(); i++) {
+    for (int i = 0; i < current_nodes->count(); i++) {
       context.node = (*current_nodes)[i];
       result = predicate->eval(&context);
 
@@ -190,19 +189,17 @@ Nodeset *
 xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps)
 {
   Nodeset *result_nodes;
-  int i;
 
   result_nodes = new Nodeset();
   result_nodes->add(node);
 
-  for (i = 0; i < steps.size(); i++) {
+  for (int i = 0; i < steps.size(); i++) {
     xpath_step_t *step = &steps[i];
     Nodeset *current_nodes;
-    int j;
 
     current_nodes = new Nodeset();
 
-    for (j = 0; j < result_nodes->count(); j++) {
+    for (int j = 0; j < result_nodes->count(); j++) {
       Node *current_node;
       Nodeset *selected_nodes;
 
