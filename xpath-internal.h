@@ -23,11 +23,6 @@ typedef struct {
   unsigned int start;
 } xpath_token_t;
 
-typedef struct {
-  char *xpath;
-  std::vector<xpath_token_t> tokens;
-} xpath_tokens_t;
-
 typedef enum {
   XPATH_AXIS_ANCESTOR,
   XPATH_AXIS_ANCESTOR_OR_SELF,
@@ -101,22 +96,6 @@ typedef struct xpath_evaluation_contextS {
 typedef std::vector<xpath_result_t> xpath_parameters_t;
 
 typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, xpath_parameters_t &parameters);
-
-class XPathTokens {
-public:
-  ~XPathTokens();
-  XPathTokens(const char * const xpath);
-
-  xpath_token_t operator[](int index);
-  int size();
-  char * string(int index);
-
-private:
-  char *xpath;
-  std::vector<xpath_token_t> _tokens;
-
-  void build_tokens();
-};
 
 Nodeset *
 xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step);

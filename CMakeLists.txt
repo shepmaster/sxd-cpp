@@ -16,14 +16,14 @@ add_definitions(${GLIB2_CFLAGS})
 
 add_definitions(-ansi -Wall -pedantic -Werror -std=c++11 -stdlib=libc++)
 
-set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp node.cpp text-node.cpp nodeset.cpp xpath.cpp xpath-functions.cpp tokenizer.cpp comment.cpp predicate-value.cpp predicate-function.cpp predicate-equals.cpp)
+set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp node.cpp text-node.cpp nodeset.cpp xpath.cpp xpath-functions.cpp tokenizer.cpp comment.cpp predicate-value.cpp predicate-function.cpp predicate-equals.cpp xpath-tokens.cpp)
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
 
 add_library(test-utilities SHARED test-utilities.cpp)
 target_link_libraries(test-utilities ${GLIB2_LIBRARIES} sxd)
 
-set(test_programs element intern document exception nmtoken node text-node nodeset xpath xpath-functions tokenizer comment predicate-value predicate-function predicate-equals)
+set(test_programs element intern document exception nmtoken node text-node nodeset xpath xpath-functions tokenizer comment predicate-value predicate-function predicate-equals xpath-tokens)
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
   target_link_libraries(${program}-test sxd test-utilities CppUTest)
