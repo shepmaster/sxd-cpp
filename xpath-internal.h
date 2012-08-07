@@ -91,14 +91,12 @@ xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step);
 Nodeset *
 xpath_apply_predicates(Nodeset *nodeset, xpath_step_t *step);
 
-Nodeset *
-xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps);
-
 class XPathProcessor {
 public:
   XPathProcessor(Node *node);
 
   Nodeset *apply(const char * const xpath);
+  Nodeset *select_steps(std::vector<xpath_step_t> &steps);
 
 private:
   Node *_node;

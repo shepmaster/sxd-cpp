@@ -328,7 +328,7 @@ TEST(xpath, two_step)
   step.name = strdup("c");
   steps.push_back(step);
 
-  ns = xpath_select_xpath_steps(d.alpha, steps);
+  ns = XPathProcessor(d.alpha).select_steps(steps);
   CHECK_EQUAL(1, ns->count());
   CHECK_nodeset_item(d.c, ns, 0);
 

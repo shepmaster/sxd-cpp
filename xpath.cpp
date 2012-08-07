@@ -185,13 +185,28 @@ xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
   return data.nodeset;
 }
 
+XPathProcessor::XPathProcessor(Node *node) :
+  _node(node)
+{
+}
+
 Nodeset *
-xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps)
+XPathProcessor::apply(const char * const xpath)
+{
+  XPathCompiled *compiled = XPathCompiled::compile(xpath);
+  Nodeset *nodes = select_steps(compiled->steps());
+  delete compiled;
+
+  return nodes;
+}
+
+Nodeset *
+XPathProcessor::select_steps(std::vector<xpath_step_t> &steps)
 {
   Nodeset *result_nodes;
 
   result_nodes = new Nodeset();
-  result_nodes->add(node);
+  result_nodes->add(_node);
 
   for (int i = 0; i < steps.size(); i++) {
     xpath_step_t *step = &steps[i];
@@ -214,21 +229,6 @@ xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps)
   }
 
   return result_nodes;
-}
-
-XPathProcessor::XPathProcessor(Node *node) :
-  _node(node)
-{
-}
-
-Nodeset *
-XPathProcessor::apply(const char * const xpath)
-{
-  XPathCompiled *compiled = XPathCompiled::compile(xpath);
-  Nodeset *nodes = xpath_select_xpath_steps(_node, compiled->steps());
-  delete compiled;
-
-  return nodes;
 }
 
 void
