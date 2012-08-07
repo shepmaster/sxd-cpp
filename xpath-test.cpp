@@ -26,50 +26,43 @@ dump_xpath_tokens(xpath_tokens_t *tokens)
 
 #define CHECK_token(_tokens, _index, _type, _start)     \
   {                                                     \
-    xpath_token_t *__token;                             \
-    __token = &_tokens->tokens[_index];                 \
-    CHECK_EQUAL(_type, __token->type);                  \
-    CHECK_EQUAL(_start, __token->start);                \
+    xpath_token_t __token;                              \
+    __token = tokens[_index];                           \
+    CHECK_EQUAL(_type, __token.type);                   \
+    CHECK_EQUAL(_start, __token.start);                 \
   }
 
 TEST(xpath, tokenize)
 {
-  xpath_tokens_t *tokens;
   const char * const xpath = "//one/two";
-  tokens = xpath_tokenize(xpath);
+  XPathTokens tokens(xpath);
 
-  STRCMP_EQUAL(xpath, tokens->xpath);
-  CHECK_EQUAL_C_INT(5, tokens->tokens.size());
+  CHECK_EQUAL_C_INT(5, tokens.size());
 
   CHECK_token(tokens, 0, SLASH, 0);
   CHECK_token(tokens, 1, SLASH, 1);
   CHECK_token(tokens, 2, TEXT,  2);
   CHECK_token(tokens, 3, SLASH, 5);
   CHECK_token(tokens, 4, TEXT,  6);
-
-  xpath_tokens_free(tokens);
 }
 
-#define CHECK_str(_tokens, _index, _str)		\
-  {							\
-    char *__str = xpath_tokens_string(_tokens, _index);	\
-    STRCMP_EQUAL(_str, __str);				\
-    free(__str);					\
-  }							\
+#define CHECK_str(_tokens, _index, _str)        \
+  {                                             \
+    char *__str = _tokens.string(_index);       \
+    STRCMP_EQUAL(_str, __str);                  \
+    free(__str);                                \
+  }                                             \
 
 TEST(xpath, tokens_string)
 {
-  xpath_tokens_t *tokens;
   const char * const xpath = "//one/two";
+  XPathTokens tokens(xpath);
 
-  tokens = xpath_tokenize(xpath);
   CHECK_str(tokens, 0, "/");
   CHECK_str(tokens, 1, "/");
   CHECK_str(tokens, 2, "one");
   CHECK_str(tokens, 3, "/");
   CHECK_str(tokens, 4, "two");
-
-  xpath_tokens_free(tokens);
 }
 
 TEST(xpath, compile_element)

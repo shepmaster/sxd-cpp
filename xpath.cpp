@@ -17,36 +17,39 @@ not_implemented(void)
   abort();
 }
 
-void
-xpath_tokens_free(xpath_tokens_t *tokens)
+XPathTokens::XPathTokens(const char * const xpath)
 {
-  free(tokens->xpath);
-  delete tokens;
+  this->xpath = strdup(xpath);
 }
 
-xpath_tokens_t *
-xpath_tokenize(const char * const xpath)
+XPathTokens::~XPathTokens()
 {
-  xpath_tokens_t *tokens;
+  free(xpath);
+}
+
+void
+XPathTokens::build_tokens()
+{
   xpath_token_t token;
   const char *token_start = NULL;
   const char *current;
 
-  tokens = new xpath_tokens_t;
-  tokens->xpath = strdup(xpath);
-
-#define ADD_TOKEN(_type, _start)                \
-  {                                             \
-    token.type = _type;                         \
-    token.start = _start - xpath;               \
-    tokens->tokens.push_back(token);            \
+  if (! _tokens.empty()) {
+    return;
   }
 
-#define FINISH_TEXT()				\
-  if (token_start) {				\
-    ADD_TOKEN(TEXT, token_start);		\
-    token_start = NULL;				\
-  }
+  #define ADD_TOKEN(_type, _start)                \
+    {                                             \
+      token.type = _type;                         \
+      token.start = _start - xpath;               \
+      _tokens.push_back(token);                   \
+    }
+
+  #define FINISH_TEXT()                           \
+    if (token_start) {                            \
+      ADD_TOKEN(TEXT, token_start);               \
+      token_start = NULL;                         \
+    }
 
   for (current = xpath; *current; current++) {
     if (*current == '/') {
@@ -72,33 +75,46 @@ xpath_tokenize(const char * const xpath)
       ADD_TOKEN(APOS, current);
     } else {
       if (token_start == NULL) {
-	token_start = current;
+        token_start = current;
       }
     }
   }
 
   FINISH_TEXT();
 
-#undef FINISH_TEXT
-#undef ADD_TOKEN
+  #undef FINISH_TEXT
+  #undef ADD_TOKEN
+}
 
-  return tokens;
+xpath_token_t
+XPathTokens::operator[](int index)
+{
+  build_tokens();
+  return _tokens[index];
+}
+
+int
+XPathTokens::size()
+{
+  build_tokens();
+  return _tokens.size();
 }
 
 char *
-xpath_tokens_string(xpath_tokens_t *tokens, int index)
+XPathTokens::string(int index)
 {
   xpath_token_t *token;
   char *start_of_string;
 
-  token = &tokens->tokens[index];
-  start_of_string = tokens->xpath + token->start;
+  build_tokens();
+  token = &_tokens[index];
+  start_of_string = xpath + token->start;
 
-  if (index + 1 < tokens->tokens.size()) {
+  if (index + 1 < _tokens.size()) {
     xpath_token_t *next_token;
     int len;
 
-    next_token = &tokens->tokens[index + 1];
+    next_token = &_tokens[index + 1];
     len = next_token->start - token->start;
 
     return g_strndup(start_of_string, len);
@@ -110,28 +126,26 @@ xpath_tokens_string(xpath_tokens_t *tokens, int index)
 XPathCompiled *
 XPathCompiled::compile(const char * const xpath)
 {
-  xpath_tokens_t *tokens;
   XPathCompiled *compiled;
   xpath_step_t step;
   int i;
 
   compiled = new XPathCompiled;
 
-  tokens = xpath_tokenize(xpath);
-  for (i = 0; i < tokens->tokens.size(); i++) {
-    xpath_token_t *token = &tokens->tokens[i];
-    switch (token->type) {
+  XPathTokens tokens(xpath);
+  for (i = 0; i < tokens.size(); i++) {
+    xpath_token_t token = tokens[i];
+    switch (token.type) {
     case TEXT:
       step.axis = XPATH_AXIS_CHILD;
       step.type = XPATH_NODE_TYPE_ELEMENT;
-      step.name = xpath_tokens_string(tokens, i);
+      step.name = tokens.string(i);
       compiled->add_step(step);
       break;
     default:
       break;
     }
   }
-  xpath_tokens_free(tokens);
 
   return compiled;
 }

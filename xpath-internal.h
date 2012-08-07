@@ -102,14 +102,21 @@ typedef std::vector<xpath_result_t> xpath_parameters_t;
 
 typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, xpath_parameters_t &parameters);
 
-void
-xpath_tokens_free(xpath_tokens_t *tokens);
+class XPathTokens {
+public:
+  ~XPathTokens();
+  XPathTokens(const char * const xpath);
 
-xpath_tokens_t *
-xpath_tokenize(const char * const xpath);
+  xpath_token_t operator[](int index);
+  int size();
+  char * string(int index);
 
-char *
-xpath_tokens_string(xpath_tokens_t *tokens, int index);
+private:
+  char *xpath;
+  std::vector<xpath_token_t> _tokens;
+
+  void build_tokens();
+};
 
 Nodeset *
 xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step);
