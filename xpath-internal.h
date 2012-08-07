@@ -58,18 +58,6 @@ typedef struct {
   std::vector<XPathPredicate *> predicates;
 } xpath_step_t;
 
-class XPathCompiled {
-public:
-  static XPathCompiled *compile(const char * const xpath);
-  ~XPathCompiled();
-
-  void add_step(xpath_step_t step);
-  std::vector<xpath_step_t> &steps();
-
-private:
-  std::vector<xpath_step_t> _steps;
-};
-
 typedef enum {
   XPATH_RESULT_TYPE_BOOLEAN,
   XPATH_RESULT_TYPE_NUMERIC,
