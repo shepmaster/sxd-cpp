@@ -408,7 +408,7 @@ TEST(xpath, apply_element)
   parent->append_child(children[2]);
   parent->append_child(children[3]);
 
-  nodes = xpath_apply_xpath(parent, name);
+  nodes = XPathProcessor(parent).apply(name);
 
   CHECK_EQUAL(2, nodes->count());
   CHECK_nodeset_element_name(nodes, 0, name);

@@ -216,14 +216,16 @@ xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps)
   return result_nodes;
 }
 
-Nodeset *
-xpath_apply_xpath(Node *node, const char * const xpath)
+XPathProcessor::XPathProcessor(Node *node) :
+  _node(node)
 {
-  XPathCompiled *compiled;
-  Nodeset *nodes;
+}
 
-  compiled = XPathCompiled::compile(xpath);
-  nodes = xpath_select_xpath_steps(node, compiled->steps());
+Nodeset *
+XPathProcessor::apply(const char * const xpath)
+{
+  XPathCompiled *compiled = XPathCompiled::compile(xpath);
+  Nodeset *nodes = xpath_select_xpath_steps(_node, compiled->steps());
   delete compiled;
 
   return nodes;

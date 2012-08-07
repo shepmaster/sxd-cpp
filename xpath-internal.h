@@ -94,8 +94,15 @@ xpath_apply_predicates(Nodeset *nodeset, xpath_step_t *step);
 Nodeset *
 xpath_select_xpath_steps(Node *node, std::vector<xpath_step_t> &steps);
 
-Nodeset *
-xpath_apply_xpath(Node *node, const char * const xpath);
+class XPathProcessor {
+public:
+  XPathProcessor(Node *node);
+
+  Nodeset *apply(const char * const xpath);
+
+private:
+  Node *_node;
+};
 
 void
 xpath_result_destroy(xpath_result_t *result);
