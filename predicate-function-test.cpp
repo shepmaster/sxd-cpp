@@ -16,18 +16,16 @@ TEST_GROUP(xpath_predicate)
   Node *alpha;
   Nodeset *ns;
 
-  xpath_step_t step;
-
   xpath_parameters_t parameters;
+
+  std::vector<XPathPredicate *> predicates;
+  PotentialNodes potential;
 
   void setup(void)
   {
     alpha = test_helper_new_node(doc, "alpha");
     ns = nodeset_new_with_nodes(alpha, NULL);
-
-    step.axis = XPATH_AXIS_CHILD;
-    step.type = XPATH_NODE_TYPE_ELEMENT;
-    step.name = NULL;
+    potential.add_candidates(*ns);
   }
 
   void teardown(void)
@@ -40,19 +38,19 @@ TEST_GROUP(xpath_predicate)
 TEST(xpath_predicate, predicate_fn_true)
 {
   PredicateFunction pred(xpath_fn_true, parameters);
-  step.predicates.push_back(&pred);
+  predicates.push_back(&pred);
 
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
+  Nodeset ns2 = potential.apply_predicates(predicates);
+  CHECK_EQUAL(1, ns2.count());
 }
 
 TEST(xpath_predicate, predicate_fn_false)
 {
   PredicateFunction pred(xpath_fn_false, parameters);
-  step.predicates.push_back(&pred);
+  predicates.push_back(&pred);
 
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(0, ns->count());
+  Nodeset ns2 = potential.apply_predicates(predicates);
+  CHECK_EQUAL(0, ns2.count());
 }
 
 TEST(xpath_predicate, predicate_fn_floor)
@@ -63,10 +61,10 @@ TEST(xpath_predicate, predicate_fn_floor)
   parameters.push_back(value);
 
   PredicateFunction pred(xpath_fn_floor, parameters);
-  step.predicates.push_back(&pred);
+  predicates.push_back(&pred);
 
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
+  Nodeset ns2 = potential.apply_predicates(predicates);
+  CHECK_EQUAL(1, ns2.count());
 }
 
 TEST(xpath_predicate, predicate_fn_ceiling)
@@ -77,10 +75,10 @@ TEST(xpath_predicate, predicate_fn_ceiling)
   parameters.push_back(value);
 
   PredicateFunction pred(xpath_fn_ceiling, parameters);
-  step.predicates.push_back(&pred);
+  predicates.push_back(&pred);
 
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
+  Nodeset ns2 = potential.apply_predicates(predicates);
+  CHECK_EQUAL(1, ns2.count());
 }
 
 int

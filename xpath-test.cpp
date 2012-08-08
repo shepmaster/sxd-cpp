@@ -57,61 +57,48 @@ destroy_step(xpath_step_t *step)
 TEST(xpath, element)
 {
   xpath_test_data_t d;
-  Nodeset *ns;
-  const Node *n;
   xpath_step_t step;
 
   init_xpath_test(&d);
   init_step(&step);
 
-  ns = xpath_select_xpath_no_predicates(d.parent, &step);
-  CHECK_EQUAL(1, ns->count());
-  n = (*ns)[0];
-  POINTERS_EQUAL(d.e, n);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
+  CHECK_EQUAL(1, ns.count());
+  POINTERS_EQUAL(d.e, ns[0]);
 
-  delete ns;
   destroy_xpath_test(&d);
 }
 
 TEST(xpath, text_node)
 {
   xpath_test_data_t d;
-  Nodeset *ns;
-  const Node *n;
   xpath_step_t step;
 
   init_xpath_test(&d);
   init_step(&step);
   step.type = XPATH_NODE_TYPE_TEXT_NODE;
 
-  ns = xpath_select_xpath_no_predicates(d.parent, &step);
-  CHECK_EQUAL(1, ns->count());
-  n = (*ns)[0];
-  POINTERS_EQUAL(d.tn, n);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
+  CHECK_EQUAL(1, ns.count());
+  POINTERS_EQUAL(d.tn, ns[0]);
 
-  delete ns;
   destroy_xpath_test(&d);
 }
 
 TEST(xpath, element_and_text_node)
 {
   xpath_test_data_t d;
-  Nodeset *ns;
-  const Node *n;
   xpath_step_t step;
 
   init_xpath_test(&d);
   init_step(&step);
   step.type = XPATH_NODE_TYPE_ELEMENT | XPATH_NODE_TYPE_TEXT_NODE;
 
-  ns = xpath_select_xpath_no_predicates(d.parent, &step);
-  CHECK_EQUAL(2, ns->count());
-  n = (*ns)[0];
-  POINTERS_EQUAL(d.e, n);
-  n = (*ns)[1];
-  POINTERS_EQUAL(d.tn, n);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
+  CHECK_EQUAL(2, ns.count());
+  POINTERS_EQUAL(d.e, ns[0]);
+  POINTERS_EQUAL(d.tn, ns[1]);
 
-  delete ns;
   destroy_xpath_test(&d);
 }
 
@@ -166,11 +153,10 @@ destroy_xpath_axis_test(xpath_axis_test_t *d)
 }
 
 #define CHECK_nodeset_item(_node, _nodeset, _index) \
-  POINTERS_EQUAL(_node, (*_nodeset)[_index])
+  POINTERS_EQUAL(_node, _nodeset[_index])
 
 TEST_GROUP(xpath_axis)
 {
-  Nodeset *ns;
   xpath_step_t step;
   xpath_axis_test_t d;
 
@@ -182,7 +168,6 @@ TEST_GROUP(xpath_axis)
 
   void teardown(void)
   {
-    delete ns;
     destroy_xpath_axis_test(&d);
   }
 };
@@ -191,8 +176,8 @@ TEST(xpath_axis, axis_self)
 {
   step.axis = XPATH_AXIS_SELF;
 
-  ns = xpath_select_xpath_no_predicates(d.b, &step);
-  CHECK_EQUAL(1, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.b, ns, 0);
 }
 
@@ -200,8 +185,8 @@ TEST(xpath_axis, axis_parent)
 {
   step.axis = XPATH_AXIS_PARENT;
 
-  ns = xpath_select_xpath_no_predicates(d.b, &step);
-  CHECK_EQUAL(1, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
 }
 
@@ -209,8 +194,8 @@ TEST(xpath_axis, axis_following_sibling)
 {
   step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
 
-  ns = xpath_select_xpath_no_predicates(d.b, &step);
-  CHECK_EQUAL(2, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  CHECK_EQUAL(2, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.d, ns, 1);
 }
@@ -219,8 +204,8 @@ TEST(xpath_axis, axis_preceding_sibling)
 {
   step.axis = XPATH_AXIS_PRECEDING_SIBLING;
 
-  ns = xpath_select_xpath_no_predicates(d.d, &step);
-  CHECK_EQUAL(3, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.d, &step);
+  CHECK_EQUAL(3, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.b, ns, 1);
   CHECK_nodeset_item(d.a, ns, 2);
@@ -230,8 +215,8 @@ TEST(xpath_axis, axis_descendant)
 {
   step.axis = XPATH_AXIS_DESCENDANT;
 
-  ns = xpath_select_xpath_no_predicates(d.alpha, &step);
-  CHECK_EQUAL(10, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, &step);
+  CHECK_EQUAL(10, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
   CHECK_nodeset_item(d.a, ns, 1);
   CHECK_nodeset_item(d.b, ns, 2);
@@ -248,8 +233,8 @@ TEST(xpath_axis, axis_descendant_or_self)
 {
   step.axis = XPATH_AXIS_DESCENDANT_OR_SELF;
 
-  ns = xpath_select_xpath_no_predicates(d.alpha, &step);
-  CHECK_EQUAL(11, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, &step);
+  CHECK_EQUAL(11, ns.count());
   CHECK_nodeset_item(d.alpha, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
   CHECK_nodeset_item(d.a, ns, 2);
@@ -267,8 +252,8 @@ TEST(xpath_axis, axis_ancestor)
 {
   step.axis = XPATH_AXIS_ANCESTOR;
 
-  ns = xpath_select_xpath_no_predicates(d.b, &step);
-  CHECK_EQUAL(2, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  CHECK_EQUAL(2, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
   CHECK_nodeset_item(d.alpha, ns, 1);
 }
@@ -277,8 +262,8 @@ TEST(xpath_axis, axis_ancestor_or_self)
 {
   step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
 
-  ns = xpath_select_xpath_no_predicates(d.c, &step);
-  CHECK_EQUAL(3, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.c, &step);
+  CHECK_EQUAL(3, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
   CHECK_nodeset_item(d.alpha, ns, 2);
@@ -288,8 +273,8 @@ TEST(xpath_axis, axis_following)
 {
   step.axis = XPATH_AXIS_FOLLOWING;
 
-  ns = xpath_select_xpath_no_predicates(d.c, &step);
-  CHECK_EQUAL(6, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.c, &step);
+  CHECK_EQUAL(6, ns.count());
   CHECK_nodeset_item(d.d, ns, 0);
   CHECK_nodeset_item(d.two, ns, 1);
   CHECK_nodeset_item(d.w, ns, 2);
@@ -302,8 +287,8 @@ TEST(xpath_axis, axis_preceding)
 {
   step.axis = XPATH_AXIS_PRECEDING;
 
-  ns = xpath_select_xpath_no_predicates(d.x, &step);
-  CHECK_EQUAL(6, ns->count());
+  Nodeset ns = xpath_select_xpath_no_predicates(d.x, &step);
+  CHECK_EQUAL(6, ns.count());
   CHECK_nodeset_item(d.w, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
   CHECK_nodeset_item(d.a, ns, 2);
@@ -314,7 +299,6 @@ TEST(xpath_axis, axis_preceding)
 
 TEST(xpath, two_step)
 {
-  Nodeset *ns;
   xpath_step_t step;
   std::vector<xpath_step_t> steps;
   xpath_axis_test_t d;
@@ -328,8 +312,8 @@ TEST(xpath, two_step)
   step.name = strdup("c");
   steps.push_back(step);
 
-  ns = XPathProcessor(d.alpha).select_steps(steps);
-  CHECK_EQUAL(1, ns->count());
+  Nodeset ns = XPathProcessor(d.alpha).select_steps(steps);
+  CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
 
   for (i = 0; i < steps.size(); i++) {
@@ -337,7 +321,6 @@ TEST(xpath, two_step)
     destroy_step(x);
   }
 
-  delete ns;
   destroy_xpath_axis_test(&d);
 }
 
@@ -372,18 +355,22 @@ TEST(xpath_predicate, predicate_position_1)
   PredicateFunction pred_fn_position(xpath_fn_position, parameters);
   PredicateEquals pred(pred_val_1, pred_fn_position);
 
-  step.predicates.push_back(&pred);
-
   ns = nodeset_new_with_nodes(d.alpha, NULL);
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
+  PotentialNodes potential;
+  potential.add_candidates(*ns);
+
+  std::vector<XPathPredicate *> predicates;
+  predicates.push_back(&pred);
+
+  Nodeset ns2 = potential.apply_predicates(predicates);
+  CHECK_EQUAL(1, ns2.count());
 }
 
 #define CHECK_nodeset_element_name(_nodeset, _index, _name)  \
   {                                                          \
     Element *__e;                                            \
     Node *__n;                                               \
-    __n = (*_nodeset)[_index];                               \
+    __n = _nodeset[_index];                                  \
     CHECK_EQUAL(NODE_TYPE_ELEMENT, __n->type());             \
     __e = (Element *)__n;                                    \
     STRCMP_EQUAL(_name, __e->name());                        \
@@ -396,7 +383,6 @@ TEST(xpath, apply_element)
   Document doc;
   Node *parent = test_helper_new_node(doc, "parent");
   Node *children[4];
-  Nodeset *nodes;
 
   children[0] = test_helper_new_node(doc, "one");
   children[1] = test_helper_new_node(doc, "two");
@@ -408,13 +394,12 @@ TEST(xpath, apply_element)
   parent->append_child(children[2]);
   parent->append_child(children[3]);
 
-  nodes = XPathProcessor(parent).apply(name);
+  Nodeset nodes = XPathProcessor(parent).apply(name);
 
-  CHECK_EQUAL(2, nodes->count());
+  CHECK_EQUAL(2, nodes.count());
   CHECK_nodeset_element_name(nodes, 0, name);
   CHECK_nodeset_element_name(nodes, 1, name);
 
-  delete nodes;
   delete parent;
 }
 

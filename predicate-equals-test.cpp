@@ -19,17 +19,14 @@ TEST_GROUP(predicate_equal)
   Node *alpha;
   Nodeset *ns;
 
-  xpath_step_t step;
-  xpath_parameters_t parameters;
+  std::vector<XPathPredicate *> predicates;
+  PotentialNodes potential;
 
   void setup(void)
   {
     alpha = test_helper_new_node(doc, "alpha");
     ns = nodeset_new_with_nodes(alpha, NULL);
-
-    step.axis = XPATH_AXIS_CHILD;
-    step.type = XPATH_NODE_TYPE_ELEMENT;
-    step.name = NULL;
+    potential.add_candidates(*ns);
   }
 
   void teardown(void)
@@ -42,19 +39,19 @@ TEST_GROUP(predicate_equal)
 TEST(predicate_equal, true)
 {
   PredicateEquals pred(g_predicate_true, g_predicate_true);
-  step.predicates.push_back(&pred);
+  predicates.push_back(&pred);
 
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(1, ns->count());
+  Nodeset ns2 = potential.apply_predicates(predicates);
+  CHECK_EQUAL(1, ns2.count());
 }
 
 TEST(predicate_equal, false)
 {
   PredicateEquals pred(g_predicate_true, g_predicate_false);
-  step.predicates.push_back(&pred);
+  predicates.push_back(&pred);
 
-  ns = xpath_apply_predicates(ns, &step);
-  CHECK_EQUAL(0, ns->count());
+  Nodeset ns2 = potential.apply_predicates(predicates);
+  CHECK_EQUAL(0, ns2.count());
 }
 
 int
