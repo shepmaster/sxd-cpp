@@ -23,10 +23,6 @@ typedef enum {
   XPATH_AXIS_SELF
 } xpath_axis_t;
 
-#define XPATH_NODE_TYPE_ELEMENT (1 << 0)
-#define XPATH_NODE_TYPE_TEXT_NODE (1 << 1)
-typedef unsigned char xpath_node_type_t;
-
 typedef struct xpath_resultS xpath_result_t;
 typedef struct xpath_evaluation_contextS xpath_evaluation_context_t;
 
@@ -35,10 +31,36 @@ public:
   virtual xpath_result_t eval(xpath_evaluation_context_t *context) = 0;
 };
 
+class XPathNodeTest {
+public:
+  virtual ~XPathNodeTest() {};
+  virtual bool include_node(Node &node) = 0;
+};
+
+#include <string>
+
+class ElementTest : public XPathNodeTest {
+public:
+  bool include_node(Node &node);
+};
+
+class NamedElementTest : public XPathNodeTest {
+public:
+  NamedElementTest(std::string name);
+  bool include_node(Node &node);
+
+private:
+  std::string _name;
+};
+
+class TextTest : public XPathNodeTest {
+public:
+  bool include_node(Node &node);
+};
+
 typedef struct {
   xpath_axis_t axis;
-  xpath_node_type_t type;
-  char *name;
+  std::vector<XPathNodeTest *> tests;
   std::vector<XPathPredicate *> predicates;
 } xpath_step_t;
 

@@ -78,28 +78,45 @@ PotentialNodes::apply_predicates(std::vector<XPathPredicate *> predicates)
   return current_nodes;
 }
 
+bool
+ElementTest::include_node(Node &node)
+{
+  return node.type() == NODE_TYPE_ELEMENT;
+}
+
+NamedElementTest::NamedElementTest(std::string name) :
+  _name(name)
+{
+}
+
+bool
+NamedElementTest::include_node(Node &node)
+{
+  ElementTest element_test;
+
+  if (! element_test.include_node(node)) {
+    return false;
+  }
+
+  Element *element = (Element *)&node;
+  return _name.compare(element->name()) == 0;
+}
+
+bool
+TextTest::include_node(Node &node)
+{
+  return node.type() == NODE_TYPE_TEXT_NODE;
+}
+
 static void
 xpath_test_step(Node *node, xpath_test_step_t *data)
 {
-  int should_add = FALSE;
-
-  switch (node->type()) {
-  case NODE_TYPE_ELEMENT:
-    should_add = (data->step->type & XPATH_NODE_TYPE_ELEMENT);
-    if (should_add && data->step->name) {
-      Element *element = (Element *)node;
-      should_add = strcmp(data->step->name, element->name()) == 0;
+  for (int i = 0; i < data->step->tests.size(); i++) {
+    XPathNodeTest *test = data->step->tests[i];
+    if (test->include_node(*node)) {
+      data->nodeset->add(node);
+      return;
     }
-    break;
-  case NODE_TYPE_TEXT_NODE:
-    should_add = (data->step->type & XPATH_NODE_TYPE_TEXT_NODE);
-    break;
-  default:
-    not_implemented();
-  }
-
-  if (should_add) {
-    data->nodeset->add(node);
   }
 }
 

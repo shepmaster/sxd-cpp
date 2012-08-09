@@ -17,8 +17,7 @@ XPathCompiled::compile(const char * const xpath)
     switch (token.type) {
     case TEXT:
       step.axis = XPATH_AXIS_CHILD;
-      step.type = XPATH_NODE_TYPE_ELEMENT;
-      step.name = tokens.string(i);
+      step.tests.push_back(new NamedElementTest(tokens.string(i)));
       compiled->add_step(step);
       break;
     default:
@@ -33,7 +32,10 @@ XPathCompiled::~XPathCompiled()
 {
   for (int i = 0; i < _steps.size(); i++) {
     xpath_step_t *step = &_steps[i];
-    free(step->name);
+    for (int j = 0; j < step->tests.size(); j++) {
+      XPathNodeTest *test = step->tests[j];
+      delete test;
+    }
   }
 }
 

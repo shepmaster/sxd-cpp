@@ -44,14 +44,16 @@ static void
 init_step(xpath_step_t *step)
 {
   step->axis = XPATH_AXIS_CHILD;
-  step->type = XPATH_NODE_TYPE_ELEMENT;
-  step->name = NULL;
+  step->tests.push_back(new ElementTest());
 }
 
 static void
 destroy_step(xpath_step_t *step)
 {
-  if (step->name) free(step->name);
+  for (int i = 0; i < step->tests.size(); i++) {
+    XPathNodeTest *test = step->tests[i];
+    delete test;
+  }
 }
 
 TEST(xpath, element)
@@ -76,7 +78,8 @@ TEST(xpath, text_node)
 
   init_xpath_test(&d);
   init_step(&step);
-  step.type = XPATH_NODE_TYPE_TEXT_NODE;
+  step.tests.clear();
+  step.tests.push_back(new TextTest());
 
   Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
   CHECK_EQUAL(1, ns.count());
@@ -92,7 +95,9 @@ TEST(xpath, element_and_text_node)
 
   init_xpath_test(&d);
   init_step(&step);
-  step.type = XPATH_NODE_TYPE_ELEMENT | XPATH_NODE_TYPE_TEXT_NODE;
+  step.tests.clear();
+  step.tests.push_back(new ElementTest());
+  step.tests.push_back(new TextTest());
 
   Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
   CHECK_EQUAL(2, ns.count());
@@ -307,9 +312,11 @@ TEST(xpath, two_step)
   init_xpath_axis_test(&d);
 
   init_step(&step);
-  step.name = strdup("one");
+  step.tests.clear();
+  step.tests.push_back(new NamedElementTest("one"));
   steps.push_back(step);
-  step.name = strdup("c");
+  step.tests.clear();
+  step.tests.push_back(new NamedElementTest("c"));
   steps.push_back(step);
 
   Nodeset ns = XPathProcessor(d.alpha).select_steps(steps);
