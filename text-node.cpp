@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string.h>
 
 #include "text-node.h"
 #include "document.h"

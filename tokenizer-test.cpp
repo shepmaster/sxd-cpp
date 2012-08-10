@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string.h>
 #include <glib.h>
 
 #include <CppUTest/TestHarness_c.h>
