@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdlib.h>
 #include <glib.h>
 
 #include "intern.h"

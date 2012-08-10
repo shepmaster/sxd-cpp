@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdlib.h>
 
 #include <CppUTest/TestHarness.h>
 #include <CppUTest/CommandLineTestRunner.h>
