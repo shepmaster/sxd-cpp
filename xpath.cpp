@@ -1,5 +1,4 @@
 #include <iostream>
-#include <math.h>
 
 #include "element.h"
 #include "xpath-internal.h"
