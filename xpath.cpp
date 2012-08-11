@@ -102,8 +102,8 @@ TextTest::include_node(Node &node)
 
 class StepTester {
 public:
-  StepTester(xpath_step_t *step, Nodeset *nodeset) :
-    _step(step), _nodeset(nodeset)
+  StepTester(xpath_step_t *step) :
+    _step(step)
   {
   }
 
@@ -113,15 +113,20 @@ public:
     for (int i = 0; i < _step->tests.size(); i++) {
       XPathNodeTest *test = _step->tests[i];
       if (test->include_node(*node)) {
-        _nodeset->add(node);
+        _nodeset.add(node);
         return;
       }
     }
   }
 
+  Nodeset selected_nodes()
+  {
+    return _nodeset;
+  }
+
 private:
   xpath_step_t *_step;
-  Nodeset *_nodeset;
+  Nodeset _nodeset;
 };
 
 struct DownwardRecursiveTester {
@@ -130,7 +135,7 @@ struct DownwardRecursiveTester {
     _test(node);
     node->foreach_child(*this);
   }
-  StepTester _test;
+  StepTester &_test;
 };
 
 struct FollowingSiblingAndAncestorTester {
@@ -139,39 +144,38 @@ struct FollowingSiblingAndAncestorTester {
     node->foreach_following_sibling(DownwardRecursiveTester(_test));
     node->foreach_ancestor(*this);
   }
-  StepTester _test;
+  StepTester &_test;
 };
 
 struct PrecedingSiblingAndAncestorTester {
   PrecedingSiblingAndAncestorTester(StepTester &test) : _test(test) {}
   void operator() (Node *node) {
     node->foreach_preceding_sibling(DownwardRecursiveTester(_test));
-    node->foreach_ancestor(*this);
+    node->foreach_ancestor(std::ref(*this));
   }
-  StepTester _test;
+  StepTester &_test;
 };
 
 Nodeset
 xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
 {
-  Nodeset selected_nodes;
-  StepTester test(step, &selected_nodes);
+  StepTester test(step);
 
   switch (step->axis) {
   case XPATH_AXIS_SELF:
     test(node);
     break;
   case XPATH_AXIS_CHILD:
-    node->foreach_child(test);
+    node->foreach_child(std::ref(test));
     break;
   case XPATH_AXIS_PARENT:
     test(node->parent());
     break;
   case XPATH_AXIS_FOLLOWING_SIBLING:
-    node->foreach_following_sibling(test);
+    node->foreach_following_sibling(std::ref(test));
     break;
   case XPATH_AXIS_PRECEDING_SIBLING:
-    node->foreach_preceding_sibling(test);
+    node->foreach_preceding_sibling(std::ref(test));
     break;
   case XPATH_AXIS_DESCENDANT:
     node->foreach_child(DownwardRecursiveTester(test));
@@ -181,11 +185,11 @@ xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
     node->foreach_child(DownwardRecursiveTester(test));
     break;
   case XPATH_AXIS_ANCESTOR:
-    node->foreach_ancestor(test);
+    node->foreach_ancestor(std::ref(test));
     break;
   case XPATH_AXIS_ANCESTOR_OR_SELF:
     test(node);
-    node->foreach_ancestor(test);
+    node->foreach_ancestor(std::ref(test));
     break;
   case XPATH_AXIS_FOLLOWING:
     node->foreach_following_sibling(DownwardRecursiveTester(test));
@@ -200,7 +204,7 @@ xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step)
     not_implemented();
   }
 
-  return selected_nodes;
+  return test.selected_nodes();
 }
 
 XPathProcessor::XPathProcessor(Node *node) :
