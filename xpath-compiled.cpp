@@ -6,7 +6,7 @@ XPathCompiled *
 XPathCompiled::compile(const char * const xpath)
 {
   XPathCompiled *compiled;
-  xpath_step_t step;
+  XPathStep step;
   int i;
 
   compiled = new XPathCompiled;
@@ -38,12 +38,12 @@ XPathCompiled::~XPathCompiled()
 }
 
 void
-XPathCompiled::add_step(xpath_step_t step)
+XPathCompiled::add_step(XPathStep step)
 {
   _steps.push_back(step);
 }
 
-std::vector<xpath_step_t> &
+std::vector<XPathStep> &
 XPathCompiled::steps()
 {
   return _steps;

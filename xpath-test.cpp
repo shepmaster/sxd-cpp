@@ -38,14 +38,14 @@ destroy_xpath_test(xpath_test_data_t *d)
 }
 
 static void
-init_step(xpath_step_t *step)
+init_step(XPathStep *step)
 {
   step->axis = XPATH_AXIS_CHILD;
   step->tests.push_back(new ElementTest());
 }
 
 static void
-destroy_step(xpath_step_t *step)
+destroy_step(XPathStep *step)
 {
   for (auto test : step->tests) {
     delete test;
@@ -55,7 +55,7 @@ destroy_step(xpath_step_t *step)
 TEST(xpath, element)
 {
   xpath_test_data_t d;
-  xpath_step_t step;
+  XPathStep step;
 
   init_xpath_test(&d);
   init_step(&step);
@@ -70,7 +70,7 @@ TEST(xpath, element)
 TEST(xpath, text_node)
 {
   xpath_test_data_t d;
-  xpath_step_t step;
+  XPathStep step;
 
   init_xpath_test(&d);
   init_step(&step);
@@ -87,7 +87,7 @@ TEST(xpath, text_node)
 TEST(xpath, element_and_text_node)
 {
   xpath_test_data_t d;
-  xpath_step_t step;
+  XPathStep step;
 
   init_xpath_test(&d);
   init_step(&step);
@@ -158,7 +158,7 @@ destroy_xpath_axis_test(xpath_axis_test_t *d)
 
 TEST_GROUP(xpath_axis)
 {
-  xpath_step_t step;
+  XPathStep step;
   xpath_axis_test_t d;
 
   void setup(void)
@@ -300,8 +300,8 @@ TEST(xpath_axis, axis_preceding)
 
 TEST(xpath, two_step)
 {
-  xpath_step_t step;
-  std::vector<xpath_step_t> steps;
+  XPathStep step;
+  std::vector<XPathStep> steps;
   xpath_axis_test_t d;
 
   init_xpath_axis_test(&d);
@@ -328,7 +328,7 @@ TEST(xpath, two_step)
 TEST_GROUP(xpath_predicate)
 {
   Nodeset *ns;
-  xpath_step_t step;
+  XPathStep step;
   xpath_axis_test_t d;
 
   void setup(void)

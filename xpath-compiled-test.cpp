@@ -21,7 +21,7 @@ TEST(xpath, compile_element)
 
   compiled = XPathCompiled::compile(name);
 
-  std::vector<xpath_step_t> steps = compiled->steps();
+  auto steps = compiled->steps();
   CHECK_EQUAL_C_INT(1, steps.size());
   CHECK_EQUAL(XPATH_AXIS_CHILD, steps[0].axis);
   CHECK_EQUAL_C_INT(1, steps[0].tests.size());

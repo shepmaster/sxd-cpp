@@ -58,11 +58,12 @@ public:
   bool include_node(Node &node);
 };
 
-typedef struct {
+class XPathStep {
+public:
   xpath_axis_t axis;
   std::vector<XPathNodeTest *> tests;
   std::vector<XPathPredicate *> predicates;
-} xpath_step_t;
+};
 
 typedef enum {
   XPATH_RESULT_TYPE_BOOLEAN,
@@ -92,14 +93,14 @@ typedef std::vector<xpath_result_t> xpath_parameters_t;
 typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, xpath_parameters_t &parameters);
 
 Nodeset
-xpath_select_xpath_no_predicates(Node *node, xpath_step_t &step);
+xpath_select_xpath_no_predicates(Node *node, XPathStep &step);
 
 class XPathProcessor {
 public:
   XPathProcessor(Node *node);
 
   Nodeset apply(const char * const xpath);
-  Nodeset select_steps(std::vector<xpath_step_t> &steps);
+  Nodeset select_steps(std::vector<XPathStep> &steps);
 
 private:
   Node *_node;

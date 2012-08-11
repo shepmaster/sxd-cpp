@@ -8,11 +8,11 @@ public:
   static XPathCompiled *compile(const char * const xpath);
   ~XPathCompiled();
 
-  void add_step(xpath_step_t step);
-  std::vector<xpath_step_t> &steps();
+  void add_step(XPathStep step);
+  std::vector<XPathStep> &steps();
 
 private:
-  std::vector<xpath_step_t> _steps;
+  std::vector<XPathStep> _steps;
 };
 
 #endif

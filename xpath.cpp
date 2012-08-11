@@ -101,7 +101,7 @@ TextTest::include_node(Node &node)
 
 class StepTester {
 public:
-  StepTester(xpath_step_t &step) :
+  StepTester(XPathStep &step) :
     _step(step)
   {
   }
@@ -123,7 +123,7 @@ public:
   }
 
 private:
-  xpath_step_t &_step;
+  XPathStep &_step;
   Nodeset _nodeset;
 };
 
@@ -155,7 +155,7 @@ struct PrecedingSiblingAndAncestorTester {
 };
 
 Nodeset
-xpath_select_xpath_no_predicates(Node *node, xpath_step_t &step)
+xpath_select_xpath_no_predicates(Node *node, XPathStep &step)
 {
   StepTester test(step);
 
@@ -221,7 +221,7 @@ XPathProcessor::apply(const char * const xpath)
 }
 
 Nodeset
-XPathProcessor::select_steps(std::vector<xpath_step_t> &steps)
+XPathProcessor::select_steps(std::vector<XPathStep> &steps)
 {
   Nodeset result_nodes;
   result_nodes.add(_node);
