@@ -113,8 +113,37 @@ TEST(xpath, element_and_text_node)
   destroy_xpath_test(&d);
 }
 
-typedef struct {
-  Document *doc;
+struct XPathAxisTestData {
+  XPathAxisTestData() {
+    alpha = doc.new_element("alpha");
+    one = doc.new_element("one");
+    a = doc.new_element("a");
+    b = doc.new_element("b");
+    c = doc.new_element("c");
+    d = doc.new_element("d");
+    two = doc.new_element("two");
+    w = doc.new_element("w");
+    x = doc.new_element("x");
+    y = doc.new_element("y");
+    z = doc.new_element("z");
+
+    alpha->append_child(one);
+    one->append_child(a);
+    one->append_child(b);
+    one->append_child(c);
+    one->append_child(d);
+    alpha->append_child(two);
+    two->append_child(w);
+    two->append_child(x);
+    two->append_child(y);
+    two->append_child(z);
+  }
+
+  ~XPathAxisTestData() {
+    delete alpha;
+  }
+
+  Document doc;
   Node *alpha;
   Node *one;
   Node *a;
@@ -126,42 +155,7 @@ typedef struct {
   Node *x;
   Node *y;
   Node *z;
-} xpath_axis_test_t;
-
-static void
-init_xpath_axis_test(xpath_axis_test_t *d)
-{
-  d->doc = new Document();
-  d->alpha = test_helper_new_node(*d->doc, "alpha");
-  d->one = test_helper_new_node(*d->doc, "one");
-  d->a = test_helper_new_node(*d->doc, "a");
-  d->b = test_helper_new_node(*d->doc, "b");
-  d->c = test_helper_new_node(*d->doc, "c");
-  d->d = test_helper_new_node(*d->doc, "d");
-  d->two = test_helper_new_node(*d->doc, "two");
-  d->w = test_helper_new_node(*d->doc, "w");
-  d->x = test_helper_new_node(*d->doc, "x");
-  d->y = test_helper_new_node(*d->doc, "y");
-  d->z = test_helper_new_node(*d->doc, "z");
-
-  d->alpha->append_child(d->one);
-  d->one->append_child(d->a);
-  d->one->append_child(d->b);
-  d->one->append_child(d->c);
-  d->one->append_child(d->d);
-  d->alpha->append_child(d->two);
-  d->two->append_child(d->w);
-  d->two->append_child(d->x);
-  d->two->append_child(d->y);
-  d->two->append_child(d->z);
-}
-
-static void
-destroy_xpath_axis_test(xpath_axis_test_t *d)
-{
-  delete d->alpha;
-  delete d->doc;
-}
+};
 
 #define CHECK_nodeset_item(_node, _nodeset, _index) \
   POINTERS_EQUAL(_node, _nodeset[_index])
@@ -169,18 +163,16 @@ destroy_xpath_axis_test(xpath_axis_test_t *d)
 TEST_GROUP(xpath_axis)
 {
   XPathStep *step;
-  xpath_axis_test_t d;
+  XPathAxisTestData d;
 
   void setup(void)
   {
     step = new XPathStep(new AxisChild());
-    init_xpath_axis_test(&d);
     init_step(step);
   }
 
   void teardown(void)
   {
-    destroy_xpath_axis_test(&d);
     delete step;
   }
 };
@@ -314,9 +306,7 @@ TEST(xpath, two_step)
 {
   XPathStep step(new AxisChild());
   std::vector<XPathStep> steps;
-  xpath_axis_test_t d;
-
-  init_xpath_axis_test(&d);
+  XPathAxisTestData d;
 
   init_step(&step);
   step.tests.clear();
@@ -333,24 +323,20 @@ TEST(xpath, two_step)
   for (auto x : steps) {
     destroy_step(&x);
   }
-
-  destroy_xpath_axis_test(&d);
 }
 
 TEST_GROUP(xpath_predicate)
 {
   Nodeset *ns;
-  xpath_axis_test_t d;
+  XPathAxisTestData d;
 
   void setup(void)
   {
-    init_xpath_axis_test(&d);
   }
 
   void teardown(void)
   {
     delete ns;
-    destroy_xpath_axis_test(&d);
   }
 };
 
