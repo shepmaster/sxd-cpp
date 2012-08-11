@@ -39,12 +39,11 @@ PotentialNodes::apply_predicates(std::vector<XPathPredicate *> predicates)
 
   current_nodes = _nodeset;
 
-  for (int j = 0; j < predicates.size(); j++) {
+  for (auto predicate : predicates) {
     xpath_evaluation_context_t context;
     xpath_result_t result;
     Nodeset selected_nodes;
 
-    XPathPredicate *predicate = predicates[j];
     context.nodeset = &current_nodes;
 
     for (int i = 0; i < current_nodes.count(); i++) {
@@ -110,8 +109,7 @@ public:
   void
   operator() (Node *node)
   {
-    for (int i = 0; i < _step->tests.size(); i++) {
-      XPathNodeTest *test = _step->tests[i];
+    for (auto test : _step->tests) {
       if (test->include_node(*node)) {
         _nodeset.add(node);
         return;
@@ -228,8 +226,7 @@ XPathProcessor::select_steps(std::vector<xpath_step_t> &steps)
   Nodeset result_nodes;
   result_nodes.add(_node);
 
-  for (int i = 0; i < steps.size(); i++) {
-    xpath_step_t *step = &steps[i];
+  for (auto step : steps) {
     PotentialNodes current_nodes;
 
     for (int j = 0; j < result_nodes.count(); j++) {
@@ -237,11 +234,11 @@ XPathProcessor::select_steps(std::vector<xpath_step_t> &steps)
       Nodeset selected_nodes;
 
       current_node = result_nodes[j];
-      selected_nodes = xpath_select_xpath_no_predicates(current_node, step);
+      selected_nodes = xpath_select_xpath_no_predicates(current_node, &step);
       current_nodes.add_candidates(selected_nodes);
     }
 
-    result_nodes = current_nodes.apply_predicates(step->predicates);
+    result_nodes = current_nodes.apply_predicates(step.predicates);
   }
 
   return result_nodes;

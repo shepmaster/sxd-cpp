@@ -30,10 +30,8 @@ XPathCompiled::compile(const char * const xpath)
 
 XPathCompiled::~XPathCompiled()
 {
-  for (int i = 0; i < _steps.size(); i++) {
-    xpath_step_t *step = &_steps[i];
-    for (int j = 0; j < step->tests.size(); j++) {
-      XPathNodeTest *test = step->tests[j];
+  for (auto step : _steps) {
+    for (auto test : step.tests) {
       delete test;
     }
   }

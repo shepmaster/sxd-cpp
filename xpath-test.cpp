@@ -47,8 +47,7 @@ init_step(xpath_step_t *step)
 static void
 destroy_step(xpath_step_t *step)
 {
-  for (int i = 0; i < step->tests.size(); i++) {
-    XPathNodeTest *test = step->tests[i];
+  for (auto test : step->tests) {
     delete test;
   }
 }
@@ -304,7 +303,6 @@ TEST(xpath, two_step)
   xpath_step_t step;
   std::vector<xpath_step_t> steps;
   xpath_axis_test_t d;
-  unsigned int i;
 
   init_xpath_axis_test(&d);
 
@@ -320,9 +318,8 @@ TEST(xpath, two_step)
   CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
 
-  for (i = 0; i < steps.size(); i++) {
-    xpath_step_t *x = &steps[i];
-    destroy_step(x);
+  for (auto x : steps) {
+    destroy_step(&x);
   }
 
   destroy_xpath_axis_test(&d);

@@ -89,12 +89,9 @@ add_nodeset_param(xpath_parameters_t &params, Nodeset *value)
 static void
 cleanup_params(xpath_parameters_t &params)
 {
-  unsigned int i;
-
-  for (i = 0; i < params.size(); i++) {
-      xpath_result_t *param = &params[i];
-      xpath_result_destroy(param);
-    }
+  for (auto param : params) {
+    xpath_result_destroy(&param);
+  }
 }
 
 /* 4.1 - Node set functions */
