@@ -127,10 +127,10 @@ XPathStep::XPathStep(XPathAxis *axis) :
 }
 
 Nodeset
-xpath_select_xpath_no_predicates(Node *node, XPathStep &step)
+XPathStep::select_without_predicates(Node *node)
 {
-  StepTester test(step);
-  step.axis->traverse(node, test);
+  StepTester test(*this);
+  axis->traverse(node, test);
   return test.selected_nodes();
 }
 
@@ -163,7 +163,7 @@ XPathProcessor::select_steps(std::vector<XPathStep> &steps)
       Nodeset selected_nodes;
 
       current_node = result_nodes[j];
-      selected_nodes = xpath_select_xpath_no_predicates(current_node, step);
+      selected_nodes = step.select_without_predicates(current_node);
       current_nodes.add_candidates(selected_nodes);
     }
 

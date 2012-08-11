@@ -65,6 +65,9 @@ public:
 class XPathStep {
 public:
   XPathStep(XPathAxis *axis);
+
+  Nodeset select_without_predicates(Node *node);
+
   XPathAxis *axis;
   std::vector<XPathNodeTest *> tests;
   std::vector<XPathPredicate *> predicates;
@@ -96,9 +99,6 @@ typedef struct xpath_evaluation_contextS {
 typedef std::vector<xpath_result_t> xpath_parameters_t;
 
 typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, xpath_parameters_t &parameters);
-
-Nodeset
-xpath_select_xpath_no_predicates(Node *node, XPathStep &step);
 
 class XPathProcessor {
 public:
