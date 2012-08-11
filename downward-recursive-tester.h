@@ -1,7 +1,7 @@
 #ifndef DOWNWARD_RECURSIVE_TESTER_H
 #define DOWNWARD_RECURSIVE_TESTER_H
 
-#include "xpath-internal.h"
+#include "node.h"
 
 struct DownwardRecursiveTester {
   DownwardRecursiveTester(Node::foreach_fn_t fn);

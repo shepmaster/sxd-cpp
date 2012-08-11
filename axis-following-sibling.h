@@ -1,7 +1,7 @@
 #ifndef AXIS_FOLLOWING_SIBLING_H
 #define AXIS_FOLLOWING_SIBLING_H
 
-#include "xpath-internal.h"
+#include "xpath-axis.h"
 
 class AxisFollowingSibling : public XPathAxis {
 public:

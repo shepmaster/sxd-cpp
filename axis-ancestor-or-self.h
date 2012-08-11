@@ -1,7 +1,7 @@
 #ifndef AXIS_ANCESTOR_OR_SELF_H
 #define AXIS_ANCESTOR_OR_SELF_H
 
-#include "xpath-internal.h"
+#include "xpath-axis.h"
 
 class AxisAncestorOrSelf : public XPathAxis {
 public:

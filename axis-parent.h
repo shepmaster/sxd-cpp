@@ -1,7 +1,7 @@
 #ifndef AXIS_PARENT_H
 #define AXIS_PARENT_H
 
-#include "xpath-internal.h"
+#include "xpath-axis.h"
 
 class AxisParent : public XPathAxis {
 public:

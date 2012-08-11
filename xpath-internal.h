@@ -42,11 +42,7 @@ public:
   bool include_node(Node &node);
 };
 
-class XPathAxis {
-public:
-  virtual ~XPathAxis() {};
-  virtual void traverse(Node *node, const Node::foreach_fn_t &fn) = 0;
-};
+#include "xpath-axis.h"
 
 class XPathStep {
 public:

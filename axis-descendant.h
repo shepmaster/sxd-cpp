@@ -1,7 +1,7 @@
 #ifndef AXIS_DESCENDANT_H
 #define AXIS_DESCENDANT_H
 
-#include "xpath-internal.h"
+#include "xpath-axis.h"
 
 class AxisDescendant : public XPathAxis {
 public:

@@ -1,7 +1,7 @@
 #ifndef AXIS_PRECEDING_H
 #define AXIS_PRECEDING_H
 
-#include "xpath-internal.h"
+#include "xpath-axis.h"
 
 class AxisPreceding : public XPathAxis {
 public:
