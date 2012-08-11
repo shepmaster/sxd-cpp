@@ -92,7 +92,7 @@ typedef std::vector<xpath_result_t> xpath_parameters_t;
 typedef xpath_result_t (*xpath_fn_t)(xpath_evaluation_context_t *context, xpath_parameters_t &parameters);
 
 Nodeset
-xpath_select_xpath_no_predicates(Node *node, xpath_step_t *step);
+xpath_select_xpath_no_predicates(Node *node, xpath_step_t &step);
 
 class XPathProcessor {
 public:

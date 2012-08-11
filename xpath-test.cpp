@@ -60,7 +60,7 @@ TEST(xpath, element)
   init_xpath_test(&d);
   init_step(&step);
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, step);
   CHECK_EQUAL(1, ns.count());
   POINTERS_EQUAL(d.e, ns[0]);
 
@@ -77,7 +77,7 @@ TEST(xpath, text_node)
   step.tests.clear();
   step.tests.push_back(new TextTest());
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, step);
   CHECK_EQUAL(1, ns.count());
   POINTERS_EQUAL(d.tn, ns[0]);
 
@@ -95,7 +95,7 @@ TEST(xpath, element_and_text_node)
   step.tests.push_back(new ElementTest());
   step.tests.push_back(new TextTest());
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.parent, step);
   CHECK_EQUAL(2, ns.count());
   POINTERS_EQUAL(d.e, ns[0]);
   POINTERS_EQUAL(d.tn, ns[1]);
@@ -177,7 +177,7 @@ TEST(xpath_axis, axis_self)
 {
   step.axis = XPATH_AXIS_SELF;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
   CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.b, ns, 0);
 }
@@ -186,7 +186,7 @@ TEST(xpath_axis, axis_parent)
 {
   step.axis = XPATH_AXIS_PARENT;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
   CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
 }
@@ -195,7 +195,7 @@ TEST(xpath_axis, axis_following_sibling)
 {
   step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
   CHECK_EQUAL(2, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.d, ns, 1);
@@ -205,7 +205,7 @@ TEST(xpath_axis, axis_preceding_sibling)
 {
   step.axis = XPATH_AXIS_PRECEDING_SIBLING;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.d, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.d, step);
   CHECK_EQUAL(3, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.b, ns, 1);
@@ -216,7 +216,7 @@ TEST(xpath_axis, axis_descendant)
 {
   step.axis = XPATH_AXIS_DESCENDANT;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, step);
   CHECK_EQUAL(10, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
   CHECK_nodeset_item(d.a, ns, 1);
@@ -234,7 +234,7 @@ TEST(xpath_axis, axis_descendant_or_self)
 {
   step.axis = XPATH_AXIS_DESCENDANT_OR_SELF;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, step);
   CHECK_EQUAL(11, ns.count());
   CHECK_nodeset_item(d.alpha, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
@@ -253,7 +253,7 @@ TEST(xpath_axis, axis_ancestor)
 {
   step.axis = XPATH_AXIS_ANCESTOR;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
   CHECK_EQUAL(2, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
   CHECK_nodeset_item(d.alpha, ns, 1);
@@ -263,7 +263,7 @@ TEST(xpath_axis, axis_ancestor_or_self)
 {
   step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.c, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.c, step);
   CHECK_EQUAL(3, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
@@ -274,7 +274,7 @@ TEST(xpath_axis, axis_following)
 {
   step.axis = XPATH_AXIS_FOLLOWING;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.c, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.c, step);
   CHECK_EQUAL(6, ns.count());
   CHECK_nodeset_item(d.d, ns, 0);
   CHECK_nodeset_item(d.two, ns, 1);
@@ -288,7 +288,7 @@ TEST(xpath_axis, axis_preceding)
 {
   step.axis = XPATH_AXIS_PRECEDING;
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.x, &step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.x, step);
   CHECK_EQUAL(6, ns.count());
   CHECK_nodeset_item(d.w, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
