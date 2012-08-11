@@ -22,31 +22,27 @@
 TEST_GROUP(xpath)
 {};
 
-typedef struct {
-  Document *doc;
+struct XPathTestData {
+  XPathTestData()
+{
+  parent = doc.new_element("parent");
+  e = doc.new_element("child1");
+  tn = doc.new_text_node("child2");
+
+  parent->append_child(e);
+  parent->append_child(tn);
+}
+
+~XPathTestData()
+{
+  delete parent;
+}
+
+  Document doc;
   Node *parent;
   Node *e;
   Node *tn;
-} xpath_test_data_t;
-
-static void
-init_xpath_test(xpath_test_data_t *d)
-{
-  d->doc = new Document();
-  d->parent = test_helper_new_node(*d->doc, "parent");
-  d->e = test_helper_new_node(*d->doc, "child1");
-  d->tn = test_helper_new_text_node(d->doc, "child2");
-
-  d->parent->append_child(d->e);
-  d->parent->append_child(d->tn);
-}
-
-static void
-destroy_xpath_test(xpath_test_data_t *d)
-{
-  delete d->parent;
-  delete d->doc;
-}
+};
 
 static void
 init_step(XPathStep *step)
@@ -64,25 +60,21 @@ destroy_step(XPathStep *step)
 
 TEST(xpath, element)
 {
-  xpath_test_data_t d;
+  XPathTestData d;
   XPathStep step(new AxisChild());
 
-  init_xpath_test(&d);
   init_step(&step);
 
   Nodeset ns = step.select_without_predicates(d.parent);
   CHECK_EQUAL(1, ns.count());
   POINTERS_EQUAL(d.e, ns[0]);
-
-  destroy_xpath_test(&d);
 }
 
 TEST(xpath, text_node)
 {
-  xpath_test_data_t d;
+  XPathTestData d;
   XPathStep step(new AxisChild());
 
-  init_xpath_test(&d);
   init_step(&step);
   step.tests.clear();
   step.tests.push_back(new TextTest());
@@ -90,16 +82,13 @@ TEST(xpath, text_node)
   Nodeset ns = step.select_without_predicates(d.parent);
   CHECK_EQUAL(1, ns.count());
   POINTERS_EQUAL(d.tn, ns[0]);
-
-  destroy_xpath_test(&d);
 }
 
 TEST(xpath, element_and_text_node)
 {
-  xpath_test_data_t d;
+  XPathTestData d;
   XPathStep step(new AxisChild());
 
-  init_xpath_test(&d);
   init_step(&step);
   step.tests.clear();
   step.tests.push_back(new ElementTest());
@@ -109,8 +98,6 @@ TEST(xpath, element_and_text_node)
   CHECK_EQUAL(2, ns.count());
   POINTERS_EQUAL(d.e, ns[0]);
   POINTERS_EQUAL(d.tn, ns[1]);
-
-  destroy_xpath_test(&d);
 }
 
 struct XPathAxisTestData {
