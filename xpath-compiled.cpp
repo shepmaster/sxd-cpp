@@ -1,6 +1,7 @@
 #include "xpath-compiled.h"
 
 #include "xpath-tokens.h"
+#include "axis-child.h"
 
 XPathCompiled *
 XPathCompiled::compile(const char * const xpath)

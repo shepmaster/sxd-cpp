@@ -62,61 +62,6 @@ public:
   virtual void traverse(Node *node, StepTester &test) = 0;
 };
 
-class AxisSelf : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisChild : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisParent : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisFollowingSibling : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisPrecedingSibling : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisDescendant : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisDescendantOrSelf : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisAncestor : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisAncestorOrSelf : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisFollowing : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
-class AxisPreceding : public XPathAxis {
-public:
-  void traverse(Node *node, StepTester &test);
-};
-
 class XPathStep {
 public:
   XPathStep(XPathAxis *axis);

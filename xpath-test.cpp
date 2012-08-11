@@ -6,6 +6,17 @@
 #include "document.h"
 #include "xpath-internal.h"
 #include "xpath-functions.h"
+#include "axis-ancestor.h"
+#include "axis-ancestor-or-self.h"
+#include "axis-child.h"
+#include "axis-descendant.h"
+#include "axis-descendant-or-self.h"
+#include "axis-following.h"
+#include "axis-following-sibling.h"
+#include "axis-parent.h"
+#include "axis-preceding.h"
+#include "axis-preceding-sibling.h"
+#include "axis-self.h"
 #include "test-utilities.h"
 
 TEST_GROUP(xpath)

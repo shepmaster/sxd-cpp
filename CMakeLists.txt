@@ -16,7 +16,7 @@ add_definitions(${GLIB2_CFLAGS})
 
 add_definitions(-ansi -Wall -pedantic -Werror -std=c++11 -stdlib=libc++)
 
-set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp node.cpp text-node.cpp nodeset.cpp xpath.cpp xpath-functions.cpp tokenizer.cpp comment.cpp predicate-value.cpp predicate-function.cpp predicate-equals.cpp xpath-tokens.cpp xpath-compiled.cpp)
+set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp node.cpp text-node.cpp nodeset.cpp xpath.cpp xpath-functions.cpp tokenizer.cpp comment.cpp predicate-value.cpp predicate-function.cpp predicate-equals.cpp xpath-tokens.cpp xpath-compiled.cpp axis-ancestor.cpp axis-ancestor-or-self.cpp axis-child.cpp axis-descendant.cpp axis-descendant-or-self.cpp axis-following.cpp axis-following-sibling.cpp axis-parent.cpp axis-preceding.cpp axis-preceding-sibling.cpp axis-self.cpp downward-recursive-tester.cpp)
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
 
