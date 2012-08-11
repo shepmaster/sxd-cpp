@@ -67,10 +67,12 @@ public:
   XPathStep(XPathAxis *axis);
 
   Nodeset select_without_predicates(Node *node);
+  Nodeset select_with_predicates(Nodeset node);
 
   XPathAxis *axis;
   std::vector<XPathNodeTest *> tests;
-  std::vector<XPathPredicate *> predicates;
+private:
+  std::vector<XPathPredicate *> _predicates;
 };
 
 typedef enum {

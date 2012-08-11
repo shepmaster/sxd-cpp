@@ -134,6 +134,20 @@ XPathStep::select_without_predicates(Node *node)
   return test.selected_nodes();
 }
 
+Nodeset
+XPathStep::select_with_predicates(Nodeset nodes)
+{
+  PotentialNodes current_nodes;
+
+  for (int j = 0; j < nodes.count(); j++) {
+    auto current_node = nodes[j];
+    auto selected_nodes = select_without_predicates(current_node);
+    current_nodes.add_candidates(selected_nodes);
+  }
+
+  return current_nodes.apply_predicates(_predicates);
+}
+
 XPathProcessor::XPathProcessor(Node *node) :
   _node(node)
 {
@@ -156,18 +170,7 @@ XPathProcessor::select_steps(std::vector<XPathStep> &steps)
   result_nodes.add(_node);
 
   for (auto step : steps) {
-    PotentialNodes current_nodes;
-
-    for (int j = 0; j < result_nodes.count(); j++) {
-      Node *current_node;
-      Nodeset selected_nodes;
-
-      current_node = result_nodes[j];
-      selected_nodes = step.select_without_predicates(current_node);
-      current_nodes.add_candidates(selected_nodes);
-    }
-
-    result_nodes = current_nodes.apply_predicates(step.predicates);
+    result_nodes = step.select_with_predicates(result_nodes);
   }
 
   return result_nodes;
