@@ -2,6 +2,6 @@
 #include "axis-descendant.h"
 
 void
-AxisDescendant::traverse(Node *node, StepTester &test) {
-  node->foreach_child(DownwardRecursiveTester(test));
+AxisDescendant::traverse(Node *node, const Node::foreach_fn_t &fn) {
+  node->foreach_child(DownwardRecursiveTester(fn));
 }

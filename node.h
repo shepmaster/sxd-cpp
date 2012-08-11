@@ -14,9 +14,9 @@ typedef enum {
 } node_type_t;
 
 class Node {
+public:
   typedef std::function<void (Node *)> foreach_fn_t;
 
-public:
   Node(Document *document, node_type_t type);
   virtual ~Node();
   virtual void change_document(Document *doc);

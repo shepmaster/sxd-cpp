@@ -1,12 +1,12 @@
 #include "downward-recursive-tester.h"
 
-DownwardRecursiveTester::DownwardRecursiveTester(StepTester &test) :
-  _test(test)
+DownwardRecursiveTester::DownwardRecursiveTester(Node::foreach_fn_t fn) :
+  _fn(fn)
 {
 }
 
 void
 DownwardRecursiveTester::operator() (Node *node) {
-  _test(node);
+  _fn(node);
   node->foreach_child(*this);
 }

@@ -5,7 +5,7 @@
 
 class AxisPreceding : public XPathAxis {
 public:
-  void traverse(Node *node, StepTester &test);
+  void traverse(Node *node, const Node::foreach_fn_t &fn);
 };
 
 #endif

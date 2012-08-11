@@ -4,9 +4,9 @@
 #include "xpath-internal.h"
 
 struct DownwardRecursiveTester {
-  DownwardRecursiveTester(StepTester &test);
+  DownwardRecursiveTester(Node::foreach_fn_t fn);
   void operator() (Node *node);
-  StepTester &_test;
+  Node::foreach_fn_t _fn;
 };
 
 #endif

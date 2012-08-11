@@ -42,24 +42,10 @@ public:
   bool include_node(Node &node);
 };
 
-class XPathStep;
-
-class StepTester {
-public:
-  StepTester(XPathStep &step);
-
-  void operator() (Node *node);
-  Nodeset selected_nodes();
-
-private:
-  XPathStep &_step;
-  Nodeset _nodeset;
-};
-
 class XPathAxis {
 public:
   virtual ~XPathAxis() {};
-  virtual void traverse(Node *node, StepTester &test) = 0;
+  virtual void traverse(Node *node, const Node::foreach_fn_t &fn) = 0;
 };
 
 class XPathStep {

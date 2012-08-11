@@ -99,6 +99,18 @@ TextTest::include_node(Node &node)
   return node.type() == NODE_TYPE_TEXT_NODE;
 }
 
+class StepTester {
+public:
+  StepTester(XPathStep &step);
+
+  void operator() (Node *node);
+  Nodeset selected_nodes();
+
+private:
+  XPathStep &_step;
+  Nodeset _nodeset;
+};
+
 StepTester::StepTester(XPathStep &step) :
   _step(step)
 {
@@ -130,7 +142,7 @@ Nodeset
 XPathStep::select_without_predicates(Node *node)
 {
   StepTester test(*this);
-  axis->traverse(node, test);
+  axis->traverse(node, std::ref(test));
   return test.selected_nodes();
 }
 

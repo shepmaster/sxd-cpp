@@ -1,6 +1,6 @@
 #include "axis-ancestor.h"
 
 void
-AxisAncestor::traverse(Node *node, StepTester &test) {
-  node->foreach_ancestor(std::ref(test));
+AxisAncestor::traverse(Node *node, const Node::foreach_fn_t &fn) {
+  node->foreach_ancestor(fn);
 }

@@ -2,16 +2,16 @@
 #include "axis-preceding.h"
 
 struct PrecedingSiblingAndAncestorTester {
-  PrecedingSiblingAndAncestorTester(StepTester &test) : _test(test) {}
+  PrecedingSiblingAndAncestorTester(const Node::foreach_fn_t &fn) : _fn(fn) {}
   void operator() (Node *node) {
-    node->foreach_preceding_sibling(DownwardRecursiveTester(_test));
-    node->foreach_ancestor(std::ref(*this));
+    node->foreach_preceding_sibling(DownwardRecursiveTester(_fn));
+    node->foreach_ancestor(*this);
   }
-  StepTester &_test;
+  const Node::foreach_fn_t & _fn;
 };
 
 void
-AxisPreceding::traverse(Node *node, StepTester &test) {
-  node->foreach_preceding_sibling(DownwardRecursiveTester(test));
-  node->foreach_ancestor(PrecedingSiblingAndAncestorTester(test));
+AxisPreceding::traverse(Node *node, const Node::foreach_fn_t &fn) {
+  node->foreach_preceding_sibling(DownwardRecursiveTester(fn));
+  node->foreach_ancestor(PrecedingSiblingAndAncestorTester(fn));
 }
