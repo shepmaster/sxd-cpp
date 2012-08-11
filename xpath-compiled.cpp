@@ -6,7 +6,6 @@ XPathCompiled *
 XPathCompiled::compile(const char * const xpath)
 {
   XPathCompiled *compiled;
-  XPathStep step;
   int i;
 
   compiled = new XPathCompiled;
@@ -16,9 +15,11 @@ XPathCompiled::compile(const char * const xpath)
     xpath_token_t token = tokens[i];
     switch (token.type) {
     case TEXT:
-      step.axis = XPATH_AXIS_CHILD;
+      {
+      XPathStep step(new AxisChild());
       step.tests.push_back(new NamedElementTest(tokens.string(i)));
       compiled->add_step(step);
+      }
       break;
     default:
       break;

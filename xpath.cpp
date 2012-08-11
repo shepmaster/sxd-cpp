@@ -99,33 +99,27 @@ TextTest::include_node(Node &node)
   return node.type() == NODE_TYPE_TEXT_NODE;
 }
 
-class StepTester {
-public:
-  StepTester(XPathStep &step) :
-    _step(step)
-  {
-  }
+StepTester::StepTester(XPathStep &step) :
+  _step(step)
+{
+}
 
-  void
-  operator() (Node *node)
-  {
-    for (auto test : _step.tests) {
-      if (test->include_node(*node)) {
-        _nodeset.add(node);
-        return;
-      }
+void
+StepTester::operator() (Node *node)
+{
+  for (auto test : _step.tests) {
+    if (test->include_node(*node)) {
+      _nodeset.add(node);
+      return;
     }
   }
+}
 
-  Nodeset selected_nodes()
-  {
-    return _nodeset;
-  }
-
-private:
-  XPathStep &_step;
-  Nodeset _nodeset;
-};
+Nodeset
+StepTester::selected_nodes()
+{
+  return _nodeset;
+}
 
 struct DownwardRecursiveTester {
   DownwardRecursiveTester(StepTester &test) : _test(test) {}
@@ -154,54 +148,75 @@ struct PrecedingSiblingAndAncestorTester {
   StepTester &_test;
 };
 
+void
+AxisSelf::traverse(Node *node, StepTester &test) {
+  test(node);
+}
+
+void
+AxisChild::traverse(Node *node, StepTester &test) {
+  node->foreach_child(std::ref(test));
+}
+
+void
+AxisParent::traverse(Node *node, StepTester &test) {
+  test(node->parent());
+}
+
+void
+AxisFollowingSibling::traverse(Node *node, StepTester &test) {
+  node->foreach_following_sibling(std::ref(test));
+}
+
+void
+AxisPrecedingSibling::traverse(Node *node, StepTester &test) {
+  node->foreach_preceding_sibling(std::ref(test));
+}
+
+void
+AxisDescendant::traverse(Node *node, StepTester &test) {
+  node->foreach_child(DownwardRecursiveTester(test));
+}
+
+void
+AxisDescendantOrSelf::traverse(Node *node, StepTester &test) {
+  test(node);
+  node->foreach_child(DownwardRecursiveTester(test));
+}
+
+void
+AxisAncestor::traverse(Node *node, StepTester &test) {
+  node->foreach_ancestor(std::ref(test));
+}
+
+void
+AxisAncestorOrSelf::traverse(Node *node, StepTester &test) {
+  test(node);
+  node->foreach_ancestor(std::ref(test));
+}
+
+void
+AxisFollowing::traverse(Node *node, StepTester &test) {
+  node->foreach_following_sibling(DownwardRecursiveTester(test));
+  node->foreach_ancestor(FollowingSiblingAndAncestorTester(test));
+}
+
+void
+AxisPreceding::traverse(Node *node, StepTester &test) {
+  node->foreach_preceding_sibling(DownwardRecursiveTester(test));
+  node->foreach_ancestor(PrecedingSiblingAndAncestorTester(test));
+}
+
+XPathStep::XPathStep(XPathAxis *axis) :
+  axis(axis)
+{
+}
+
 Nodeset
 xpath_select_xpath_no_predicates(Node *node, XPathStep &step)
 {
   StepTester test(step);
-
-  switch (step.axis) {
-  case XPATH_AXIS_SELF:
-    test(node);
-    break;
-  case XPATH_AXIS_CHILD:
-    node->foreach_child(std::ref(test));
-    break;
-  case XPATH_AXIS_PARENT:
-    test(node->parent());
-    break;
-  case XPATH_AXIS_FOLLOWING_SIBLING:
-    node->foreach_following_sibling(std::ref(test));
-    break;
-  case XPATH_AXIS_PRECEDING_SIBLING:
-    node->foreach_preceding_sibling(std::ref(test));
-    break;
-  case XPATH_AXIS_DESCENDANT:
-    node->foreach_child(DownwardRecursiveTester(test));
-    break;
-  case XPATH_AXIS_DESCENDANT_OR_SELF:
-    test(node);
-    node->foreach_child(DownwardRecursiveTester(test));
-    break;
-  case XPATH_AXIS_ANCESTOR:
-    node->foreach_ancestor(std::ref(test));
-    break;
-  case XPATH_AXIS_ANCESTOR_OR_SELF:
-    test(node);
-    node->foreach_ancestor(std::ref(test));
-    break;
-  case XPATH_AXIS_FOLLOWING:
-    node->foreach_following_sibling(DownwardRecursiveTester(test));
-    node->foreach_ancestor(FollowingSiblingAndAncestorTester(test));
-    break;
-  case XPATH_AXIS_PRECEDING:
-    node->foreach_preceding_sibling(DownwardRecursiveTester(test));
-    node->foreach_ancestor(PrecedingSiblingAndAncestorTester(test));
-    break;
-  case XPATH_AXIS_ATTRIBUTE:
-  case XPATH_AXIS_NAMESPACE:
-    not_implemented();
-  }
-
+  step.axis->traverse(node, test);
   return test.selected_nodes();
 }
 

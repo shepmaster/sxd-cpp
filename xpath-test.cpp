@@ -40,7 +40,6 @@ destroy_xpath_test(xpath_test_data_t *d)
 static void
 init_step(XPathStep *step)
 {
-  step->axis = XPATH_AXIS_CHILD;
   step->tests.push_back(new ElementTest());
 }
 
@@ -55,7 +54,7 @@ destroy_step(XPathStep *step)
 TEST(xpath, element)
 {
   xpath_test_data_t d;
-  XPathStep step;
+  XPathStep step(new AxisChild());
 
   init_xpath_test(&d);
   init_step(&step);
@@ -70,7 +69,7 @@ TEST(xpath, element)
 TEST(xpath, text_node)
 {
   xpath_test_data_t d;
-  XPathStep step;
+  XPathStep step(new AxisChild());
 
   init_xpath_test(&d);
   init_step(&step);
@@ -87,7 +86,7 @@ TEST(xpath, text_node)
 TEST(xpath, element_and_text_node)
 {
   xpath_test_data_t d;
-  XPathStep step;
+  XPathStep step(new AxisChild());
 
   init_xpath_test(&d);
   init_step(&step);
@@ -158,44 +157,46 @@ destroy_xpath_axis_test(xpath_axis_test_t *d)
 
 TEST_GROUP(xpath_axis)
 {
-  XPathStep step;
+  XPathStep *step;
   xpath_axis_test_t d;
 
   void setup(void)
   {
+    step = new XPathStep(new AxisChild());
     init_xpath_axis_test(&d);
-    init_step(&step);
+    init_step(step);
   }
 
   void teardown(void)
   {
     destroy_xpath_axis_test(&d);
+    delete step;
   }
 };
 
 TEST(xpath_axis, axis_self)
 {
-  step.axis = XPATH_AXIS_SELF;
+  step->axis = new AxisSelf();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, *step);
   CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.b, ns, 0);
 }
 
 TEST(xpath_axis, axis_parent)
 {
-  step.axis = XPATH_AXIS_PARENT;
+  step->axis = new AxisParent();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, *step);
   CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
 }
 
 TEST(xpath_axis, axis_following_sibling)
 {
-  step.axis = XPATH_AXIS_FOLLOWING_SIBLING;
+  step->axis = new AxisFollowingSibling();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, *step);
   CHECK_EQUAL(2, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.d, ns, 1);
@@ -203,9 +204,9 @@ TEST(xpath_axis, axis_following_sibling)
 
 TEST(xpath_axis, axis_preceding_sibling)
 {
-  step.axis = XPATH_AXIS_PRECEDING_SIBLING;
+  step->axis = new AxisPrecedingSibling();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.d, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.d, *step);
   CHECK_EQUAL(3, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.b, ns, 1);
@@ -214,9 +215,9 @@ TEST(xpath_axis, axis_preceding_sibling)
 
 TEST(xpath_axis, axis_descendant)
 {
-  step.axis = XPATH_AXIS_DESCENDANT;
+  step->axis = new AxisDescendant();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, *step);
   CHECK_EQUAL(10, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
   CHECK_nodeset_item(d.a, ns, 1);
@@ -232,9 +233,9 @@ TEST(xpath_axis, axis_descendant)
 
 TEST(xpath_axis, axis_descendant_or_self)
 {
-  step.axis = XPATH_AXIS_DESCENDANT_OR_SELF;
+  step->axis = new AxisDescendantOrSelf();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.alpha, *step);
   CHECK_EQUAL(11, ns.count());
   CHECK_nodeset_item(d.alpha, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
@@ -251,9 +252,9 @@ TEST(xpath_axis, axis_descendant_or_self)
 
 TEST(xpath_axis, axis_ancestor)
 {
-  step.axis = XPATH_AXIS_ANCESTOR;
+  step->axis = new AxisAncestor();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.b, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.b, *step);
   CHECK_EQUAL(2, ns.count());
   CHECK_nodeset_item(d.one, ns, 0);
   CHECK_nodeset_item(d.alpha, ns, 1);
@@ -261,9 +262,9 @@ TEST(xpath_axis, axis_ancestor)
 
 TEST(xpath_axis, axis_ancestor_or_self)
 {
-  step.axis = XPATH_AXIS_ANCESTOR_OR_SELF;
+  step->axis = new AxisAncestorOrSelf();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.c, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.c, *step);
   CHECK_EQUAL(3, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
@@ -272,9 +273,9 @@ TEST(xpath_axis, axis_ancestor_or_self)
 
 TEST(xpath_axis, axis_following)
 {
-  step.axis = XPATH_AXIS_FOLLOWING;
+  step->axis = new AxisFollowing();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.c, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.c, *step);
   CHECK_EQUAL(6, ns.count());
   CHECK_nodeset_item(d.d, ns, 0);
   CHECK_nodeset_item(d.two, ns, 1);
@@ -286,9 +287,9 @@ TEST(xpath_axis, axis_following)
 
 TEST(xpath_axis, axis_preceding)
 {
-  step.axis = XPATH_AXIS_PRECEDING;
+  step->axis = new AxisPreceding();
 
-  Nodeset ns = xpath_select_xpath_no_predicates(d.x, step);
+  Nodeset ns = xpath_select_xpath_no_predicates(d.x, *step);
   CHECK_EQUAL(6, ns.count());
   CHECK_nodeset_item(d.w, ns, 0);
   CHECK_nodeset_item(d.one, ns, 1);
@@ -300,7 +301,7 @@ TEST(xpath_axis, axis_preceding)
 
 TEST(xpath, two_step)
 {
-  XPathStep step;
+  XPathStep step(new AxisChild());
   std::vector<XPathStep> steps;
   xpath_axis_test_t d;
 
@@ -328,13 +329,11 @@ TEST(xpath, two_step)
 TEST_GROUP(xpath_predicate)
 {
   Nodeset *ns;
-  XPathStep step;
   xpath_axis_test_t d;
 
   void setup(void)
   {
     init_xpath_axis_test(&d);
-    init_step(&step);
   }
 
   void teardown(void)

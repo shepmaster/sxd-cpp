@@ -7,22 +7,6 @@
 #include "node.h"
 #include "nodeset.h"
 
-typedef enum {
-  XPATH_AXIS_ANCESTOR,
-  XPATH_AXIS_ANCESTOR_OR_SELF,
-  XPATH_AXIS_ATTRIBUTE,
-  XPATH_AXIS_CHILD,
-  XPATH_AXIS_DESCENDANT,
-  XPATH_AXIS_DESCENDANT_OR_SELF,
-  XPATH_AXIS_FOLLOWING,
-  XPATH_AXIS_FOLLOWING_SIBLING,
-  XPATH_AXIS_NAMESPACE,
-  XPATH_AXIS_PARENT,
-  XPATH_AXIS_PRECEDING,
-  XPATH_AXIS_PRECEDING_SIBLING,
-  XPATH_AXIS_SELF
-} xpath_axis_t;
-
 typedef struct xpath_resultS xpath_result_t;
 typedef struct xpath_evaluation_contextS xpath_evaluation_context_t;
 
@@ -58,9 +42,85 @@ public:
   bool include_node(Node &node);
 };
 
+class XPathStep;
+
+class StepTester {
+public:
+  StepTester(XPathStep &step);
+
+  void operator() (Node *node);
+  Nodeset selected_nodes();
+
+private:
+  XPathStep &_step;
+  Nodeset _nodeset;
+};
+
+class XPathAxis {
+public:
+  virtual ~XPathAxis() {};
+  virtual void traverse(Node *node, StepTester &test) = 0;
+};
+
+class AxisSelf : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisChild : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisParent : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisFollowingSibling : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisPrecedingSibling : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisDescendant : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisDescendantOrSelf : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisAncestor : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisAncestorOrSelf : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisFollowing : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
+class AxisPreceding : public XPathAxis {
+public:
+  void traverse(Node *node, StepTester &test);
+};
+
 class XPathStep {
 public:
-  xpath_axis_t axis;
+  XPathStep(XPathAxis *axis);
+  XPathAxis *axis;
   std::vector<XPathNodeTest *> tests;
   std::vector<XPathPredicate *> predicates;
 };
