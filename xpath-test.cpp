@@ -148,18 +148,11 @@ TEST(xpath, apply_element)
   const char * const name = "one";
 
   Document doc;
-  Node *parent = test_helper_new_node(doc, "parent");
-  Node *children[4];
-
-  children[0] = test_helper_new_node(doc, "one");
-  children[1] = test_helper_new_node(doc, "two");
-  children[2] = test_helper_new_node(doc, "one");
-  children[3] = test_helper_new_node(doc, "four");
-
-  parent->append_child(children[0]);
-  parent->append_child(children[1]);
-  parent->append_child(children[2]);
-  parent->append_child(children[3]);
+  Node *parent = doc.new_element("parent");
+  parent->append_child(doc.new_element("one"));
+  parent->append_child(doc.new_element("two"));
+  parent->append_child(doc.new_element("one"));
+  parent->append_child(doc.new_element("four"));
 
   Nodeset nodes = XPathProcessor(parent).apply(name);
 
