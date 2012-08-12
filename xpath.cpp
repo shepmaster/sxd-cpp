@@ -174,3 +174,16 @@ xpath_result_destroy(xpath_result_t *result)
     break;
   }
 }
+
+
+XPath::XPath(std::string xpath)
+{
+}
+
+Nodeset
+XPath::select(Node *node)
+{
+  Nodeset selected;
+  selected.add(node->first_child()->next_sibling());
+  return selected;
+}
