@@ -44,26 +44,12 @@ struct XPathTestData {
   Node *tn;
 };
 
-static void
-init_step(XPathStep *step)
-{
-  step->tests.push_back(new ElementTest());
-}
-
-static void
-destroy_step(XPathStep *step)
-{
-  for (auto test : step->tests) {
-    delete test;
-  }
-}
-
 TEST(xpath, element)
 {
   XPathTestData d;
   XPathStep step(new AxisChild());
 
-  init_step(&step);
+  step.tests.push_back(new ElementTest());
 
   Nodeset ns = step.select_without_predicates(d.parent);
   CHECK_EQUAL(1, ns.count());
@@ -75,8 +61,6 @@ TEST(xpath, text_node)
   XPathTestData d;
   XPathStep step(new AxisChild());
 
-  init_step(&step);
-  step.tests.clear();
   step.tests.push_back(new TextTest());
 
   Nodeset ns = step.select_without_predicates(d.parent);
@@ -89,8 +73,6 @@ TEST(xpath, element_and_text_node)
   XPathTestData d;
   XPathStep step(new AxisChild());
 
-  init_step(&step);
-  step.tests.clear();
   step.tests.push_back(new ElementTest());
   step.tests.push_back(new TextTest());
 
@@ -155,7 +137,7 @@ TEST_GROUP(xpath_axis)
   void setup(void)
   {
     step = new XPathStep(new AxisChild());
-    init_step(step);
+    step->tests.push_back(new ElementTest());
   }
 
   void teardown(void)
@@ -291,25 +273,20 @@ TEST(xpath_axis, axis_preceding)
 
 TEST(xpath, two_step)
 {
-  XPathStep step(new AxisChild());
   std::vector<XPathStep> steps;
   XPathAxisTestData d;
 
-  init_step(&step);
-  step.tests.clear();
-  step.tests.push_back(new NamedElementTest("one"));
-  steps.push_back(step);
-  step.tests.clear();
-  step.tests.push_back(new NamedElementTest("c"));
-  steps.push_back(step);
+  XPathStep first_step(new AxisChild());
+  first_step.tests.push_back(new NamedElementTest("one"));
+  steps.push_back(first_step);
+
+  XPathStep second_step(new AxisChild());
+  second_step.tests.push_back(new NamedElementTest("c"));
+  steps.push_back(second_step);
 
   Nodeset ns = XPathProcessor(d.alpha).select_steps(steps);
   CHECK_EQUAL(1, ns.count());
   CHECK_nodeset_item(d.c, ns, 0);
-
-  for (auto x : steps) {
-    destroy_step(&x);
-  }
 }
 
 TEST_GROUP(xpath_predicate)
