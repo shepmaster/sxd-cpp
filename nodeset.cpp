@@ -3,7 +3,7 @@
 #include "nodeset.h"
 
 unsigned int
-Nodeset::count()
+Nodeset::count() const
 {
   return nodes.size();
 }

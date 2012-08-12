@@ -6,7 +6,7 @@
 
 class Nodeset {
 public:
-  unsigned int count();
+  unsigned int count() const;
 
   void add(Node *node);
   void add_nodeset(Nodeset &to_add);
