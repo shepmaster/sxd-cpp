@@ -25,3 +25,20 @@ Nodeset::operator[](unsigned int i)
 {
   return nodes[i];
 }
+
+bool
+Nodeset::operator ==(const Nodeset &other) const
+{
+  return nodes == other.nodes;
+};
+
+bool
+Nodeset::operator !=(const Nodeset &other) const
+{
+  return !(*this == other);
+}
+
+std::ostream &
+operator<<(std::ostream &os, const Nodeset &nodeset) {
+  return os << "Nodeset contains " << nodeset.count() << " nodes";
+}
