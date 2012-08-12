@@ -130,144 +130,169 @@ struct XPathAxisTestData {
 
 TEST_GROUP(xpath_axis)
 {
-  XPathStep *step;
   XPathAxisTestData d;
+};
 
-  void setup(void)
-  {
-    step = new XPathStep(new AxisChild());
-    step->tests.push_back(new ElementTest());
+class RememberingVisitor {
+public:
+  void operator() (Node *node) {
+    seen_nodes.push_back(node);
   }
 
-  void teardown(void)
-  {
-    delete step;
+  unsigned int nodes_seen() {
+    return seen_nodes.size();
   }
+
+  Node *operator[] (unsigned int idx) {
+    return seen_nodes[idx];
+  }
+
+  std::vector<Node *> seen_nodes;
 };
 
 TEST(xpath_axis, axis_self)
 {
-  step->axis = new AxisSelf();
+  AxisSelf axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.b);
-  CHECK_EQUAL(1, ns.count());
-  CHECK_nodeset_item(d.b, ns, 0);
+  axis.traverse(d.b, std::ref(visitor));
+
+  CHECK_EQUAL(1, visitor.nodes_seen());
+  CHECK_EQUAL(d.b, visitor[0]);
 }
 
 TEST(xpath_axis, axis_parent)
 {
-  step->axis = new AxisParent();
+  AxisParent axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.b);
-  CHECK_EQUAL(1, ns.count());
-  CHECK_nodeset_item(d.one, ns, 0);
+  axis.traverse(d.b, std::ref(visitor));
+
+  CHECK_EQUAL(1, visitor.nodes_seen());
+  CHECK_EQUAL(d.one, visitor[0]);
 }
 
 TEST(xpath_axis, axis_following_sibling)
 {
-  step->axis = new AxisFollowingSibling();
+  AxisFollowingSibling axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.b);
-  CHECK_EQUAL(2, ns.count());
-  CHECK_nodeset_item(d.c, ns, 0);
-  CHECK_nodeset_item(d.d, ns, 1);
+  axis.traverse(d.b, std::ref(visitor));
+
+  CHECK_EQUAL(2, visitor.nodes_seen());
+  CHECK_EQUAL(d.c, visitor[0]);
+  CHECK_EQUAL(d.d, visitor[1]);
 }
 
 TEST(xpath_axis, axis_preceding_sibling)
 {
-  step->axis = new AxisPrecedingSibling();
+  AxisPrecedingSibling axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.d);
-  CHECK_EQUAL(3, ns.count());
-  CHECK_nodeset_item(d.c, ns, 0);
-  CHECK_nodeset_item(d.b, ns, 1);
-  CHECK_nodeset_item(d.a, ns, 2);
+  axis.traverse(d.d, std::ref(visitor));
+
+  CHECK_EQUAL(3, visitor.nodes_seen());
+  CHECK_EQUAL(d.c, visitor[0]);
+  CHECK_EQUAL(d.b, visitor[1]);
+  CHECK_EQUAL(d.a, visitor[2]);
 }
 
 TEST(xpath_axis, axis_descendant)
 {
-  step->axis = new AxisDescendant();
+  AxisDescendant axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.alpha);
-  CHECK_EQUAL(10, ns.count());
-  CHECK_nodeset_item(d.one, ns, 0);
-  CHECK_nodeset_item(d.a, ns, 1);
-  CHECK_nodeset_item(d.b, ns, 2);
-  CHECK_nodeset_item(d.c, ns, 3);
-  CHECK_nodeset_item(d.d, ns, 4);
-  CHECK_nodeset_item(d.two, ns, 5);
-  CHECK_nodeset_item(d.w, ns, 6);
-  CHECK_nodeset_item(d.x, ns, 7);
-  CHECK_nodeset_item(d.y, ns, 8);
-  CHECK_nodeset_item(d.z, ns, 9);
+  axis.traverse(d.alpha, std::ref(visitor));
+
+  CHECK_EQUAL(10, visitor.nodes_seen());
+  CHECK_EQUAL(d.one, visitor[0]);
+  CHECK_EQUAL(d.a, visitor[1]);
+  CHECK_EQUAL(d.b, visitor[2]);
+  CHECK_EQUAL(d.c, visitor[3]);
+  CHECK_EQUAL(d.d, visitor[4]);
+  CHECK_EQUAL(d.two, visitor[5]);
+  CHECK_EQUAL(d.w, visitor[6]);
+  CHECK_EQUAL(d.x, visitor[7]);
+  CHECK_EQUAL(d.y, visitor[8]);
+  CHECK_EQUAL(d.z, visitor[9]);
 }
 
 TEST(xpath_axis, axis_descendant_or_self)
 {
-  step->axis = new AxisDescendantOrSelf();
+  AxisDescendantOrSelf axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.alpha);
-  CHECK_EQUAL(11, ns.count());
-  CHECK_nodeset_item(d.alpha, ns, 0);
-  CHECK_nodeset_item(d.one, ns, 1);
-  CHECK_nodeset_item(d.a, ns, 2);
-  CHECK_nodeset_item(d.b, ns, 3);
-  CHECK_nodeset_item(d.c, ns, 4);
-  CHECK_nodeset_item(d.d, ns, 5);
-  CHECK_nodeset_item(d.two, ns, 6);
-  CHECK_nodeset_item(d.w, ns, 7);
-  CHECK_nodeset_item(d.x, ns, 8);
-  CHECK_nodeset_item(d.y, ns, 9);
-  CHECK_nodeset_item(d.z, ns, 10);
+  axis.traverse(d.alpha, std::ref(visitor));
+
+  CHECK_EQUAL(11, visitor.nodes_seen());
+  CHECK_EQUAL(d.alpha, visitor[0]);
+  CHECK_EQUAL(d.one, visitor[1]);
+  CHECK_EQUAL(d.a, visitor[2]);
+  CHECK_EQUAL(d.b, visitor[3]);
+  CHECK_EQUAL(d.c, visitor[4]);
+  CHECK_EQUAL(d.d, visitor[5]);
+  CHECK_EQUAL(d.two, visitor[6]);
+  CHECK_EQUAL(d.w, visitor[7]);
+  CHECK_EQUAL(d.x, visitor[8]);
+  CHECK_EQUAL(d.y, visitor[9]);
+  CHECK_EQUAL(d.z, visitor[10]);
 }
 
 TEST(xpath_axis, axis_ancestor)
 {
-  step->axis = new AxisAncestor();
+  AxisAncestor axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.b);
-  CHECK_EQUAL(2, ns.count());
-  CHECK_nodeset_item(d.one, ns, 0);
-  CHECK_nodeset_item(d.alpha, ns, 1);
+  axis.traverse(d.b, std::ref(visitor));
+
+  CHECK_EQUAL(2, visitor.nodes_seen());
+  CHECK_EQUAL(d.one, visitor[0]);
+  CHECK_EQUAL(d.alpha, visitor[1]);
 }
 
 TEST(xpath_axis, axis_ancestor_or_self)
 {
-  step->axis = new AxisAncestorOrSelf();
+  AxisAncestorOrSelf axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.c);
-  CHECK_EQUAL(3, ns.count());
-  CHECK_nodeset_item(d.c, ns, 0);
-  CHECK_nodeset_item(d.one, ns, 1);
-  CHECK_nodeset_item(d.alpha, ns, 2);
+  axis.traverse(d.c, std::ref(visitor));
+
+  CHECK_EQUAL(3, visitor.nodes_seen());
+  CHECK_EQUAL(d.c, visitor[0]);
+  CHECK_EQUAL(d.one, visitor[1]);
+  CHECK_EQUAL(d.alpha, visitor[2]);
 }
 
 TEST(xpath_axis, axis_following)
 {
-  step->axis = new AxisFollowing();
+  AxisFollowing axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.c);
-  CHECK_EQUAL(6, ns.count());
-  CHECK_nodeset_item(d.d, ns, 0);
-  CHECK_nodeset_item(d.two, ns, 1);
-  CHECK_nodeset_item(d.w, ns, 2);
-  CHECK_nodeset_item(d.x, ns, 3);
-  CHECK_nodeset_item(d.y, ns, 4);
-  CHECK_nodeset_item(d.z, ns, 5);
+  axis.traverse(d.c, std::ref(visitor));
+
+  CHECK_EQUAL(6, visitor.nodes_seen());
+  CHECK_EQUAL(d.d, visitor[0]);
+  CHECK_EQUAL(d.two, visitor[1]);
+  CHECK_EQUAL(d.w, visitor[2]);
+  CHECK_EQUAL(d.x, visitor[3]);
+  CHECK_EQUAL(d.y, visitor[4]);
+  CHECK_EQUAL(d.z, visitor[5]);
 }
 
 TEST(xpath_axis, axis_preceding)
 {
-  step->axis = new AxisPreceding();
+  AxisPreceding axis;
+  RememberingVisitor visitor;
 
-  Nodeset ns = step->select_without_predicates(d.x);
-  CHECK_EQUAL(6, ns.count());
-  CHECK_nodeset_item(d.w, ns, 0);
-  CHECK_nodeset_item(d.one, ns, 1);
-  CHECK_nodeset_item(d.a, ns, 2);
-  CHECK_nodeset_item(d.b, ns, 3);
-  CHECK_nodeset_item(d.c, ns, 4);
-  CHECK_nodeset_item(d.d, ns, 5);
+  axis.traverse(d.x, std::ref(visitor));
+
+  CHECK_EQUAL(6, visitor.nodes_seen());
+  CHECK_EQUAL(d.w, visitor[0]);
+  CHECK_EQUAL(d.one, visitor[1]);
+  CHECK_EQUAL(d.a, visitor[2]);
+  CHECK_EQUAL(d.b, visitor[3]);
+  CHECK_EQUAL(d.c, visitor[4]);
+  CHECK_EQUAL(d.d, visitor[5]);
 }
 
 TEST(xpath, two_step)
