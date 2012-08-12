@@ -20,10 +20,10 @@ set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp nod
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
 
-add_library(test-utilities SHARED test-utilities.cpp)
+add_library(test-utilities SHARED test-utilities.cpp remembering-node-visitor.cpp)
 target_link_libraries(test-utilities ${GLIB2_LIBRARIES} sxd)
 
-set(test_programs element intern document exception nmtoken node text-node nodeset xpath xpath-functions tokenizer comment predicate-value predicate-function predicate-equals xpath-tokens xpath-compiled)
+set(test_programs element intern document exception nmtoken node text-node nodeset xpath xpath-functions tokenizer comment predicate-value predicate-function predicate-equals xpath-tokens xpath-compiled axis-ancestor-or-self axis-ancestor axis-descendant-or-self axis-descendant axis-following-sibling axis-following axis-parent axis-preceding-sibling axis-preceding axis-self)
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
   target_link_libraries(${program}-test sxd test-utilities CppUTest)
