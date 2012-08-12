@@ -69,36 +69,6 @@ PotentialNodes::apply_predicates(std::vector<XPathPredicate *> predicates)
   return current_nodes;
 }
 
-bool
-ElementTest::include_node(Node &node)
-{
-  return node.type() == NODE_TYPE_ELEMENT;
-}
-
-NamedElementTest::NamedElementTest(std::string name) :
-  _name(name)
-{
-}
-
-bool
-NamedElementTest::include_node(Node &node)
-{
-  ElementTest element_test;
-
-  if (! element_test.include_node(node)) {
-    return false;
-  }
-
-  Element *element = (Element *)&node;
-  return _name.compare(element->name()) == 0;
-}
-
-bool
-TextTest::include_node(Node &node)
-{
-  return node.type() == NODE_TYPE_TEXT_NODE;
-}
-
 class StepTester {
 public:
   StepTester(XPathStep &step);

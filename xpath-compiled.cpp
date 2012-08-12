@@ -2,6 +2,7 @@
 
 #include "xpath-tokens.h"
 #include "axis-child.h"
+#include "node-test-named-element.h"
 
 XPathCompiled *
 XPathCompiled::compile(const char * const xpath)
@@ -18,7 +19,7 @@ XPathCompiled::compile(const char * const xpath)
     case TEXT:
       {
       XPathStep step(new AxisChild());
-      step.tests.push_back(new NamedElementTest(tokens.string(i)));
+      step.tests.push_back(new NodeTestNamedElement(tokens.string(i)));
       compiled->add_step(step);
       }
       break;

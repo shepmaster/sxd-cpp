@@ -15,33 +15,7 @@ public:
   virtual xpath_result_t eval(xpath_evaluation_context_t *context) = 0;
 };
 
-class XPathNodeTest {
-public:
-  virtual ~XPathNodeTest() {};
-  virtual bool include_node(Node &node) = 0;
-};
-
-#include <string>
-
-class ElementTest : public XPathNodeTest {
-public:
-  bool include_node(Node &node);
-};
-
-class NamedElementTest : public XPathNodeTest {
-public:
-  NamedElementTest(std::string name);
-  bool include_node(Node &node);
-
-private:
-  std::string _name;
-};
-
-class TextTest : public XPathNodeTest {
-public:
-  bool include_node(Node &node);
-};
-
+#include "xpath-node-test.h"
 #include "xpath-axis.h"
 
 class XPathStep {

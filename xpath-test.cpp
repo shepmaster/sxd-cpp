@@ -39,36 +39,6 @@ TEST_GROUP(xpath)
   XPathTestData d;
 };
 
-TEST(xpath, element)
-{
-  ElementTest test;
-
-  CHECK_EQUAL(true, test.include_node(*d.e));
-  CHECK_EQUAL(false, test.include_node(*d.tn));
-}
-
-TEST(xpath, named_element_matches)
-{
-  NamedElementTest test("child1");
-
-  CHECK_EQUAL(true, test.include_node(*d.e));
-}
-
-TEST(xpath, named_element_fails)
-{
-  NamedElementTest test("wrong");
-
-  CHECK_EQUAL(false, test.include_node(*d.e));
-}
-
-TEST(xpath, text_node)
-{
-  TextTest test;
-
-  CHECK_EQUAL(false, test.include_node(*d.e));
-  CHECK_EQUAL(true, test.include_node(*d.tn));
-}
-
 class MockNodeTest : public XPathNodeTest {
 public:
   MockNodeTest(bool should_include) :
@@ -127,17 +97,19 @@ TEST(xpath, stops_applying_tests_after_success)
 #define CHECK_nodeset_item(_node, _nodeset, _index) \
   POINTERS_EQUAL(_node, _nodeset[_index])
 
+#include "node-test-named-element.h"
+
 TEST(xpath, two_step)
 {
   std::vector<XPathStep> steps;
   XPathAxisTestData d;
 
   XPathStep first_step(new AxisChild());
-  first_step.tests.push_back(new NamedElementTest("one"));
+  first_step.tests.push_back(new NodeTestNamedElement("one"));
   steps.push_back(first_step);
 
   XPathStep second_step(new AxisChild());
-  second_step.tests.push_back(new NamedElementTest("c"));
+  second_step.tests.push_back(new NodeTestNamedElement("c"));
   steps.push_back(second_step);
 
   Nodeset ns = XPathProcessor(d.alpha).select_steps(steps);
