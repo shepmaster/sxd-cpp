@@ -51,9 +51,9 @@ public:
   Nodeset select_without_predicates(Node *node);
   Nodeset select_with_predicates(Nodeset node);
 
-  XPathAxis *axis;
   std::vector<XPathNodeTest *> tests;
 private:
+  XPathAxis *axis;
   std::vector<XPathPredicate *> _predicates;
 };
 
