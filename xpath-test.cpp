@@ -19,9 +19,6 @@
 #include "axis-self.h"
 #include "test-utilities.h"
 
-TEST_GROUP(xpath)
-{};
-
 struct XPathTestData {
   XPathTestData()
 {
@@ -44,9 +41,13 @@ struct XPathTestData {
   Node *tn;
 };
 
-TEST(xpath, element)
+TEST_GROUP(xpath)
 {
   XPathTestData d;
+};
+
+TEST(xpath, element)
+{
   XPathStep step(new AxisChild());
 
   step.tests.push_back(new ElementTest());
@@ -58,7 +59,6 @@ TEST(xpath, element)
 
 TEST(xpath, text_node)
 {
-  XPathTestData d;
   XPathStep step(new AxisChild());
 
   step.tests.push_back(new TextTest());
@@ -70,7 +70,6 @@ TEST(xpath, text_node)
 
 TEST(xpath, element_and_text_node)
 {
-  XPathTestData d;
   XPathStep step(new AxisChild());
 
   step.tests.push_back(new ElementTest());
