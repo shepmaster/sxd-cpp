@@ -41,37 +41,87 @@ TEST_GROUP(xpath)
 
 TEST(xpath, element)
 {
-  XPathStep step(new AxisChild());
+  ElementTest test;
 
-  step.tests.push_back(new ElementTest());
+  CHECK_EQUAL(true, test.include_node(*d.e));
+  CHECK_EQUAL(false, test.include_node(*d.tn));
+}
 
-  Nodeset ns = step.select_without_predicates(d.parent);
-  CHECK_EQUAL(1, ns.count());
-  POINTERS_EQUAL(d.e, ns[0]);
+TEST(xpath, named_element_matches)
+{
+  NamedElementTest test("child1");
+
+  CHECK_EQUAL(true, test.include_node(*d.e));
+}
+
+TEST(xpath, named_element_fails)
+{
+  NamedElementTest test("wrong");
+
+  CHECK_EQUAL(false, test.include_node(*d.e));
 }
 
 TEST(xpath, text_node)
 {
-  XPathStep step(new AxisChild());
+  TextTest test;
 
-  step.tests.push_back(new TextTest());
-
-  Nodeset ns = step.select_without_predicates(d.parent);
-  CHECK_EQUAL(1, ns.count());
-  POINTERS_EQUAL(d.tn, ns[0]);
+  CHECK_EQUAL(false, test.include_node(*d.e));
+  CHECK_EQUAL(true, test.include_node(*d.tn));
 }
 
-TEST(xpath, element_and_text_node)
+class MockNodeTest : public XPathNodeTest {
+public:
+  MockNodeTest(bool should_include) :
+    should_include(should_include)
+  {
+  }
+
+  bool include_node(Node &node) {
+    ++call_count;
+    return should_include;
+  }
+
+  bool should_include;
+  unsigned int call_count = 0;
+};
+
+TEST(xpath, applies_tests_for_each_node)
 {
   XPathStep step(new AxisChild());
-
-  step.tests.push_back(new ElementTest());
-  step.tests.push_back(new TextTest());
+  MockNodeTest test(false);
+  step.tests.push_back(&test);
 
   Nodeset ns = step.select_without_predicates(d.parent);
-  CHECK_EQUAL(2, ns.count());
-  POINTERS_EQUAL(d.e, ns[0]);
-  POINTERS_EQUAL(d.tn, ns[1]);
+
+  CHECK_EQUAL(2, test.call_count);
+}
+
+TEST(xpath, applies_multiple_tests)
+{
+  XPathStep step(new AxisChild());
+  MockNodeTest test1(false);
+  MockNodeTest test2(false);
+  step.tests.push_back(&test1);
+  step.tests.push_back(&test2);
+
+  Nodeset ns = step.select_without_predicates(d.parent);
+
+  CHECK_EQUAL(2, test1.call_count);
+  CHECK_EQUAL(2, test2.call_count);
+}
+
+TEST(xpath, stops_applying_tests_after_success)
+{
+  XPathStep step(new AxisChild());
+  MockNodeTest test1(true);
+  MockNodeTest test2(false);
+  step.tests.push_back(&test1);
+  step.tests.push_back(&test2);
+
+  Nodeset ns = step.select_without_predicates(d.parent);
+
+  CHECK_EQUAL(2, test1.call_count);
+  CHECK_EQUAL(0, test2.call_count);
 }
 
 #define CHECK_nodeset_item(_node, _nodeset, _index) \
