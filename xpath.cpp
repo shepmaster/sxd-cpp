@@ -71,25 +71,25 @@ PotentialNodes::apply_predicates(std::vector<XPathPredicate *> predicates)
 
 class StepTester {
 public:
-  StepTester(XPathStep &step);
+  StepTester(const std::vector<XPathNodeTest *> &tests);
 
   void operator() (Node *node);
   Nodeset selected_nodes();
 
 private:
-  XPathStep &_step;
+  const std::vector<XPathNodeTest *> &_tests;
   Nodeset _nodeset;
 };
 
-StepTester::StepTester(XPathStep &step) :
-  _step(step)
+StepTester::StepTester(const std::vector<XPathNodeTest *> &tests) :
+  _tests(tests)
 {
 }
 
 void
 StepTester::operator() (Node *node)
 {
-  for (auto test : _step.tests) {
+  for (auto test : _tests) {
     if (test->include_node(*node)) {
       _nodeset.add(node);
       return;
@@ -111,7 +111,7 @@ XPathStep::XPathStep(XPathAxis *axis) :
 Nodeset
 XPathStep::select_without_predicates(Node *node)
 {
-  StepTester test(*this);
+  StepTester test(tests);
   axis->traverse(node, std::ref(test));
   return test.selected_nodes();
 }
