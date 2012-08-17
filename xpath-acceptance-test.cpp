@@ -37,6 +37,20 @@ TEST(XPathAcceptance, can_select_child_element)
   CHECK_EQUAL(expected_nodes, selected_nodes);
 }
 
+TEST(XPathAcceptance, can_select_child_wildcard_elements)
+{
+  XPathAxisTestData d;
+
+  XPath xpath = XPathFactory().compile("*");
+  Nodeset selected_nodes = d.alpha->select_nodes(xpath);
+
+  Nodeset expected_nodes;
+  expected_nodes.add(d.one);
+  expected_nodes.add(d.two);
+
+  CHECK_EQUAL(expected_nodes, selected_nodes);
+}
+
 int
 main(int argc, char **argv)
 {

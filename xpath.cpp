@@ -13,7 +13,7 @@ XPath::select_nodes(Node &node)
   auto child_selector = [&](Node *child){
     if (child->type() == NODE_TYPE_ELEMENT) {
       Element *e = dynamic_cast<Element *>(child);
-      if (_node_name == e->name()) {
+      if (_node_name == "*" || _node_name == e->name()) {
         result.add(e);
       }
     }
