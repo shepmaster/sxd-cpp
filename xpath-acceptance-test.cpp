@@ -4,7 +4,10 @@
 #include <CppUTest/CommandLineTestRunner.h>
 
 #include "xpath-axis-test-data.h"
+#include "xpath-factory.h"
 #include "xpath.h"
+
+#include "nodeset.h"
 
 TEST_GROUP(XPathAcceptance)
 {
@@ -25,8 +28,8 @@ TEST(XPathAcceptance, can_select_child_element)
 {
   XPathAxisTestData d;
 
-  XPath xpath("two");
-  Nodeset selected_nodes = xpath.select(d.alpha);
+  XPath xpath = XPathFactory().compile("two");
+  Nodeset selected_nodes = d.alpha->select_nodes(xpath);
 
   Nodeset expected_nodes;
   expected_nodes.add(d.two);

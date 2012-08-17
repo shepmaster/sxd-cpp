@@ -2,6 +2,7 @@
 #define NODE_H
 
 class Document;
+class Nodeset;
 class Node;
 
 #include <functional>
@@ -12,6 +13,11 @@ typedef enum {
   NODE_TYPE_TEXT_NODE,
   NODE_TYPE_COMMENT
 } node_type_t;
+
+class NodeSelector {
+public:
+  virtual Nodeset select_nodes(Node &node) = 0;
+};
 
 class Node {
 public:
@@ -40,6 +46,8 @@ public:
   void foreach_ancestor(foreach_fn_t fn);
 
   node_type_t type();
+
+  Nodeset select_nodes(NodeSelector &selector);
 
 protected:
   node_type_t type_;

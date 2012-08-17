@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "document.h"
+#include "nodeset.h"
 
 void
 Node::foreach_child(foreach_fn_t fn)
@@ -181,4 +182,10 @@ void
 Node::output_children(Output &output)
 {
   foreach_child(OutputWrapper(output));
+}
+
+Nodeset
+Node::select_nodes(NodeSelector &selector)
+{
+  return selector.select_nodes(*this);
 }

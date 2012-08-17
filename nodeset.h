@@ -11,7 +11,7 @@ public:
   void add(Node *node);
   void add_nodeset(Nodeset &to_add);
 
-  Node *operator[](unsigned int i);
+  Node *operator[](unsigned int i) const;
 
   bool operator ==(const Nodeset &other) const;
   bool operator !=(const Nodeset &other) const;

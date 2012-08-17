@@ -21,7 +21,7 @@ Nodeset::add_nodeset(Nodeset &to_add)
 }
 
 Node *
-Nodeset::operator[](unsigned int i)
+Nodeset::operator[](unsigned int i) const
 {
   return nodes[i];
 }
@@ -40,5 +40,14 @@ Nodeset::operator !=(const Nodeset &other) const
 
 std::ostream &
 operator<<(std::ostream &os, const Nodeset &nodeset) {
-  return os << "Nodeset contains " << nodeset.count() << " nodes";
+  os << "Nodeset [";
+  for (int i = 0; i < nodeset.count(); i++) {
+    if (i != 0) {
+      os << ", ";
+    }
+    const auto &node = nodeset[i];
+    os << node;
+  }
+  os << "]";
+  return os;
 }
