@@ -86,6 +86,22 @@ TEST(XPathAcceptance, can_select_great_grandchild_element)
   delete one;
 }
 
+TEST(XPathAcceptance, can_select_self)
+{
+  Document doc;
+  Node *one = doc.new_element("one");
+
+  XPath xpath = XPathFactory().compile(".");
+  Nodeset selected_nodes = one->select_nodes(xpath);
+
+  Nodeset expected_nodes;
+  expected_nodes.add(one);
+
+  CHECK_EQUAL(expected_nodes, selected_nodes);
+
+  delete one;
+}
+
 int
 main(int argc, char **argv)
 {
