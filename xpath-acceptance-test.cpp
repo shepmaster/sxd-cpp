@@ -51,7 +51,7 @@ TEST(XPathAcceptance, can_select_child_wildcard_elements)
   CHECK_EQUAL(expected_nodes, selected_nodes);
 }
 
-TEST(XPathAcceptance, can_select_nested_child_element)
+TEST(XPathAcceptance, can_select_grandchild_element)
 {
   XPathAxisTestData d;
 
@@ -62,6 +62,28 @@ TEST(XPathAcceptance, can_select_nested_child_element)
   expected_nodes.add(d.c);
 
   CHECK_EQUAL(expected_nodes, selected_nodes);
+}
+
+TEST(XPathAcceptance, can_select_great_grandchild_element)
+{
+  Document doc;
+  Node *one = doc.new_element("one");
+  Node *two = doc.new_element("two");
+  Node *three = doc.new_element("three");
+  Node *four = doc.new_element("four");
+  one->append_child(two);
+  two->append_child(three);
+  three->append_child(four);
+
+  XPath xpath = XPathFactory().compile("two/three/four");
+  Nodeset selected_nodes = one->select_nodes(xpath);
+
+  Nodeset expected_nodes;
+  expected_nodes.add(four);
+
+  CHECK_EQUAL(expected_nodes, selected_nodes);
+
+  delete one;
 }
 
 int
