@@ -16,6 +16,8 @@ XPath::select_nodes(Node &node)
     Nodeset step_result;
     if (name == ".") {
       step_result.add(&node);
+    } else if (name == "..") {
+      step_result.add(node.parent());
     } else {
       auto child_selector = [&](Node *child){
         if (child->type() == NODE_TYPE_ELEMENT) {
