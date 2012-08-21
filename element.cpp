@@ -97,7 +97,13 @@ Element::change_document(Document *doc)
 }
 
 const char *
-Element::name()
+Element::name() const
 {
   return this->name_;
+}
+
+std::ostream &
+Element::toStream(std::ostream& os) const
+{
+  return os << "Element '" << this->name() << "' <" << this << ">";
 }

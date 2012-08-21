@@ -7,6 +7,7 @@ class Node;
 
 #include <functional>
 #include "output.h"
+#include "to-stream.h"
 
 typedef enum {
   NODE_TYPE_ELEMENT,
@@ -19,7 +20,7 @@ public:
   virtual Nodeset select_nodes(Node &node) = 0;
 };
 
-class Node {
+class Node : public ToStream {
 public:
   typedef std::function<void (Node *)> foreach_fn_t;
 

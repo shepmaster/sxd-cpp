@@ -45,8 +45,8 @@ operator<<(std::ostream &os, const Nodeset &nodeset) {
     if (i != 0) {
       os << ", ";
     }
-    const auto &node = nodeset[i];
-    os << node;
+    const auto node = nodeset[i];
+    os << *node;
   }
   os << "]";
   return os;
