@@ -14,21 +14,23 @@ XPath::select_nodes(Node &node)
 
   for (auto name : _node_names) {
     Nodeset step_result;
-    if (name == ".") {
-      step_result.add(&node);
-    } else if (name == "..") {
-      step_result.add(node.parent());
-    } else {
-      auto child_selector = [&](Node *child){
-        if (child->type() == NODE_TYPE_ELEMENT) {
-          Element *e = dynamic_cast<Element *>(child);
-          if (name == "*" || name == e->name()) {
-            step_result.add(e);
+
+    for (auto i = 0; i < result.count(); i++) {
+      auto *current_node = result[i];
+
+      if (name == ".") {
+        step_result.add(current_node);
+      } else if (name == "..") {
+        step_result.add(current_node->parent());
+      } else {
+        auto child_selector = [&](Node *child){
+          if (child->type() == NODE_TYPE_ELEMENT) {
+            Element *e = dynamic_cast<Element *>(child);
+            if (name == "*" || name == e->name()) {
+              step_result.add(e);
+            }
           }
-        }
-      };
-      for (auto i = 0; i < result.count(); i++) {
-        auto *current_node = result[i];
+        };
         current_node->foreach_child(child_selector);
       }
     }

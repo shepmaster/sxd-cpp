@@ -120,6 +120,26 @@ TEST(XPathAcceptance, can_select_parent)
   delete one;
 }
 
+TEST(XPathAcceptance, can_select_grandparent)
+{
+  Document doc;
+  Node *one = doc.new_element("one");
+  Node *two = doc.new_element("two");
+  Node *three = doc.new_element("three");
+  one->append_child(two);
+  two->append_child(three);
+
+  XPath xpath = XPathFactory().compile("../..");
+  Nodeset selected_nodes = three->select_nodes(xpath);
+
+  Nodeset expected_nodes;
+  expected_nodes.add(one);
+
+  CHECK_EQUAL(expected_nodes, selected_nodes);
+
+  delete one;
+}
+
 int
 main(int argc, char **argv)
 {
