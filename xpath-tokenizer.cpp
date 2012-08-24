@@ -18,14 +18,21 @@ XPathTokenizer::has_more_tokens()
 XPathToken
 XPathTokenizer::next_token()
 {
+  auto offset = _start;
   auto current_start = _start;
-  auto offset = _xpath.find('/', current_start);
 
-  if (offset != std::string::npos) {
-    _start = offset + 1;
-    return XPathToken(_xpath.substr(current_start, offset - current_start));
-  } else {
-    _start = offset;
-    return XPathToken(_xpath.substr(current_start));
+  for (; offset < _xpath.size(); offset++) {
+    auto c = _xpath[offset];
+
+    if (':' == c && ':' == _xpath[offset + 1]) {
+      _start = offset + 2;
+      return XPathToken(XPathTokenType::DoubleColon);
+    } else if ('/' == c) {
+      _start = offset + 1;
+      return XPathToken(_xpath.substr(current_start, offset - current_start));
+    }
   }
+
+  _start = offset;
+  return XPathToken(_xpath.substr(current_start));
 }

@@ -41,7 +41,7 @@ TEST(XPathTokenizer, tokenizes_grandchild_selector)
   CHECK(! tokenizer.has_more_tokens());
 }
 
-TEST(XPathTokenizer, tokenizes_gread_grandchild_selector)
+TEST(XPathTokenizer, tokenizes_great_grandchild_selector)
 {
   XPathTokenizer tokenizer("hello/there/world");
 
@@ -56,6 +56,17 @@ TEST(XPathTokenizer, tokenizes_gread_grandchild_selector)
   CHECK(tokenizer.has_more_tokens());
   XPathToken tok3 = tokenizer.next_token();
   CHECK_EQUAL("world", tok3.string());
+
+  CHECK(! tokenizer.has_more_tokens());
+}
+
+TEST(XPathTokenizer, tokenizes_axis_separator)
+{
+  XPathTokenizer tokenizer("::");
+
+  CHECK(tokenizer.has_more_tokens());
+  XPathToken tok = tokenizer.next_token();
+  CHECK(tok.is(XPathTokenType::DoubleColon));
 
   CHECK(! tokenizer.has_more_tokens());
 }

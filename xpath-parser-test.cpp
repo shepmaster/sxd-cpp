@@ -73,6 +73,20 @@ TEST(XPathParser, parses_two_strings_as_grandchild)
   CHECK(child);
 }
 
+TEST(XPathParser, parses_self_axis)
+{
+  tokens.push_back(XPathToken("self"));
+  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
+  tokens.push_back(XPathToken("hello"));
+
+  parser->parse();
+
+  CHECK_EQUAL_C_INT(2, creator.saved_parts.size());
+
+  auto *child = dynamic_cast<StepChild *>(creator.saved_parts[0].get());
+  CHECK(child);
+}
+
 int
 main(int argc, char **argv)
 {

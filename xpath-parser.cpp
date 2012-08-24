@@ -15,16 +15,22 @@ XPathParser::parse() {
   std::vector<std::unique_ptr<XPathStep>> parts;
 
   while (_source.has_more_tokens()) {
-    auto token = _source.next_token();
-    auto name = token.string();
     std::unique_ptr<XPathStep> step;
 
-    if (name == ".") {
+    auto token = _source.next_token();
+    if (token.is(XPathTokenType::DoubleColon)) {
+      _source.next_token(); // Eat the next string
       step = make_unique<StepSelf>();
-    } else if (name == "..") {
-      step = make_unique<StepParent>();
     } else {
-      step = make_unique<StepChild>(name);
+      auto name = token.string();
+
+      if (name == ".") {
+        step = make_unique<StepSelf>();
+      } else if (name == "..") {
+        step = make_unique<StepParent>();
+      } else {
+        step = make_unique<StepChild>(name);
+      }
     }
 
     parts.push_back(std::move(step));
