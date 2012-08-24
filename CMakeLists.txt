@@ -16,14 +16,14 @@ add_definitions(${GLIB2_CFLAGS})
 
 add_definitions(-ansi -Wall -pedantic -Werror -std=c++11 -stdlib=libc++)
 
-set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp node.cpp text-node.cpp nodeset.cpp tokenizer.cpp comment.cpp axis-ancestor.cpp axis-ancestor-or-self.cpp axis-child.cpp axis-descendant.cpp axis-descendant-or-self.cpp axis-following.cpp axis-following-sibling.cpp axis-parent.cpp axis-preceding.cpp axis-preceding-sibling.cpp axis-self.cpp downward-recursive-tester.cpp node-test-text-node.cpp node-test-element.cpp node-test-named-element.cpp xpath-factory.cpp xpath.cpp to-stream.cpp)
+set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp node.cpp text-node.cpp nodeset.cpp tokenizer.cpp comment.cpp axis-ancestor.cpp axis-ancestor-or-self.cpp axis-child.cpp axis-descendant.cpp axis-descendant-or-self.cpp axis-following.cpp axis-following-sibling.cpp axis-parent.cpp axis-preceding.cpp axis-preceding-sibling.cpp axis-self.cpp downward-recursive-tester.cpp node-test-text-node.cpp node-test-element.cpp node-test-named-element.cpp xpath-factory.cpp xpath.cpp to-stream.cpp xpath-token.cpp xpath-tokenizer.cpp step-parent.cpp step-child.cpp step-self.cpp xpath-parser.cpp)
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
 
 add_library(test-utilities SHARED test-utilities.cpp remembering-node-visitor.cpp)
 target_link_libraries(test-utilities ${GLIB2_LIBRARIES} sxd)
 
-set(test_programs element intern document exception nmtoken node text-node nodeset tokenizer comment axis-ancestor-or-self axis-ancestor axis-child axis-descendant-or-self axis-descendant axis-following-sibling axis-following axis-parent axis-preceding-sibling axis-preceding axis-self node-test-element node-test-named-element node-test-text-node xpath-acceptance)
+set(test_programs element intern document exception nmtoken node text-node nodeset tokenizer comment axis-ancestor-or-self axis-ancestor axis-child axis-descendant-or-self axis-descendant axis-following-sibling axis-following axis-parent axis-preceding-sibling axis-preceding axis-self node-test-element node-test-named-element node-test-text-node xpath-acceptance xpath-tokenizer xpath-parser)
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
   target_link_libraries(${program}-test sxd test-utilities CppUTest)

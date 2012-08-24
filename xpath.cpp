@@ -1,8 +1,11 @@
-#include "element.h"
 #include "xpath.h"
 
-XPath::XPath(std::vector<std::string> node_names) :
-  _node_names(node_names)
+XPath::XPath()
+{
+}
+
+XPath::XPath(std::vector<std::unique_ptr<XPathStep>> &&steps) :
+  _steps(std::move(steps))
 {
 }
 
@@ -12,29 +15,16 @@ XPath::select_nodes(Node &node)
   Nodeset result;
   result.add(&node);
 
-  for (auto name : _node_names) {
+  for (auto &step : _steps) {
     Nodeset step_result;
 
     for (auto i = 0; i < result.count(); i++) {
       auto *current_node = result[i];
-
-      if (name == ".") {
-        step_result.add(current_node);
-      } else if (name == "..") {
-        step_result.add(current_node->parent());
-      } else {
-        auto child_selector = [&](Node *child){
-          if (child->type() == NODE_TYPE_ELEMENT) {
-            Element *e = dynamic_cast<Element *>(child);
-            if (name == "*" || name == e->name()) {
-              step_result.add(e);
-            }
-          }
-        };
-        current_node->foreach_child(child_selector);
-      }
+      step->select_nodes(current_node, step_result);
     }
+
     result = step_result;
   }
+
   return result;
 }

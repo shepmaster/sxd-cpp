@@ -1,21 +1,20 @@
 #include "xpath-factory.h"
 
-void
-find_steps(std::vector<std::string> &parts, const std::string &xpath, size_t start = 0)
-{
-  auto offset = xpath.find('/', start);
-  if (offset != std::string::npos) {
-    parts.push_back(xpath.substr(start, offset - start));
-    find_steps(parts, xpath, offset + 1);
-  } else {
-    parts.push_back(xpath.substr(start));
-  }
-}
+#include "xpath-tokenizer.h"
+#include "xpath-parser.h"
 
 XPath
 XPathFactory::compile(std::string xpath)
 {
-  std::vector<std::string> parts;
-  find_steps(parts, xpath);
-  return XPath(parts);
+  auto tokenizer = XPathTokenizer(xpath);
+
+  XPath result;
+  auto s = [&](std::vector<std::unique_ptr<XPathStep>> &&parts) {
+    result = XPath(std::move(parts));
+  };
+
+  XPathParser parser(tokenizer, s);
+  parser.parse();
+
+  return result;
 }
