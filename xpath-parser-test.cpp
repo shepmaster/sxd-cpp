@@ -4,9 +4,7 @@
 #include "make-unique.h"
 #include "step-child.h"
 
-#include <CppUTest/TestHarness.h>
-#include <CppUTest/CommandLineTestRunner.h>
-
+#include "gmock/gmock.h"
 #include <iostream>
 
 struct StubTokens : public XPathTokenSource {
@@ -34,46 +32,46 @@ struct XPathCreator {
   std::vector<std::unique_ptr<XPathStep>> saved_parts;
 };
 
-TEST_GROUP(XPathParser)
-{
+class XPathParserTest : public ::testing::Test {
+protected:
   StubTokens tokens;
   XPathCreator creator;
   std::unique_ptr<XPathParser> parser;
 
-  void setup() {
+  XPathParserTest() {
     parser = make_unique<XPathParser>(tokens, std::ref(creator));
   }
 };
 
-TEST(XPathParser, parses_string_as_child)
+TEST_F(XPathParserTest, parses_string_as_child)
 {
   tokens.push_back(XPathToken("hello"));
 
   parser->parse();
 
-  CHECK_EQUAL_C_INT(1, creator.saved_parts.size());
+  ASSERT_EQ(1, creator.saved_parts.size());
 
   auto *child = dynamic_cast<StepChild *>(creator.saved_parts[0].get());
-  CHECK(child);
+  ASSERT_NE(nullptr, child);
 }
 
-TEST(XPathParser, parses_two_strings_as_grandchild)
+TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
 {
   tokens.push_back(XPathToken("hello"));
   tokens.push_back(XPathToken("world"));
 
   parser->parse();
 
-  CHECK_EQUAL_C_INT(2, creator.saved_parts.size());
+  ASSERT_EQ(2, creator.saved_parts.size());
 
   auto *child = dynamic_cast<StepChild *>(creator.saved_parts[0].get());
-  CHECK(child);
+  ASSERT_NE(nullptr, child);
 
   child = dynamic_cast<StepChild *>(creator.saved_parts[1].get());
-  CHECK(child);
+  ASSERT_NE(nullptr, child);
 }
 
-TEST(XPathParser, parses_self_axis)
+TEST_F(XPathParserTest, parses_self_axis)
 {
   tokens.push_back(XPathToken("self"));
   tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
@@ -81,14 +79,13 @@ TEST(XPathParser, parses_self_axis)
 
   parser->parse();
 
-  CHECK_EQUAL_C_INT(2, creator.saved_parts.size());
+  ASSERT_EQ(2, creator.saved_parts.size());
 
   auto *child = dynamic_cast<StepChild *>(creator.saved_parts[0].get());
-  CHECK(child);
+  ASSERT_NE(nullptr, child);
 }
 
-int
-main(int argc, char **argv)
-{
-  return CommandLineTestRunner::RunAllTests(argc, argv);
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

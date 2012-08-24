@@ -20,13 +20,17 @@ set(sxd_source document.cpp element.cpp exception.cpp intern.cpp nmtoken.cpp nod
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
 
+add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+add_subdirectory(gmock-1.6.0)
+include_directories(gmock-1.6.0/include gmock-1.6.0/gtest/include)
+
 add_library(test-utilities SHARED test-utilities.cpp remembering-node-visitor.cpp)
 target_link_libraries(test-utilities ${GLIB2_LIBRARIES} sxd)
 
 set(test_programs element intern document exception nmtoken node text-node nodeset tokenizer comment axis-ancestor-or-self axis-ancestor axis-child axis-descendant-or-self axis-descendant axis-following-sibling axis-following axis-parent axis-preceding-sibling axis-preceding axis-self node-test-element node-test-named-element node-test-text-node xpath-acceptance xpath-tokenizer xpath-parser)
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
-  target_link_libraries(${program}-test sxd test-utilities CppUTest)
+  target_link_libraries(${program}-test sxd test-utilities CppUTest gmock)
   add_test(${program} ${program}-test)
 endforeach(program)
 
