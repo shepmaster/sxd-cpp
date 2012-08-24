@@ -16,21 +16,24 @@ XPathParser::parse() {
 
   while (_source.has_more_tokens()) {
     std::unique_ptr<XPathStep> step;
-
     auto token = _source.next_token();
-    if (token.is(XPathTokenType::DoubleColon)) {
-      _source.next_token(); // Eat the next string
-      step = make_unique<StepSelf>();
-    } else {
-      auto name = token.string();
+    auto name = token.string();
 
-      if (name == ".") {
+    if (name == "self") {
+      token = _source.next_token(); // Check if this is an axis specifier
+
+      if (token.is(XPathTokenType::DoubleColon)) {
+        _source.next_token(); // Eat the next string
         step = make_unique<StepSelf>();
-      } else if (name == "..") {
-        step = make_unique<StepParent>();
-      } else {
-        step = make_unique<StepChild>(name);
       }
+
+      // Not handling the case where the node is called "self"!
+    } else if (name == ".") {
+      step = make_unique<StepSelf>();
+    } else if (name == "..") {
+      step = make_unique<StepParent>();
+    } else {
+      step = make_unique<StepChild>(name);
     }
 
     parts.push_back(std::move(step));

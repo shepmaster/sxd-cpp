@@ -71,6 +71,23 @@ TEST(XPathTokenizer, tokenizes_axis_separator)
   CHECK(! tokenizer.has_more_tokens());
 }
 
+TEST(XPathTokenizer, tokenizes_axis_selector)
+{
+  XPathTokenizer tokenizer("hello::world");
+
+  CHECK(tokenizer.has_more_tokens());
+  XPathToken tok = tokenizer.next_token();
+  CHECK_EQUAL("hello", tok.string());
+
+  XPathToken tok2 = tokenizer.next_token();
+  CHECK(tok2.is(XPathTokenType::DoubleColon));
+
+  XPathToken tok3 = tokenizer.next_token();
+  CHECK_EQUAL("world", tok3.string());
+
+  CHECK(! tokenizer.has_more_tokens());
+}
+
 int
 main(int argc, char **argv)
 {

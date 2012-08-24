@@ -92,7 +92,7 @@ TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
   ASSERT_THAT(creator.saved_parts[1], Selects(top_node, world));
 }
 
-TEST_F(XPathParserTest, DISABLED_parses_self_axis)
+TEST_F(XPathParserTest, parses_self_axis)
 {
   tokens.push_back(XPathToken("self"));
   tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
@@ -100,7 +100,7 @@ TEST_F(XPathParserTest, DISABLED_parses_self_axis)
 
   parser->parse();
 
-  ASSERT_EQ(2, creator.saved_parts.size());
+  ASSERT_EQ(1, creator.saved_parts.size());
   ASSERT_THAT(creator.saved_parts[0], Selects(top_node, top_node));
 }
 
