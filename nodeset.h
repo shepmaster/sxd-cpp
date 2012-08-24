@@ -23,6 +23,7 @@ public:
   typedef Storage::iterator iterator;
   typedef Storage::const_iterator const_iterator;
   size_t size() const { return count(); }
+  bool empty() const { return nodes.empty(); }
   const_iterator begin() const { return nodes.begin(); }
   const_iterator end() const { return nodes.end(); }
   typedef Storage::value_type value_type;

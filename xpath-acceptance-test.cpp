@@ -91,6 +91,18 @@ TEST_F(XPathAcceptanceTest, can_select_self_using_axis)
   delete one;
 }
 
+TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_has_no_results)
+{
+  Node *one = doc.new_element("one");
+
+  XPath xpath = XPathFactory().compile("self::two");
+  Nodeset selected_nodes = one->select_nodes(xpath);
+
+  ASSERT_TRUE(selected_nodes.empty());
+
+  delete one;
+}
+
 TEST_F(XPathAcceptanceTest, can_select_parent)
 {
   Node *one = doc.new_element("one");

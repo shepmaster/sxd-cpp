@@ -3,6 +3,7 @@
 #include "step-child.h"
 #include "step-self.h"
 #include "step-parent.h"
+#include "node-test-element.h"
 #include "make-unique.h"
 
 XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &creator) :
@@ -23,17 +24,17 @@ XPathParser::parse() {
       token = _source.next_token(); // Check if this is an axis specifier
 
       if (token.is(XPathTokenType::DoubleColon)) {
-        _source.next_token(); // Eat the next string
-        step = make_unique<StepSelf>();
+        token = _source.next_token();
+        step = make_unique<StepSelf>(make_unique<NodeTestElement>(token.string()));
       }
 
       // Not handling the case where the node is called "self"!
     } else if (name == ".") {
-      step = make_unique<StepSelf>();
+      step = make_unique<StepSelf>(make_unique<NodeTestElement>("*"));
     } else if (name == "..") {
       step = make_unique<StepParent>();
     } else {
-      step = make_unique<StepChild>(name);
+      step = make_unique<StepChild>(make_unique<NodeTestElement>(name));
     }
 
     parts.push_back(std::move(step));
