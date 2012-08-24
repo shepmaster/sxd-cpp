@@ -1,163 +1,124 @@
-#include <iostream>
-
-#include <CppUTest/TestHarness.h>
-#include <CppUTest/CommandLineTestRunner.h>
-
-#include "xpath-axis-test-data.h"
-#include "xpath-factory.h"
-#include "xpath.h"
-
 #include "nodeset.h"
 
-TEST_GROUP(XPathAcceptance)
-{
+#include "xpath.h"
+#include "xpath-factory.h"
+#include "xpath-axis-test-data.h"
+
+#include "gmock/gmock.h"
+#include <iostream>
+
+using testing::ElementsAre;
+
+class XPathAcceptanceTest : public ::testing::Test {
+protected:
+  Document doc;
 };
 
-#include <sstream>
-
-SimpleString
-StringFrom(const Nodeset &nodeset)
-{
-  std::stringstream sstream;
-  sstream << nodeset;
-  std::string s = sstream.str();
-  return SimpleString(s.c_str());
+Node *
+add_child(Node *top_node, std::string name) {
+  Document *doc = top_node->document();
+  Node *n = doc->new_element(name.c_str());
+  top_node->append_child(n);
+  return n;
 }
 
-TEST(XPathAcceptance, can_select_child_element)
+TEST_F(XPathAcceptanceTest, can_select_child_element)
 {
   XPathAxisTestData d;
 
   XPath xpath = XPathFactory().compile("two");
   Nodeset selected_nodes = d.alpha->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(d.two);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(d.two));
 }
 
-TEST(XPathAcceptance, can_select_child_wildcard_elements)
+TEST_F(XPathAcceptanceTest, can_select_child_wildcard_elements)
 {
   XPathAxisTestData d;
 
   XPath xpath = XPathFactory().compile("*");
   Nodeset selected_nodes = d.alpha->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(d.one);
-  expected_nodes.add(d.two);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(d.one, d.two));
 }
 
-TEST(XPathAcceptance, can_select_grandchild_element)
+TEST_F(XPathAcceptanceTest, can_select_grandchild_element)
 {
   XPathAxisTestData d;
 
   XPath xpath = XPathFactory().compile("one/c");
   Nodeset selected_nodes = d.alpha->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(d.c);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(d.c));
 }
 
-TEST(XPathAcceptance, can_select_great_grandchild_element)
+TEST_F(XPathAcceptanceTest, can_select_great_grandchild_element)
 {
-  Document doc;
   Node *one = doc.new_element("one");
-  Node *two = doc.new_element("two");
-  Node *three = doc.new_element("three");
-  Node *four = doc.new_element("four");
-  one->append_child(two);
-  two->append_child(three);
-  three->append_child(four);
+  Node *two = add_child(one, "two");
+  Node *three = add_child(two, "three");
+  Node *four = add_child(three, "four");
 
   XPath xpath = XPathFactory().compile("two/three/four");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(four);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(four));
 
   delete one;
 }
 
-TEST(XPathAcceptance, can_select_self_using_abbreviated_step)
+TEST_F(XPathAcceptanceTest, can_select_self_using_abbreviated_step)
 {
-  Document doc;
   Node *one = doc.new_element("one");
 
   XPath xpath = XPathFactory().compile(".");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(one);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(one));
 
   delete one;
 }
 
-TEST(XPathAcceptance, can_select_self_using_axis)
+TEST_F(XPathAcceptanceTest, can_select_self_using_axis)
 {
-  Document doc;
   Node *one = doc.new_element("one");
 
   XPath xpath = XPathFactory().compile("self::one");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(one);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(one));
 
   delete one;
 }
 
-TEST(XPathAcceptance, can_select_parent)
+TEST_F(XPathAcceptanceTest, can_select_parent)
 {
-  Document doc;
   Node *one = doc.new_element("one");
-  Node *two = doc.new_element("two");
-  one->append_child(two);
+  Node *two = add_child(one, "two");
 
   XPath xpath = XPathFactory().compile("..");
   Nodeset selected_nodes = two->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(one);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(one));
 
   delete one;
 }
 
-TEST(XPathAcceptance, can_select_grandparent)
+TEST_F(XPathAcceptanceTest, can_select_grandparent)
 {
-  Document doc;
   Node *one = doc.new_element("one");
-  Node *two = doc.new_element("two");
-  Node *three = doc.new_element("three");
-  one->append_child(two);
-  two->append_child(three);
+  Node *two = add_child(one, "two");
+  Node *three = add_child(two, "three");
 
   XPath xpath = XPathFactory().compile("../..");
   Nodeset selected_nodes = three->select_nodes(xpath);
 
-  Nodeset expected_nodes;
-  expected_nodes.add(one);
-
-  CHECK_EQUAL(expected_nodes, selected_nodes);
+  ASSERT_THAT(selected_nodes, ElementsAre(one));
 
   delete one;
 }
 
-int
-main(int argc, char **argv)
-{
-  return CommandLineTestRunner::RunAllTests(argc, argv);
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

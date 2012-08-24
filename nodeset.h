@@ -5,6 +5,9 @@
 #include "node.h"
 
 class Nodeset {
+private:
+  typedef std::vector<Node *> Storage;
+  Storage nodes;
 public:
   unsigned int count() const;
 
@@ -16,8 +19,13 @@ public:
   bool operator ==(const Nodeset &other) const;
   bool operator !=(const Nodeset &other) const;
 
-private:
-  std::vector<Node *> nodes;
+  // Iterator methods
+  typedef Storage::iterator iterator;
+  typedef Storage::const_iterator const_iterator;
+  size_t size() const { return count(); }
+  const_iterator begin() const { return nodes.begin(); }
+  const_iterator end() const { return nodes.end(); }
+  typedef Storage::value_type value_type;
 };
 
 std::ostream &
