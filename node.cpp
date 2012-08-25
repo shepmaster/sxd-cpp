@@ -187,5 +187,5 @@ Node::output_children(Output &output)
 Nodeset
 Node::select_nodes(NodeSelector &selector)
 {
-  return selector.select_nodes(*this);
+  return selector.select_nodes(this);
 }

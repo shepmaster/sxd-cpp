@@ -12,7 +12,7 @@ public:
   XPath();
   XPath(std::vector<std::unique_ptr<XPathStep>> &&steps);
 
-  Nodeset select_nodes(Node &node);
+  Nodeset select_nodes(Node *node);
 
 private:
   std::vector<std::unique_ptr<XPathStep>> _steps;

@@ -10,10 +10,10 @@ XPath::XPath(std::vector<std::unique_ptr<XPathStep>> &&steps) :
 }
 
 Nodeset
-XPath::select_nodes(Node &node)
+XPath::select_nodes(Node *node)
 {
   Nodeset result;
-  result.add(&node);
+  result.add(node);
 
   for (auto &step : _steps) {
     Nodeset step_result;

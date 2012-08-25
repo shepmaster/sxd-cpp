@@ -17,7 +17,7 @@ typedef enum {
 
 class NodeSelector {
 public:
-  virtual Nodeset select_nodes(Node &node) = 0;
+  virtual Nodeset select_nodes(Node *node) = 0;
 };
 
 class Node : public ToStream {
