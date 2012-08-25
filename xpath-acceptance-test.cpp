@@ -103,12 +103,25 @@ TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_has_no_resul
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_parent)
+TEST_F(XPathAcceptanceTest, can_select_parent_using_abbreviated_step)
 {
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
 
   XPath xpath = XPathFactory().compile("..");
+  Nodeset selected_nodes = two->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(one));
+
+  delete one;
+}
+
+TEST_F(XPathAcceptanceTest, can_select_parent_using_axis)
+{
+  Node *one = doc.new_element("one");
+  Node *two = add_child(one, "two");
+
+  XPath xpath = XPathFactory().compile("parent::one");
   Nodeset selected_nodes = two->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));

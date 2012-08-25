@@ -12,6 +12,17 @@ XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &cre
 }
 
 void
+parse_axis(XPathTokenSource &_source, std::function<void(std::unique_ptr<NodeTestElement> &&)> make_step)
+{
+  auto token = _source.next_token();
+
+  if (token.is(XPathTokenType::DoubleColon)) {
+    token = _source.next_token();
+    make_step(make_unique<NodeTestElement>(token.string()));
+  }
+}
+
+void
 XPathParser::parse() {
   std::vector<std::unique_ptr<XPathStep>> parts;
 
@@ -21,18 +32,21 @@ XPathParser::parse() {
     auto name = token.string();
 
     if (name == "self") {
-      token = _source.next_token(); // Check if this is an axis specifier
-
-      if (token.is(XPathTokenType::DoubleColon)) {
-        token = _source.next_token();
-        step = make_unique<StepSelf>(make_unique<NodeTestElement>(token.string()));
-      }
+      parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
+          step = make_unique<StepSelf>(std::move(test));
+        });
 
       // Not handling the case where the node is called "self"!
+    } else if (name == "parent") {
+      parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
+          step = make_unique<StepParent>(std::move(test));
+        });
+
+      // Not handling the case where the node is called "parent"!
     } else if (name == ".") {
       step = make_unique<StepSelf>(make_unique<NodeTestElement>("*"));
     } else if (name == "..") {
-      step = make_unique<StepParent>();
+      step = make_unique<StepParent>(make_unique<NodeTestElement>("*"));
     } else {
       step = make_unique<StepChild>(make_unique<NodeTestElement>(name));
     }

@@ -1,5 +1,4 @@
 #include "step-child.h"
-#include "element.h"
 
 StepChild::StepChild(std::unique_ptr<XPathNodeTest> &&node_test) :
   _node_test(std::move(node_test))

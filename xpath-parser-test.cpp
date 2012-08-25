@@ -104,6 +104,19 @@ TEST_F(XPathParserTest, parses_self_axis)
   ASSERT_THAT(creator.saved_parts[0], Selects(top_node, top_node));
 }
 
+TEST_F(XPathParserTest, parses_parent_axis)
+{
+  tokens.push_back(XPathToken("parent"));
+  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
+  tokens.push_back(XPathToken("top-node"));
+
+  parser->parse();
+
+  auto hello = add_child(top_node, "hello");
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(creator.saved_parts[0], Selects(hello, top_node));
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
