@@ -1,8 +1,8 @@
 #include "xpath-parser.h"
 
-#include "step-child.h"
-#include "step-self.h"
-#include "step-parent.h"
+#include "axis-child.h"
+#include "axis-self.h"
+#include "axis-parent.h"
 #include "node-test-element.h"
 #include "make-unique.h"
 
@@ -12,47 +12,48 @@ XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &cre
 }
 
 void
-parse_axis(XPathTokenSource &_source, std::function<void(std::unique_ptr<NodeTestElement> &&)> make_step)
+parse_axis(XPathTokenSource &_source, std::function<void(std::unique_ptr<NodeTestElement> &&)> make_axis)
 {
   auto token = _source.next_token();
 
   if (token.is(XPathTokenType::DoubleColon)) {
     token = _source.next_token();
-    make_step(make_unique<NodeTestElement>(token.string()));
+    make_axis(make_unique<NodeTestElement>(token.string()));
   }
 }
 
 void
 XPathParser::parse() {
-  std::vector<std::unique_ptr<XPathStep>> parts;
+  std::vector<std::unique_ptr<XPathStep>> steps;
 
   while (_source.has_more_tokens()) {
-    std::unique_ptr<XPathStep> step;
+    std::unique_ptr<XPathAxis> axis;
     auto token = _source.next_token();
     auto name = token.string();
 
     if (name == "self") {
       parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
-          step = make_unique<StepSelf>(std::move(test));
+          axis = make_unique<AxisSelf>(std::move(test));
         });
 
       // Not handling the case where the node is called "self"!
     } else if (name == "parent") {
       parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
-          step = make_unique<StepParent>(std::move(test));
+          axis = make_unique<AxisParent>(std::move(test));
         });
 
       // Not handling the case where the node is called "parent"!
     } else if (name == ".") {
-      step = make_unique<StepSelf>(make_unique<NodeTestElement>("*"));
+      axis = make_unique<AxisSelf>(make_unique<NodeTestElement>("*"));
     } else if (name == "..") {
-      step = make_unique<StepParent>(make_unique<NodeTestElement>("*"));
+      axis = make_unique<AxisParent>(make_unique<NodeTestElement>("*"));
     } else {
-      step = make_unique<StepChild>(make_unique<NodeTestElement>(name));
+      axis = make_unique<AxisChild>(make_unique<NodeTestElement>(name));
     }
 
-    parts.push_back(std::move(step));
+
+    steps.push_back(make_unique<XPathStep>(std::move(axis)));
   }
 
-  _creator(std::move(parts));
+  _creator(std::move(steps));
 }

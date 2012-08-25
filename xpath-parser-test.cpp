@@ -2,7 +2,6 @@
 
 #include "document.h"
 #include "make-unique.h"
-#include "step-child.h"
 
 #include "gmock/gmock.h"
 #include <iostream>
