@@ -7,6 +7,10 @@
 #include <iostream>
 
 struct StubTokens : public XPathTokenSource {
+  bool next_token_is(XPathTokenType type) {
+    return has_more_tokens() && tokens[index].is(type);
+  }
+
   XPathToken next_token() {
     return tokens[index++];
   }
@@ -114,6 +118,17 @@ TEST_F(XPathParserTest, parses_parent_axis)
   auto hello = add_child(top_node, "hello");
   ASSERT_EQ(1, creator.saved_parts.size());
   ASSERT_THAT(creator.saved_parts[0], Selects(hello, top_node));
+}
+
+TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
+{
+  tokens.push_back(XPathToken("self"));
+
+  parser->parse();
+
+  auto self = add_child(top_node, "self");
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, self));
 }
 
 int main(int argc, char **argv) {

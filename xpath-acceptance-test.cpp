@@ -143,6 +143,19 @@ TEST_F(XPathAcceptanceTest, can_select_grandparent)
   delete one;
 }
 
+TEST_F(XPathAcceptanceTest, can_select_node_with_same_name_as_axis)
+{
+  Node *one = doc.new_element("one");
+  Node *self = add_child(one, "self");
+
+  XPath xpath = XPathFactory().compile("self");
+  Nodeset selected_nodes = one->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(self));
+
+  delete one;
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

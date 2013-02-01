@@ -33,6 +33,7 @@ set(
   to-stream.cpp
   xpath-token.cpp
   xpath-tokenizer.cpp
+  xpath-tokenizer-buffer.cpp
   axis-parent.cpp
   axis-child.cpp
   axis-self.cpp

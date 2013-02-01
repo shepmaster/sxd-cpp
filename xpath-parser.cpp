@@ -11,6 +11,11 @@ XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &cre
 {
 }
 
+bool
+looks_like_axis(XPathTokenSource &_source) {
+  return _source.next_token_is(XPathTokenType::DoubleColon);
+}
+
 void
 parse_axis(XPathTokenSource &_source, std::function<void(std::unique_ptr<NodeTestElement> &&)> make_axis)
 {
@@ -31,18 +36,14 @@ XPathParser::parse() {
     auto token = _source.next_token();
     auto name = token.string();
 
-    if (name == "self") {
+    if (name == "self" && looks_like_axis(_source)) {
       parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
           axis = make_unique<AxisSelf>(std::move(test));
         });
-
-      // Not handling the case where the node is called "self"!
-    } else if (name == "parent") {
+    } else if (name == "parent" && looks_like_axis(_source)) {
       parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
           axis = make_unique<AxisParent>(std::move(test));
         });
-
-      // Not handling the case where the node is called "parent"!
     } else if (name == ".") {
       axis = make_unique<AxisSelf>(make_unique<NodeTestElement>("*"));
     } else if (name == "..") {
@@ -50,7 +51,6 @@ XPathParser::parse() {
     } else {
       axis = make_unique<AxisChild>(make_unique<NodeTestElement>(name));
     }
-
 
     steps.push_back(make_unique<XPathStep>(std::move(axis)));
   }

@@ -3,7 +3,7 @@
 
 #include "xpath-token-source.h"
 
-class XPathTokenizer : public XPathTokenSource {
+class XPathTokenizer {
 public:
   XPathTokenizer(std::string xpath);
   bool has_more_tokens();
