@@ -165,7 +165,7 @@ parse_entity(tokenizer_t *tokenizer, GError **error, entity_callback_t callback,
 {
   token_t token;
   char *str;
-  const char *expanded;
+  const char *expanded = NULL;
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(AMP, tokenizer, error)) return;
@@ -187,7 +187,9 @@ parse_entity(tokenizer_t *tokenizer, GError **error, entity_callback_t callback,
   }
   free(str);
 
-  callback(user, expanded);
+  if (expanded) {
+    callback(user, expanded);
+  }
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(SEMICOLON, tokenizer, error)) return;
@@ -242,7 +244,7 @@ parse_char_ref(tokenizer_t *tokenizer, GError **error, entity_callback_t callbac
   token = tokenizer_next_string(tokenizer, INTEGER);
 
   str = dup_token_string(token);
-  sscanf(str, "%"G_GINT32_MODIFIER"u", &c);
+  sscanf(str, "%" G_GINT32_MODIFIER "u", &c);
   free(str);
 
   expanded = g_ucs4_to_utf8(&c, 1, NULL, NULL, error);
@@ -284,7 +286,7 @@ parse_char_ref_hex(tokenizer_t *tokenizer, GError **error, entity_callback_t cal
   token = tokenizer_next_string(tokenizer, HEX);
 
   str = dup_token_string(token);
-  sscanf(str, "%06"G_GINT32_MODIFIER"X", &c);
+  sscanf(str, "%06" G_GINT32_MODIFIER "X", &c);
   free(str);
 
   expanded = g_ucs4_to_utf8(&c, 1, NULL, NULL, error);
