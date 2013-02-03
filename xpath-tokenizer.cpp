@@ -7,7 +7,7 @@ XPathTokenizer::XPathTokenizer(std::string xpath) :
 }
 
 bool
-XPathTokenizer::has_more_tokens()
+XPathTokenizer::has_more_tokens() const
 {
   if (_xpath.length() > _start) {
     return true;
@@ -40,4 +40,10 @@ XPathTokenizer::next_token()
 
   _start = offset;
   return XPathToken(_xpath.substr(current_start));
+}
+
+std::ostream&
+operator<<(std::ostream &strm, const XPathTokenizer &a)
+{
+  return strm << "XPathTokenizer ('" << a._xpath << "', position " << a._start << ")";
 }

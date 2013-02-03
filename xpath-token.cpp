@@ -11,13 +11,35 @@ XPathToken::XPathToken(XPathTokenType type) :
 }
 
 std::string
-XPathToken::string()
+XPathToken::string() const
 {
   return _string;
 }
 
 bool
-XPathToken::is(XPathTokenType type)
+XPathToken::is(XPathTokenType type) const
 {
   return type == _type;
+}
+
+
+std::ostream&
+operator<<(std::ostream &strm, const XPathTokenType &a)
+{
+  switch (a) {
+  case XPathTokenType::String:
+    return strm << "String";
+  case XPathTokenType::DoubleColon:
+    return strm << "DoubleColon";
+  }
+}
+
+std::ostream& operator<<(std::ostream &strm, const XPathToken &a) {
+  strm << "XPathToken(" << a._type;
+
+  if (a.is(XPathTokenType::String)) {
+    strm << ", '" << a.string() << "'";
+  }
+
+  return strm << ")";
 }

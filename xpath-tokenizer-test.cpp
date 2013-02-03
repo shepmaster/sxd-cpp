@@ -1,95 +1,102 @@
-#include <iostream>
-
-#include <CppUTest/TestHarness.h>
-#include <CppUTest/CommandLineTestRunner.h>
-
 #include "xpath-tokenizer.h"
 
-TEST_GROUP(XPathTokenizer)
-{
+#include "document.h"
+
+#include "gmock/gmock.h"
+#include <iostream>
+
+class XPathTokenizerTest : public ::testing::Test {
 };
 
-TEST(XPathTokenizer, empty_string_has_no_tokens)
-{
-  XPathTokenizer tokenizer("");
-  CHECK(! tokenizer.has_more_tokens());
+MATCHER(IsFinished, "no more tokens available") {
+  *result_listener << "has more tokens";
+  return ! arg.has_more_tokens();
 }
 
-TEST(XPathTokenizer, tokenizes_simple_string)
+MATCHER_P(IsStringToken, expected_string, "")
+{
+  return arg.is(XPathTokenType::String) && expected_string == arg.string();
+}
+
+MATCHER_P(IsType, expected_type, "")
+{
+  return arg.is(expected_type);
+}
+
+TEST_F(XPathTokenizerTest, empty_string_has_no_tokens)
+{
+  XPathTokenizer tokenizer("");
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_simple_string)
 {
   XPathTokenizer tokenizer("hello");
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok = tokenizer.next_token();
-  CHECK_EQUAL("hello", tok.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("hello"));
 
-  CHECK(! tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer, IsFinished());
 }
 
-TEST(XPathTokenizer, tokenizes_grandchild_selector)
+TEST_F(XPathTokenizerTest, tokenizes_grandchild_selector)
 {
   XPathTokenizer tokenizer("hello/world");
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok = tokenizer.next_token();
-  CHECK_EQUAL("hello", tok.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("hello"));
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok2 = tokenizer.next_token();
-  CHECK_EQUAL("world", tok2.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("world"));
 
-  CHECK(! tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer, IsFinished());
 }
 
-TEST(XPathTokenizer, tokenizes_great_grandchild_selector)
+TEST_F(XPathTokenizerTest, tokenizes_great_grandchild_selector)
 {
   XPathTokenizer tokenizer("hello/there/world");
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok = tokenizer.next_token();
-  CHECK_EQUAL("hello", tok.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("hello"));
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok2 = tokenizer.next_token();
-  CHECK_EQUAL("there", tok2.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("there"));
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok3 = tokenizer.next_token();
-  CHECK_EQUAL("world", tok3.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("world"));
 
-  CHECK(! tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer, IsFinished());
 }
 
-TEST(XPathTokenizer, tokenizes_axis_separator)
+TEST_F(XPathTokenizerTest, tokenizes_axis_separator)
 {
   XPathTokenizer tokenizer("::");
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok = tokenizer.next_token();
-  CHECK(tok.is(XPathTokenType::DoubleColon));
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::DoubleColon));
 
-  CHECK(! tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer, IsFinished());
 }
 
-TEST(XPathTokenizer, tokenizes_axis_selector)
+TEST_F(XPathTokenizerTest, tokenizes_axis_selector)
 {
   XPathTokenizer tokenizer("hello::world");
 
-  CHECK(tokenizer.has_more_tokens());
-  XPathToken tok = tokenizer.next_token();
-  CHECK_EQUAL("hello", tok.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("hello"));
 
-  XPathToken tok2 = tokenizer.next_token();
-  CHECK(tok2.is(XPathTokenType::DoubleColon));
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::DoubleColon));
 
-  XPathToken tok3 = tokenizer.next_token();
-  CHECK_EQUAL("world", tok3.string());
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("world"));
 
-  CHECK(! tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer, IsFinished());
 }
 
 int
 main(int argc, char **argv)
 {
-  return CommandLineTestRunner::RunAllTests(argc, argv);
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
