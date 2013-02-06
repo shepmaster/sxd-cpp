@@ -33,8 +33,18 @@ XPathTokenizer::next_token()
         return XPathToken(XPathTokenType::DoubleColon);
       }
     } else if ('/' == c) {
-      _start = offset + 1;
-      return XPathToken(_xpath.substr(current_start, offset - current_start));
+      if ('/' == _xpath[offset + 1]) {
+        if (offset != current_start) {
+          _start = offset;
+          return XPathToken(_xpath.substr(current_start, offset - current_start));
+        } else {
+          _start = offset + 2;
+          return XPathToken(XPathTokenType::DoubleSlash);
+        }
+      } else {
+        _start = offset + 1;
+        return XPathToken(_xpath.substr(current_start, offset - current_start));
+      }
     }
   }
 

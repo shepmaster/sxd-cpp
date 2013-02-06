@@ -94,6 +94,32 @@ TEST_F(XPathTokenizerTest, tokenizes_axis_selector)
   ASSERT_THAT(tokenizer, IsFinished());
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_double_slash)
+{
+  XPathTokenizer tokenizer("//");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::DoubleSlash));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_double_slash_separator)
+{
+  XPathTokenizer tokenizer("hello//world");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("hello"));
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::DoubleSlash));
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("world"));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
 int
 main(int argc, char **argv)
 {

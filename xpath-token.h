@@ -6,7 +6,8 @@
 
 enum class XPathTokenType {
   String,
-  DoubleColon
+  DoubleColon,
+  DoubleSlash
 };
 
 class XPathToken {

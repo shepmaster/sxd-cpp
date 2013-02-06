@@ -31,6 +31,8 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "String";
   case XPathTokenType::DoubleColon:
     return strm << "DoubleColon";
+  case XPathTokenType::DoubleSlash:
+    return strm << "DoubleSlash";
   }
 }
 
