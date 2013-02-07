@@ -15,41 +15,46 @@ XPathTokenizer::has_more_tokens() const
   return false;
 }
 
+size_t while_valid_string(std::string xpath, size_t offset)
+{
+  for (; offset < xpath.size(); offset++) {
+    auto c = xpath[offset];
+
+    // Would be better to test for only valid string chars
+    if ('/' == c || ':' == c) {
+      break;
+    }
+  }
+
+  return offset;
+}
+
 XPathToken
 XPathTokenizer::next_token()
 {
   auto offset = _start;
   auto current_start = _start;
 
-  for (; offset < _xpath.size(); offset++) {
-    auto c = _xpath[offset];
+  auto c = _xpath[offset];
 
-    if (':' == c && ':' == _xpath[offset + 1]) {
-      if (offset != current_start) {
-        _start = offset;
-        return XPathToken(_xpath.substr(current_start, offset - current_start));
-      } else {
-        _start = offset + 2;
-        return XPathToken(XPathTokenType::DoubleColon);
-      }
-    } else if ('/' == c) {
-      if ('/' == _xpath[offset + 1]) {
-        if (offset != current_start) {
-          _start = offset;
-          return XPathToken(_xpath.substr(current_start, offset - current_start));
-        } else {
-          _start = offset + 2;
-          return XPathToken(XPathTokenType::DoubleSlash);
-        }
-      } else {
-        _start = offset + 1;
-        return XPathToken(_xpath.substr(current_start, offset - current_start));
-      }
+  if (':' == c && ':' == _xpath[offset + 1]) {
+    _start = offset + 2;
+    return XPathToken(XPathTokenType::DoubleColon);
+  } else if ('/' == c && '/' == _xpath[offset + 1]) {
+    _start = offset + 2;
+    return XPathToken(XPathTokenType::DoubleSlash);
+  } else {
+    if ('/' == c) {
+      // Ugly. Should be it's own token?
+      current_start++;
+      offset++;
     }
-  }
 
-  _start = offset;
-  return XPathToken(_xpath.substr(current_start));
+    offset = while_valid_string(_xpath, offset);
+
+    _start = offset;
+    return XPathToken(_xpath.substr(current_start, offset - current_start));
+  }
 }
 
 std::ostream&
