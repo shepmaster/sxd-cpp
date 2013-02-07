@@ -156,6 +156,20 @@ TEST_F(XPathAcceptanceTest, can_select_node_with_same_name_as_axis)
   delete one;
 }
 
+TEST_F(XPathAcceptanceTest, double_slash_selects_all_children)
+{
+  Node *parent = doc.new_element("parent");
+  Node *child = add_child(parent, "child");
+  Node *second_child = add_child(child, "child");
+
+  XPath xpath = XPathFactory().compile(".//child");
+  Nodeset selected_nodes = parent->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(child, second_child));
+
+  delete parent;
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

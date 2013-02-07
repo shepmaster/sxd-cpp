@@ -3,6 +3,7 @@
 #include "axis-child.h"
 #include "axis-self.h"
 #include "axis-parent.h"
+#include "axis-any-child.h"
 #include "node-test-element.h"
 #include "make-unique.h"
 
@@ -36,7 +37,13 @@ XPathParser::parse() {
     auto token = _source.next_token();
     auto name = token.string();
 
-    if (name == "self" && looks_like_axis(_source)) {
+    if (token.is(XPathTokenType::DoubleSlash)) {
+      // Hmm, what can follow this?
+      // Does foo//child::bar make sense?
+      // Assume string for now
+      token = _source.next_token();
+      axis = make_unique<AxisAnyChild>(make_unique<NodeTestElement>(token.string()));
+    } else if (name == "self" && looks_like_axis(_source)) {
       parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
           axis = make_unique<AxisSelf>(std::move(test));
         });

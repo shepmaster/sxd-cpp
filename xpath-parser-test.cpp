@@ -131,6 +131,20 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
   ASSERT_THAT(creator.saved_parts[0], Selects(top_node, self));
 }
 
+TEST_F(XPathParserTest, parses_double_slash)
+{
+  tokens.push_back(XPathToken(XPathTokenType::DoubleSlash));
+  tokens.push_back(XPathToken("two"));
+
+  parser->parse();
+
+  auto one = add_child(top_node, "one");
+  auto two = add_child(one, "two");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, two));
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
