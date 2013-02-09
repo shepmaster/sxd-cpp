@@ -7,6 +7,7 @@ class NodeTestElement : public XPathNodeTest {
 public:
   NodeTestElement(std::string name);
   void test(Node *node, Nodeset &result) const;
+  std::ostream &to_string(std::ostream &) const;
 
 private:
   std::string _name;

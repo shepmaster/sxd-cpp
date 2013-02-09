@@ -40,6 +40,7 @@ set(
   axis-self.cpp
   axis-descendant-or-self.cpp
   xpath-parser.cpp
+  xpath-node-test.cpp
   node-test-element.cpp
   xpath-step.cpp
 )
