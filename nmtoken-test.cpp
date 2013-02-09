@@ -1,31 +1,28 @@
-#include <iostream>
-
-#include <CppUTest/TestHarness.h>
-#include <CppUTest/CommandLineTestRunner.h>
-
 #include "nmtoken.h"
 
-TEST_GROUP(nmtoken)
+#include "gmock/gmock.h"
+#include <iostream>
+
+class NMTokenTest : public ::testing::Test
 {};
 
-TEST(nmtoken, new_nmtoken)
+TEST_F(NMTokenTest, new_nmtoken)
 {
   NMToken nm("xs:boolean");
 
-  STRCMP_EQUAL("boolean", nm.name());
-  STRCMP_EQUAL("xs", nm.ns());
+  ASSERT_STREQ("boolean", nm.name());
+  ASSERT_STREQ("xs", nm.ns());
 }
 
-TEST(nmtoken, new_name_only)
+TEST_F(NMTokenTest, new_name_only)
 {
   NMToken nm("string");
 
-  STRCMP_EQUAL("string", nm.name());
-  POINTERS_EQUAL(NULL, nm.ns());
+  ASSERT_STREQ("string", nm.name());
+  ASSERT_EQ(nullptr, nm.ns());
 }
 
-int
-main(int argc, char **argv)
-{
-  return CommandLineTestRunner::RunAllTests(argc, argv);
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
