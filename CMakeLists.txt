@@ -20,7 +20,6 @@ set(
   sxd_source
   document.cpp
   element.cpp
-  exception.cpp
   intern.cpp
   nmtoken.cpp
   node.cpp
@@ -59,7 +58,6 @@ set(test_programs
   element
   intern
   document
-  exception
   nmtoken
   node
   text-node
