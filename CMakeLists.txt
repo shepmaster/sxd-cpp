@@ -70,7 +70,7 @@ set(test_programs
 )
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
-  target_link_libraries(${program}-test sxd test-utilities CppUTest gmock)
+  target_link_libraries(${program}-test sxd test-utilities gmock)
   add_test(${program} ${program}-test)
 endforeach(program)
 
