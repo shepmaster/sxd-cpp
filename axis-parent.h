@@ -2,16 +2,11 @@
 #define AXIS_PARENT_H
 
 #include "xpath-axis.h"
-#include "xpath-node-test.h"
 
 class AxisParent : public XPathAxis {
 public:
-  AxisParent(std::unique_ptr<XPathNodeTest> &&node_test);
-  void select_nodes(Node *current_node, Nodeset &result);
+  void select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodeset &result);
   std::ostream &to_string(std::ostream &strm) const;
-
-private:
-  std::unique_ptr<XPathNodeTest> _node_test;
 };
 
 #endif

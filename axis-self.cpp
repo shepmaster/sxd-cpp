@@ -1,13 +1,8 @@
 #include "axis-self.h"
 
-AxisSelf::AxisSelf(std::unique_ptr<XPathNodeTest> &&node_test) :
-  _node_test(std::move(node_test))
-{
-}
-
 void
-AxisSelf::select_nodes(Node *current_node, Nodeset &result) {
-  _node_test->test(current_node, result);
+AxisSelf::select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodeset &result) {
+  node_test.test(current_node, result);
 }
 
 std::ostream &

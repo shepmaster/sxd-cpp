@@ -2,17 +2,19 @@
 #define XPATH_STEP_H
 
 #include "xpath-axis.h"
+#include "xpath-node-test.h"
 #include "node.h"
 #include "nodeset.h"
 
 class XPathStep {
 public:
-  XPathStep(std::unique_ptr<XPathAxis> axis);
+  XPathStep(std::unique_ptr<XPathAxis> axis, std::unique_ptr<XPathNodeTest> node_test);
 
   void select_nodes(Node *current_node, Nodeset &step_result);
 
 private:
   std::unique_ptr<XPathAxis> _axis;
+  std::unique_ptr<XPathNodeTest> _node_test;
 };
 
 #endif
