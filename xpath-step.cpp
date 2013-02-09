@@ -10,3 +10,9 @@ XPathStep::select_nodes(Node *current_node, Nodeset &result)
 {
   _axis->select_nodes(current_node, *_node_test, result);
 }
+
+std::ostream &
+operator<<(std::ostream &strm, const XPathStep &step)
+{
+  return strm << "XPathStep (" << *step._axis << *step._node_test << ")";
+}

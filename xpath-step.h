@@ -15,6 +15,10 @@ public:
 private:
   std::unique_ptr<XPathAxis> _axis;
   std::unique_ptr<XPathNodeTest> _node_test;
+
+  friend std::ostream &operator<<(std::ostream &, const XPathStep &);
 };
+
+std::ostream &operator<<(std::ostream &, const XPathStep &);
 
 #endif
