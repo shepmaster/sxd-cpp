@@ -160,26 +160,26 @@ TEST_F(XPathAcceptanceTest, descendant_selects_all_children)
 {
   Node *parent = doc.new_element("parent");
   Node *child = add_child(parent, "child");
-  Node *second_child = add_child(child, "child");
+  Node *grandchild = add_child(child, "grandchild");
 
   XPath xpath = XPathFactory().compile("descendant::*");
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
-  ASSERT_THAT(selected_nodes, ElementsAre(child, second_child));
+  ASSERT_THAT(selected_nodes, ElementsAre(child, grandchild));
 
   delete parent;
 }
 
-TEST_F(XPathAcceptanceTest, double_slash_selects_all_children)
+TEST_F(XPathAcceptanceTest, double_slash_selects_self_and_all_children)
 {
-  Node *parent = doc.new_element("parent");
-  Node *child = add_child(parent, "child");
-  Node *second_child = add_child(child, "child");
+  Node *parent = doc.new_element("yup");
+  Node *child = add_child(parent, "nope");
+  Node *grandchild = add_child(child, "yup");
 
-  XPath xpath = XPathFactory().compile(".//child");
+  XPath xpath = XPathFactory().compile(".//self::yup");
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
-  ASSERT_THAT(selected_nodes, ElementsAre(child, second_child));
+  ASSERT_THAT(selected_nodes, ElementsAre(parent, grandchild));
 
   delete parent;
 }
