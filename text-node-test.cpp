@@ -1,42 +1,42 @@
-#include <iostream>
-
-#include <CppUTest/TestHarness.h>
-#include <CppUTest/CommandLineTestRunner.h>
-
-#include "document.h"
 #include "text-node.h"
 
+#include "document.h"
 #include "test-utilities.h"
 
-TEST_GROUP(text_node)
-{};
+#include "gmock/gmock.h"
+#include <iostream>
 
-TEST(text_node, new_text_node)
-{
+class TextNodeTest : public ::testing::Test {
+protected:
   Document doc;
+};
+
+TEST_F(TextNodeTest, new_text_node)
+{
   TextNode *tn;
 
   tn = doc.new_text_node("I am text");
-  STRCMP_EQUAL("I am text", tn->text());
+
+  ASSERT_STREQ("I am text", tn->text());
+
   delete tn;
 }
 
-TEST(text_node, output)
+TEST_F(TextNodeTest, output)
 {
-  Document doc;
   TextNode *tn;
   StringOutput out;
 
   tn = doc.new_text_node("I am text");
 
   tn->output(out);
-  STRCMP_EQUAL("I am text", out.string());
+
+  ASSERT_STREQ("I am text", out.string());
 
   delete tn;
 }
 
-int
-main(int argc, char **argv)
-{
-  return CommandLineTestRunner::RunAllTests(argc, argv);
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
