@@ -19,17 +19,6 @@ looks_like_axis(XPathTokenSource &_source) {
 }
 
 void
-parse_axis(XPathTokenSource &_source, std::function<void(std::unique_ptr<NodeTestElement> &&)> make_axis)
-{
-  auto token = _source.next_token();
-
-  if (token.is(XPathTokenType::DoubleColon)) {
-    token = _source.next_token();
-    make_axis(make_unique<NodeTestElement>(token.string()));
-  }
-}
-
-void
 XPathParser::parse() {
   std::vector<std::unique_ptr<XPathStep>> steps;
 
@@ -39,21 +28,18 @@ XPathParser::parse() {
     auto token = _source.next_token();
     auto name = token.string();
 
-    if (name == "self" && looks_like_axis(_source)) {
-      parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
-          axis = make_unique<AxisSelf>();
-          node_test = std::move(test);
-        });
-    } else if (name == "parent" && looks_like_axis(_source)) {
-      parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
-          axis = make_unique<AxisParent>();
-          node_test = std::move(test);
-        });
-    } else if (name == "descendant" && looks_like_axis(_source)) {
-      parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
-          axis = make_unique<AxisDescendant>();
-          node_test = std::move(test);
-        });
+    if (looks_like_axis(_source)) {
+      if (name == "self") {
+        axis = make_unique<AxisSelf>();
+      } else if (name == "parent") {
+        axis = make_unique<AxisParent>();
+      } else if (name == "descendant") {
+        axis = make_unique<AxisDescendant>();
+      }
+
+      _source.next_token(); // Consume the colon
+      token = _source.next_token();
+      node_test = make_unique<NodeTestElement>(token.string());
     } else if (name == ".") {
       axis = make_unique<AxisSelf>();
       node_test = make_unique<NodeTestElement>("*");
