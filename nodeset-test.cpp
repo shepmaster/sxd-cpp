@@ -1,63 +1,64 @@
-#include <iostream>
-
-#include <CppUTest/TestHarness.h>
-#include <CppUTest/CommandLineTestRunner.h>
-
-#include "test-utilities.h"
-#include "document.h"
 #include "nodeset.h"
 
-TEST_GROUP(nodeset)
-{
-  Document doc;
-  Node *n;
-  Nodeset ns;
+#include "document.h"
 
-  void setup() {
-    n = doc.new_element("one");
+#include "gmock/gmock.h"
+#include <iostream>
+
+class NodesetTest : public ::testing::Test {
+protected:
+  Document doc;
+  Node *node;
+  Nodeset nodeset;
+
+  Node *new_node() {
+    return doc.new_element("dummy-element");
   }
 
-  void teardown() {
-    delete n;
+  void SetUp() {
+    node = new_node();
+  }
+
+  void TearDown() {
+    delete node;
   }
 };
 
-TEST(nodeset, add_node)
+TEST_F(NodesetTest, add_node)
 {
-  ns.add(n);
-  CHECK_EQUAL(1, ns.count());
+  nodeset.add(node);
+  ASSERT_EQ(1, nodeset.count());
 }
 
-TEST(nodeset, get_node)
+TEST_F(NodesetTest, get_node)
 {
   const Node *n2;
 
-  ns.add(n);
-  n2 = ns[0];
+  nodeset.add(node);
+  n2 = nodeset[0];
 
-  POINTERS_EQUAL(n, n2);
+  ASSERT_EQ(node, n2);
 }
 
-TEST(nodeset, add_nodeset)
+TEST_F(NodesetTest, add_nodeset)
 {
   Node *n2;
   Nodeset ns2;
 
-  n2 = test_helper_new_node(doc, "two");
+  n2 = new_node();
 
-  ns.add(n);
+  nodeset.add(node);
   ns2.add(n2);
 
-  ns.add_nodeset(ns2);
-  CHECK_EQUAL(2, ns.count());
-  POINTERS_EQUAL(n, ns[0]);
-  POINTERS_EQUAL(n2, ns[1]);
+  nodeset.add_nodeset(ns2);
+  ASSERT_EQ(2, nodeset.count());
+  ASSERT_EQ(node, nodeset[0]);
+  ASSERT_EQ(n2, nodeset[1]);
 
   delete n2;
 }
 
-int
-main(int argc, char **argv)
-{
-  return CommandLineTestRunner::RunAllTests(argc, argv);
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
