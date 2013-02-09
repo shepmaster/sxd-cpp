@@ -42,6 +42,21 @@ parse_axis(XPathTokenSource &source, XPathToken token) {
   return axis;
 }
 
+std::unique_ptr<XPathNodeTest>
+parse_node_test(XPathTokenSource &source, XPathToken token) {
+  auto name = token.string();
+  std::unique_ptr<XPathNodeTest> node_test;
+
+  if (name == "text") {
+    node_test = make_unique<NodeTestText>();
+  }
+
+  source.next_token(); // Consume left paren
+  source.next_token(); // Consume right paren
+
+  return node_test;
+}
+
 void
 XPathParser::parse() {
   std::vector<std::unique_ptr<XPathStep>> steps;
@@ -57,13 +72,8 @@ XPathParser::parse() {
       token = _source.next_token();
       node_test = make_unique<NodeTestElement>(token.string());
     } else if (looks_like_node_test(_source)) {
-      if (name == "text") {
-        axis = make_unique<AxisChild>(); // Not true - what about if we have an axis?
-        node_test = make_unique<NodeTestText>();
-      }
-
-      _source.next_token(); // Consume left paren
-      _source.next_token(); // Consume right paren
+      axis = make_unique<AxisChild>(); // Not true - what about if we have an axis?
+      node_test = parse_node_test(_source, token);
     } else if (name == ".") {
       axis = make_unique<AxisSelf>();
       node_test = make_unique<NodeTestElement>("*");
