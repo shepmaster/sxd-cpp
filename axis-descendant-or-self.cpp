@@ -1,12 +1,12 @@
-#include "axis-any-child.h"
+#include "axis-descendant-or-self.h"
 
-AxisAnyChild::AxisAnyChild(std::unique_ptr<XPathNodeTest> &&node_test) :
+AxisDescendantOrSelf::AxisDescendantOrSelf(std::unique_ptr<XPathNodeTest> &&node_test) :
   _node_test(std::move(node_test))
 {
 }
 
 void
-AxisAnyChild::select_nodes(Node *current_node, Nodeset &result)
+AxisDescendantOrSelf::select_nodes(Node *current_node, Nodeset &result)
 {
   auto child_selector = [&](Node *child){
     // Which order is correct?

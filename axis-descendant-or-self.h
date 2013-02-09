@@ -1,12 +1,12 @@
-#ifndef AXIS_ANY_CHILD_H
-#define AXIS_ANY_CHILD_H
+#ifndef AXIS_DESCENDANT_OR_SELF_H
+#define AXIS_DESCENDANT_OR_SELF_H
 
 #include "xpath-axis.h"
 #include "xpath-node-test.h"
 
-class AxisAnyChild : public XPathAxis {
+class AxisDescendantOrSelf : public XPathAxis {
 public:
-  AxisAnyChild(std::unique_ptr<XPathNodeTest> &&node_test);
+  AxisDescendantOrSelf(std::unique_ptr<XPathNodeTest> &&node_test);
   void select_nodes(Node *current_node, Nodeset &result);
 private:
   std::unique_ptr<XPathNodeTest> _node_test;
