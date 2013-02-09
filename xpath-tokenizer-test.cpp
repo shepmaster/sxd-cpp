@@ -120,6 +120,26 @@ TEST_F(XPathTokenizerTest, tokenizes_double_slash_separator)
   ASSERT_THAT(tokenizer, IsFinished());
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_left_paren)
+{
+  XPathTokenizer tokenizer("(");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::LeftParen));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_right_paren)
+{
+  XPathTokenizer tokenizer(")");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::RightParen));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
 int
 main(int argc, char **argv)
 {

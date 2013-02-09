@@ -21,7 +21,7 @@ size_t while_valid_string(std::string xpath, size_t offset)
     auto c = xpath[offset];
 
     // Would be better to test for only valid string chars
-    if ('/' == c || ':' == c) {
+    if ('/' == c || ':' == c || '(' == c || ')' == c) {
       break;
     }
   }
@@ -40,6 +40,12 @@ XPathTokenizer::next_token()
   } else if ('/' == c && '/' == _xpath[_start + 1]) {
     _start += 2;
     return XPathToken(XPathTokenType::DoubleSlash);
+  } else if ('(' == c) {
+    _start += 1;
+    return XPathToken(XPathTokenType::LeftParen);
+  } else if (')' == c) {
+    _start += 1;
+    return XPathToken(XPathTokenType::RightParen);
   } else {
     auto offset = _start;
     auto current_start = _start;
