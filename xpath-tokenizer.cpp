@@ -32,18 +32,18 @@ size_t while_valid_string(std::string xpath, size_t offset)
 XPathToken
 XPathTokenizer::next_token()
 {
-  auto offset = _start;
-  auto current_start = _start;
+  auto c = _xpath[_start];
 
-  auto c = _xpath[offset];
-
-  if (':' == c && ':' == _xpath[offset + 1]) {
-    _start = offset + 2;
+  if (':' == c && ':' == _xpath[_start + 1]) {
+    _start += 2;
     return XPathToken(XPathTokenType::DoubleColon);
-  } else if ('/' == c && '/' == _xpath[offset + 1]) {
-    _start = offset + 2;
+  } else if ('/' == c && '/' == _xpath[_start + 1]) {
+    _start += 2;
     return XPathToken(XPathTokenType::DoubleSlash);
   } else {
+    auto offset = _start;
+    auto current_start = _start;
+
     if ('/' == c) {
       // Ugly. Should be it's own token?
       current_start++;
