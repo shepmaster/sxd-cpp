@@ -3,6 +3,7 @@
 #include "axis-child.h"
 #include "axis-self.h"
 #include "axis-parent.h"
+#include "axis-descendant.h"
 #include "axis-descendant-or-self.h"
 #include "node-test-element.h"
 #include "make-unique.h"
@@ -53,6 +54,11 @@ XPathParser::parse() {
     } else if (name == "parent" && looks_like_axis(_source)) {
       parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
           axis = make_unique<AxisParent>();
+          node_test = std::move(test);
+        });
+    } else if (name == "descendant" && looks_like_axis(_source)) {
+      parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
+          axis = make_unique<AxisDescendant>();
           node_test = std::move(test);
         });
     } else if (name == ".") {

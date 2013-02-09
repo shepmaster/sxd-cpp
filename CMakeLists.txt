@@ -38,6 +38,7 @@ set(
   axis-parent.cpp
   axis-child.cpp
   axis-self.cpp
+  axis-descendant.cpp
   axis-descendant-or-self.cpp
   xpath-parser.cpp
   xpath-node-test.cpp
