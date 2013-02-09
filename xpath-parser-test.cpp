@@ -79,6 +79,14 @@ add_child(Node *top_node, std::string name) {
   return n;
 }
 
+Node *
+add_text_node(Node *parent, std::string value) {
+  Document *doc = parent->document();
+  Node *n = doc->new_text_node(value.c_str());
+  parent->append_child(n);
+  return n;
+}
+
 TEST_F(XPathParserTest, parses_string_as_child)
 {
   tokens.push_back(XPathToken("hello"));
@@ -169,6 +177,21 @@ TEST_F(XPathParserTest, parses_double_slash)
 
   ASSERT_EQ(1, creator.saved_parts.size());
   ASSERT_THAT(creator.saved_parts[0], Selects(one, one, two));
+}
+
+TEST_F(XPathParserTest, parses_text_node_test)
+{
+  tokens.push_back(XPathToken("text"));
+  tokens.push_back(XPathToken(XPathTokenType::LeftParen));
+  tokens.push_back(XPathToken(XPathTokenType::RightParen));
+
+  parser->parse();
+
+  auto one = add_child(top_node, "one");
+  auto text = add_text_node(one, "text");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(creator.saved_parts[0], Selects(one, text));
 }
 
 int main(int argc, char **argv) {

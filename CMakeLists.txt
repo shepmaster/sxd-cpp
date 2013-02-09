@@ -42,6 +42,7 @@ set(
   xpath-parser.cpp
   xpath-node-test.cpp
   node-test-element.cpp
+  node-test-text.cpp
   xpath-step.cpp
 )
 add_library(sxd SHARED ${sxd_source})

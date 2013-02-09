@@ -6,6 +6,7 @@
 #include "axis-descendant.h"
 #include "axis-descendant-or-self.h"
 #include "node-test-element.h"
+#include "node-test-text.h"
 #include "make-unique.h"
 
 XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &creator) :
@@ -16,6 +17,12 @@ XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &cre
 bool
 looks_like_axis(XPathTokenSource &_source) {
   return _source.next_token_is(XPathTokenType::DoubleColon);
+}
+
+bool
+looks_like_node_test(XPathTokenSource &_source) {
+  // Should we also look for the closing paren?
+  return _source.next_token_is(XPathTokenType::LeftParen);
 }
 
 void
@@ -40,6 +47,14 @@ XPathParser::parse() {
       _source.next_token(); // Consume the colon
       token = _source.next_token();
       node_test = make_unique<NodeTestElement>(token.string());
+    } else if (looks_like_node_test(_source)) {
+      if (name == "text") {
+        axis = make_unique<AxisChild>(); // Not true - what about if we have an axis?
+        node_test = make_unique<NodeTestText>();
+      }
+
+      _source.next_token(); // Consume left paren
+      _source.next_token(); // Consume right paren
     } else if (name == ".") {
       axis = make_unique<AxisSelf>();
       node_test = make_unique<NodeTestElement>("*");

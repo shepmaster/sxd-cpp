@@ -22,6 +22,14 @@ add_child(Node *top_node, std::string name) {
   return n;
 }
 
+Node *
+add_text_node(Node *parent, std::string text) {
+  Document *doc = parent->document();
+  Node *n = doc->new_text_node(text.c_str());
+  parent->append_child(n);
+  return n;
+}
+
 TEST_F(XPathAcceptanceTest, can_select_child_element)
 {
   XPathAxisTestData d;
@@ -180,6 +188,19 @@ TEST_F(XPathAcceptanceTest, double_slash_selects_self_and_all_children)
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(parent, grandchild));
+
+  delete parent;
+}
+
+TEST_F(XPathAcceptanceTest, can_select_text_nodes)
+{
+  Node *parent = doc.new_element("element");
+  Node *text = add_text_node(parent, "some text");
+
+  XPath xpath = XPathFactory().compile("text()");
+  Nodeset selected_nodes = parent->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(text));
 
   delete parent;
 }
