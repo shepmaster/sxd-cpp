@@ -25,6 +25,23 @@ looks_like_node_test(XPathTokenSource &_source) {
   return _source.next_token_is(XPathTokenType::LeftParen);
 }
 
+std::unique_ptr<XPathAxis>
+parse_axis(XPathTokenSource &source, XPathToken token) {
+  auto name = token.string();
+  std::unique_ptr<XPathAxis> axis;
+
+  if (name == "self") {
+    axis = make_unique<AxisSelf>();
+  } else if (name == "parent") {
+    axis = make_unique<AxisParent>();
+  } else if (name == "descendant") {
+    axis = make_unique<AxisDescendant>();
+  }
+
+  source.next_token(); // Consume the colon
+  return axis;
+}
+
 void
 XPathParser::parse() {
   std::vector<std::unique_ptr<XPathStep>> steps;
@@ -36,15 +53,7 @@ XPathParser::parse() {
     auto name = token.string();
 
     if (looks_like_axis(_source)) {
-      if (name == "self") {
-        axis = make_unique<AxisSelf>();
-      } else if (name == "parent") {
-        axis = make_unique<AxisParent>();
-      } else if (name == "descendant") {
-        axis = make_unique<AxisDescendant>();
-      }
-
-      _source.next_token(); // Consume the colon
+      axis = parse_axis(_source, token);
       token = _source.next_token();
       node_test = make_unique<NodeTestElement>(token.string());
     } else if (looks_like_node_test(_source)) {
