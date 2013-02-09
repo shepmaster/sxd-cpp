@@ -7,6 +7,9 @@
 class XPathAxis {
 public:
   virtual void select_nodes(Node *current_node, Nodeset &result) = 0;
+  virtual std::ostream &to_string(std::ostream &) const = 0;
 };
+
+std::ostream &operator<<(std::ostream &, const XPathAxis &);
 
 #endif

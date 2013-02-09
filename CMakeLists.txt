@@ -34,6 +34,7 @@ set(
   xpath-token.cpp
   xpath-tokenizer.cpp
   xpath-tokenizer-buffer.cpp
+  xpath-axis.cpp
   axis-parent.cpp
   axis-child.cpp
   axis-self.cpp

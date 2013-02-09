@@ -9,3 +9,9 @@ void
 AxisParent::select_nodes(Node *current_node, Nodeset &result) {
   _node_test->test(current_node->parent(), result);
 }
+
+std::ostream &
+AxisParent::to_string(std::ostream &strm) const
+{
+  return strm << "parent::";
+};
