@@ -7,7 +7,7 @@
 class XPathNodeTest {
 public:
   virtual ~XPathNodeTest() {};
-  virtual void test(Node *node, Nodeset &result) = 0;
+  virtual void test(Node *node, Nodeset &result) const = 0;
 };
 
 #endif

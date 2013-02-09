@@ -6,7 +6,7 @@ NodeTestElement::NodeTestElement(std::string name) :
 {
 }
 
-void NodeTestElement::test(Node *node, Nodeset &result) {
+void NodeTestElement::test(Node *node, Nodeset &result) const {
   if (node->type() == NODE_TYPE_ELEMENT) {
     Element *e = dynamic_cast<Element *>(node);
     if (_name == "*" || _name == e->name()) {
