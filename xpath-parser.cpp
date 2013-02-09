@@ -39,14 +39,7 @@ XPathParser::parse() {
     auto token = _source.next_token();
     auto name = token.string();
 
-    if (token.is(XPathTokenType::DoubleSlash)) {
-      // Hmm, what can follow this?
-      // Does foo//child::bar make sense?
-      // Assume string for now
-      token = _source.next_token();
-      axis = make_unique<AxisDescendantOrSelf>();
-      node_test = make_unique<NodeTestElement>(token.string());
-    } else if (name == "self" && looks_like_axis(_source)) {
+    if (name == "self" && looks_like_axis(_source)) {
       parse_axis(_source, [&](std::unique_ptr<NodeTestElement> &&test) {
           axis = make_unique<AxisSelf>();
           node_test = std::move(test);
@@ -66,6 +59,9 @@ XPathParser::parse() {
       node_test = make_unique<NodeTestElement>("*");
     } else if (name == "..") {
       axis = make_unique<AxisParent>();
+      node_test = make_unique<NodeTestElement>("*");
+    } else if (token.is(XPathTokenType::DoubleSlash)) {
+      axis = make_unique<AxisDescendantOrSelf>();
       node_test = make_unique<NodeTestElement>("*");
     } else {
       axis = make_unique<AxisChild>();

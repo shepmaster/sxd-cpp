@@ -60,6 +60,17 @@ MATCHER_P2(Selects, start_node, expected_node, "") {
   return false;
 }
 
+MATCHER_P3(Selects, start_node, expected_node_1, expected_node_2, "") {
+  Nodeset result;
+  arg->select_nodes(start_node, result);
+
+  if (2 == result.count()) {
+    return expected_node_1 == result[0] &&
+      expected_node_2 == result[1];
+  }
+  return false;
+}
+
 Node *
 add_child(Node *top_node, std::string name) {
   Document *doc = top_node->document();
@@ -148,8 +159,8 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 
 TEST_F(XPathParserTest, parses_double_slash)
 {
+  // This is a bit dubious - can you really say '//' by itself?
   tokens.push_back(XPathToken(XPathTokenType::DoubleSlash));
-  tokens.push_back(XPathToken("two"));
 
   parser->parse();
 
@@ -157,7 +168,7 @@ TEST_F(XPathParserTest, parses_double_slash)
   auto two = add_child(one, "two");
 
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, two));
+  ASSERT_THAT(creator.saved_parts[0], Selects(one, one, two));
 }
 
 int main(int argc, char **argv) {
