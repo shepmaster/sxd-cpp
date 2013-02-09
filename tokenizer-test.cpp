@@ -1,16 +1,13 @@
-#include <iostream>
-#include <glib.h>
-
-#include <CppUTest/TestHarness_c.h>
-#include <CppUTest/CommandLineTestRunner.h>
-
 #include "tokenizer.h"
 
-TEST_GROUP(tokenize)
-{
-  tokenizer_t *tz;
+#include "gmock/gmock.h"
+#include <iostream>
 
-  void teardown(void)
+class TokenizerTest : public ::testing::Test {
+protected:
+  tokenizer_t *tz = NULL;
+
+  void TearDown(void)
   {
     if (tz) tokenizer_free(tz);
   }
@@ -19,182 +16,159 @@ TEST_GROUP(tokenize)
 #define NEXT_TOKEN(_type, _tz)                  \
 {                                               \
   token_t _tok = tokenizer_next(_tz);           \
-  CHECK_EQUAL(_type, _tok.type);                \
+  ASSERT_EQ(_type, _tok.type);                  \
 }                                               \
 
 static void
-STRNCMP_EQUAL_LOCATION(
-  const char *expected, const char *actual, int len,
-  const char *file, int line
-)
-{
-  int res;
-
-  res = strncmp(expected, actual, len);
-  Utest::getTestResult()->countCheck();
-  if (0 != res) {
-    GString *str = g_string_new(NULL);
-    g_string_printf(str, "Expected [%s] but got [%.*s]", expected, len, actual);
-    FAIL_TEST_LOCATION(str->str, file, line);
-    g_string_free(str, TRUE);
-  }
-}
-
-static void
-_NEXT_TOKEN_STRING(
+NEXT_TOKEN_STRING(
   const char *expected,
-  tokenizer_t *tz, string_type_t string_type,
-  const char *file, int line
+  tokenizer_t *tz, string_type_t string_type
 )
 {
-  int len;
-  token_t tok;
+  token_t tok = tokenizer_next_string(tz, string_type);
+  ASSERT_EQ(STRING, tok.type);
 
-  len = strlen(expected);
-  tok = tokenizer_next_string(tz, string_type);
+  size_t len = strlen(expected);
+  ASSERT_EQ(len, tok.value.string.len);
 
-  CHECK_EQUAL_LOCATION(STRING, tok.type, file, line);
-  CHECK_EQUAL_LOCATION(len, tok.value.string.len, file, line);
-  STRNCMP_EQUAL_LOCATION(expected, tok.value.string.str, len, file, line);
+  auto subset = std::string(tok.value.string.str, len);
+  ASSERT_EQ(expected, subset);
 }
 
-#define NEXT_TOKEN_STRING(expected, tz, string_type)                    \
-  _NEXT_TOKEN_STRING(expected, tz, string_type, __FILE__, __LINE__)
-
-TEST(tokenize, tokenize_end)
+TEST_F(TokenizerTest, tokenize_end)
 {
   tz = tokenizer_new("");
   NEXT_TOKEN(END, tz);
 }
 
-TEST(tokenize, tokenize_after_end)
+TEST_F(TokenizerTest, tokenize_after_end)
 {
   tz = tokenizer_new("");
   NEXT_TOKEN(END, tz);
   NEXT_TOKEN(END, tz);
 }
 
-TEST(tokenize, tokenize_space_space)
+TEST_F(TokenizerTest, tokenize_space_space)
 {
   tz = tokenizer_new(" ");
   NEXT_TOKEN(SPACE, tz);
 }
 
-TEST(tokenize, tokenize_space_tab)
+TEST_F(TokenizerTest, tokenize_space_tab)
 {
   tz = tokenizer_new("	");
   NEXT_TOKEN(SPACE, tz);
 }
 
-TEST(tokenize, tokenize_space_lf)
+TEST_F(TokenizerTest, tokenize_space_lf)
 {
   tz = tokenizer_new("\n");
   NEXT_TOKEN(SPACE, tz);
 }
 
-TEST(tokenize, tokenize_space_cr)
+TEST_F(TokenizerTest, tokenize_space_cr)
 {
   tz = tokenizer_new("\r");
   NEXT_TOKEN(SPACE, tz);
 }
 
-TEST(tokenize, tokenize_lt)
+TEST_F(TokenizerTest, tokenize_lt)
 {
   tz = tokenizer_new("<");
   NEXT_TOKEN(LT, tz);
 }
 
-TEST(tokenize, tokenize_gt)
+TEST_F(TokenizerTest, tokenize_gt)
 {
   tz = tokenizer_new(">");
   NEXT_TOKEN(GT, tz);
 }
 
-TEST(tokenize, tokenize_close_tag_start)
+TEST_F(TokenizerTest, tokenize_close_tag_start)
 {
   tz = tokenizer_new("</");
   NEXT_TOKEN(CLOSE_TAG_START, tz);
 }
 
-TEST(tokenize, tokenize_pi_start)
+TEST_F(TokenizerTest, tokenize_pi_start)
 {
   tz = tokenizer_new("<?");
   NEXT_TOKEN(PI_START, tz);
 }
 
-TEST(tokenize, tokenize_pi_end)
+TEST_F(TokenizerTest, tokenize_pi_end)
 {
   tz = tokenizer_new("?>");
   NEXT_TOKEN(PI_END, tz);
 }
 
-TEST(tokenize, tokenize_comment_start)
+TEST_F(TokenizerTest, tokenize_comment_start)
 {
   tz = tokenizer_new("<!--");
   NEXT_TOKEN(COMMENT_START, tz);
 }
 
-TEST(tokenize, tokenize_comment_text)
+TEST_F(TokenizerTest, tokenize_comment_text)
 {
   tz = tokenizer_new("foo-bar-->");
   NEXT_TOKEN_STRING("foo-bar", tz, COMMENT_TEXT);
 }
 
-TEST(tokenize, tokenize_comment_end)
+TEST_F(TokenizerTest, tokenize_comment_end)
 {
   tz = tokenizer_new("-->");
   NEXT_TOKEN(COMMENT_END, tz);
 }
 
-TEST(tokenize, tokenize_slash)
+TEST_F(TokenizerTest, tokenize_slash)
 {
   tz = tokenizer_new("/");
   NEXT_TOKEN(SLASH, tz);
 }
 
-TEST(tokenize, tokenize_eq)
+TEST_F(TokenizerTest, tokenize_eq)
 {
   tz = tokenizer_new("=");
   NEXT_TOKEN(EQ, tz);
 }
 
-TEST(tokenize, tokenize_apos)
+TEST_F(TokenizerTest, tokenize_apos)
 {
   tz = tokenizer_new("'");
   NEXT_TOKEN(APOS, tz);
 }
 
-TEST(tokenize, tokenize_quot)
+TEST_F(TokenizerTest, tokenize_quot)
 {
   tz = tokenizer_new("\"");
   NEXT_TOKEN(QUOT, tz);
 }
 
-TEST(tokenize, tokenize_amp)
+TEST_F(TokenizerTest, tokenize_amp)
 {
   tz = tokenizer_new("&");
   NEXT_TOKEN(AMP, tz);
 }
 
-TEST(tokenize, tokenize_char_ref)
+TEST_F(TokenizerTest, tokenize_char_ref)
 {
   tz = tokenizer_new("&#");
   NEXT_TOKEN(CHAR_REF, tz);
 }
 
-TEST(tokenize, tokenize_char_ref_hex)
+TEST_F(TokenizerTest, tokenize_char_ref_hex)
 {
   tz = tokenizer_new("&#x");
   NEXT_TOKEN(CHAR_REF_HEX, tz);
 }
 
-TEST(tokenize, tokenize_semicolon)
+TEST_F(TokenizerTest, tokenize_semicolon)
 {
   tz = tokenizer_new(";");
   NEXT_TOKEN(SEMICOLON, tz);
 }
 
-TEST(tokenize, tokenize_attr_value_apos)
+TEST_F(TokenizerTest, tokenize_attr_value_apos)
 {
   tz = tokenizer_new("hello world'");
   NEXT_TOKEN_STRING("hello world", tz, ATTR_VALUE_APOS);
@@ -202,7 +176,7 @@ TEST(tokenize, tokenize_attr_value_apos)
   NEXT_TOKEN(END, tz);
 }
 
-TEST(tokenize, tokenize_attr_value_quot)
+TEST_F(TokenizerTest, tokenize_attr_value_quot)
 {
   tz = tokenizer_new("hello world\"");
   NEXT_TOKEN_STRING("hello world", tz, ATTR_VALUE_QUOT);
@@ -210,72 +184,72 @@ TEST(tokenize, tokenize_attr_value_quot)
   NEXT_TOKEN(END, tz);
 }
 
-TEST(tokenize, tokenize_chardata_not_whitespace_only)
+TEST_F(TokenizerTest, tokenize_chardata_not_whitespace_only)
 {
   token_t token;
 
   tz = tokenizer_new(" \thi\r\n");
   token = tokenizer_next_string(tz, CHARDATA);
-  CHECK_EQUAL(FALSE, token.value.string.whitespace_only);
+  ASSERT_FALSE(token.value.string.whitespace_only);
 }
 
-TEST(tokenize, tokenize_chardata_whitespace_only)
+TEST_F(TokenizerTest, tokenize_chardata_whitespace_only)
 {
   token_t token;
 
   tz = tokenizer_new(" \t\n\r");
   token = tokenizer_next_string(tz, CHARDATA);
-  CHECK_EQUAL(TRUE, token.value.string.whitespace_only);
+  ASSERT_TRUE(token.value.string.whitespace_only);
 }
 
-TEST(tokenize, tokenize_chardata_lt)
+TEST_F(TokenizerTest, tokenize_chardata_lt)
 {
   tz = tokenizer_new("a, 2<");
   NEXT_TOKEN_STRING("a, 2", tz, CHARDATA);
   NEXT_TOKEN(LT, tz);
 }
 
-TEST(tokenize, tokenize_chardata_amp)
+TEST_F(TokenizerTest, tokenize_chardata_amp)
 {
   tz = tokenizer_new("a, 2&");
   NEXT_TOKEN_STRING("a, 2", tz, CHARDATA);
   NEXT_TOKEN(AMP, tz);
 }
 
-TEST(tokenize, tokenize_chardata_bad_start)
+TEST_F(TokenizerTest, tokenize_chardata_bad_start)
 {
   token_t token;
   tz = tokenizer_new("<");
   token = tokenizer_next_string(tz, CHARDATA);
-  CHECK_EQUAL(LT, token.type);
+  ASSERT_EQ(LT, token.type);
 }
 
-TEST(tokenize, tokenize_name)
+TEST_F(TokenizerTest, tokenize_name)
 {
   tz = tokenizer_new("_H0-.");
   NEXT_TOKEN_STRING("_H0-.", tz, NAME);
 }
 
-TEST(tokenize, tokenize_integer)
+TEST_F(TokenizerTest, tokenize_integer)
 {
   tz = tokenizer_new("13790");
   NEXT_TOKEN_STRING("13790", tz, INTEGER);
 }
 
-TEST(tokenize, tokenize_hex)
+TEST_F(TokenizerTest, tokenize_hex)
 {
   tz = tokenizer_new("aF09");
   NEXT_TOKEN_STRING("aF09", tz, HEX);
 }
 
-TEST(tokenize, tokenize_two)
+TEST_F(TokenizerTest, tokenize_two)
 {
   tz = tokenizer_new("<>");
   NEXT_TOKEN(LT, tz);
   NEXT_TOKEN(GT, tz);
 }
 
-TEST(tokenize, tokenize_element)
+TEST_F(TokenizerTest, tokenize_element)
 {
   tz = tokenizer_new("<world/>");
   NEXT_TOKEN(LT, tz);
@@ -284,7 +258,7 @@ TEST(tokenize, tokenize_element)
   NEXT_TOKEN(GT, tz);
 }
 
-TEST(tokenize, tokenize_push)
+TEST_F(TokenizerTest, tokenize_push)
 {
   tz = tokenizer_new("<>");
   tokenizer_next(tz);
@@ -292,70 +266,70 @@ TEST(tokenize, tokenize_push)
   NEXT_TOKEN(LT, tz);
 }
 
-TEST_GROUP(tokenize_context)
-{
-  tokenizer_t *tz;
+class TokenizerContextTest : public ::testing::Test {
+protected:
+  tokenizer_t *tz = NULL;
   tokenizer_context_t context;
 
-  void teardown(void)
+  void TearDown(void)
   {
     if (tz) tokenizer_free(tz);
     tokenizer_context_destroy(&context);
   }
 };
 
-TEST(tokenize_context, empty)
+TEST_F(TokenizerContextTest, empty)
 {
   tz = tokenizer_new("");
   tokenizer_next(tz);
 
   context = tokenizer_context(tz);
-  CHECK_EQUAL(0, context.line);
-  CHECK_EQUAL(0, context.column);
-  STRCMP_EQUAL("", context.string);
-  CHECK_EQUAL(0, context.offset);
+  ASSERT_EQ(0, context.line);
+  ASSERT_EQ(0, context.column);
+  ASSERT_STREQ("", context.string);
+  ASSERT_EQ(0, context.offset);
 }
 
-TEST(tokenize_context, basic)
+TEST_F(TokenizerContextTest, basic)
 {
   tz = tokenizer_new("<hello>");
   tokenizer_next(tz);
   tokenizer_next_string(tz, NAME);
 
   context = tokenizer_context(tz);
-  CHECK_EQUAL(0, context.line);
-  CHECK_EQUAL(1, context.column);
-  STRCMP_EQUAL("<hello>", context.string);
-  CHECK_EQUAL(1, context.offset);
+  ASSERT_EQ(0, context.line);
+  ASSERT_EQ(1, context.column);
+  ASSERT_STREQ("<hello>", context.string);
+  ASSERT_EQ(1, context.offset);
 }
 
-TEST(tokenize_context, string)
+TEST_F(TokenizerContextTest, string)
 {
   tz = tokenizer_new("hello>");
   tokenizer_next_string(tz, NAME);
   tokenizer_next(tz);
 
   context = tokenizer_context(tz);
-  CHECK_EQUAL(0, context.line);
-  CHECK_EQUAL(5, context.column);
-  STRCMP_EQUAL("hello>", context.string);
-  CHECK_EQUAL(5, context.offset);
+  ASSERT_EQ(0, context.line);
+  ASSERT_EQ(5, context.column);
+  ASSERT_STREQ("hello>", context.string);
+  ASSERT_EQ(5, context.offset);
 }
 
-TEST(tokenize_context, newline)
+TEST_F(TokenizerContextTest, newline)
 {
   tz = tokenizer_new("\nworld");
   tokenizer_next(tz);
   tokenizer_next_string(tz, NAME);
 
   context = tokenizer_context(tz);
-  CHECK_EQUAL(1, context.line);
-  CHECK_EQUAL(0, context.column);
-  STRCMP_EQUAL("\nworld", context.string);
-  CHECK_EQUAL(1, context.offset);
+  ASSERT_EQ(1, context.line);
+  ASSERT_EQ(0, context.column);
+  ASSERT_STREQ("\nworld", context.string);
+  ASSERT_EQ(1, context.offset);
 }
 
-TEST(tokenize_context, push)
+TEST_F(TokenizerContextTest, push)
 {
   tz = tokenizer_new("<>");
   tokenizer_next(tz);
@@ -363,13 +337,13 @@ TEST(tokenize_context, push)
   tokenizer_push(tz);
 
   context = tokenizer_context(tz);
-  CHECK_EQUAL(0, context.line);
-  CHECK_EQUAL(0, context.column);
-  STRCMP_EQUAL("<>", context.string);
-  CHECK_EQUAL(0, context.offset);
+  ASSERT_EQ(0, context.line);
+  ASSERT_EQ(0, context.column);
+  ASSERT_STREQ("<>", context.string);
+  ASSERT_EQ(0, context.offset);
 }
 
-TEST(tokenize_context, push_string)
+TEST_F(TokenizerContextTest, push_string)
 {
   tz = tokenizer_new("hello<>");
   tokenizer_next_string(tz, NAME);
@@ -378,13 +352,13 @@ TEST(tokenize_context, push_string)
   tokenizer_push(tz);
 
   context = tokenizer_context(tz);
-  CHECK_EQUAL(0, context.line);
-  CHECK_EQUAL(5, context.column);
-  STRCMP_EQUAL("hello<>", context.string);
-  CHECK_EQUAL(5, context.offset);
+  ASSERT_EQ(0, context.line);
+  ASSERT_EQ(5, context.column);
+  ASSERT_STREQ("hello<>", context.string);
+  ASSERT_EQ(5, context.offset);
 }
 
-TEST(tokenize_context, push_next)
+TEST_F(TokenizerContextTest, push_next)
 {
   tz = tokenizer_new("<>");
   tokenizer_next(tz);
@@ -392,19 +366,18 @@ TEST(tokenize_context, push_next)
   tokenizer_next(tz);
 
   context = tokenizer_context(tz);
-  CHECK_EQUAL(0, context.line);
-  CHECK_EQUAL(0, context.column);
-  STRCMP_EQUAL("<>", context.string);
-  CHECK_EQUAL(0, context.offset);
+  ASSERT_EQ(0, context.line);
+  ASSERT_EQ(0, context.column);
+  ASSERT_STREQ("<>", context.string);
+  ASSERT_EQ(0, context.offset);
 }
 
-TEST(tokenize, token_name)
+TEST_F(TokenizerTest, token_name)
 {
-  STRCMP_EQUAL(">", tokenizer_token_name(GT));
+  ASSERT_STREQ(">", tokenizer_token_name(GT));
 }
 
-int
-main(int argc, char **argv)
-{
-  return CommandLineTestRunner::RunAllTests(argc, argv);
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
