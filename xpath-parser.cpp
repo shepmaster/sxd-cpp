@@ -14,6 +14,11 @@ XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &cre
 {
 }
 
+void
+consume(XPathTokenSource &source, XPathTokenType type) {
+  source.next_token();
+}
+
 bool
 looks_like_axis(XPathTokenSource &_source) {
   return _source.next_token_is(XPathTokenType::DoubleColon);
@@ -38,7 +43,7 @@ parse_axis(XPathTokenSource &source, XPathToken token) {
     axis = make_unique<AxisDescendant>();
   }
 
-  source.next_token(); // Consume the colon
+  consume(source, XPathTokenType::DoubleColon);
   return axis;
 }
 
@@ -51,8 +56,8 @@ parse_node_test(XPathTokenSource &source, XPathToken token) {
     node_test = make_unique<NodeTestText>();
   }
 
-  source.next_token(); // Consume left paren
-  source.next_token(); // Consume right paren
+  consume(source, XPathTokenType::LeftParen);
+  consume(source, XPathTokenType::RightParen);
 
   return node_test;
 }
