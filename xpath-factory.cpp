@@ -14,6 +14,10 @@ public:
     throw InvalidXPathAxisException(axis_name);
   }
 
+  void invalid_node_test(std::string name) {
+    throw InvalidNodeTestException(name);
+  }
+
   XPath finalize() {
     return XPath(std::move(steps));
   }

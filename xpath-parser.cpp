@@ -58,7 +58,7 @@ parse_axis(XPathCreator &creator, XPathTokenSource &source, XPathToken token) {
 }
 
 std::unique_ptr<XPathNodeTest>
-parse_node_test(XPathTokenSource &source, XPathToken token) {
+parse_node_test(XPathCreator &creator, XPathTokenSource &source, XPathToken token) {
   auto name = token.string();
   std::unique_ptr<XPathNodeTest> node_test;
 
@@ -66,6 +66,9 @@ parse_node_test(XPathTokenSource &source, XPathToken token) {
     node_test = make_unique<NodeTestNode>();
   } else if (name == "text") {
     node_test = make_unique<NodeTestText>();
+  } else {
+    creator.invalid_node_test(name);
+    return nullptr;
   }
 
   consume(source, XPathTokenType::LeftParen);
@@ -119,9 +122,13 @@ XPathParser::parse() {
       }
 
       if (looks_like_node_test(_source)) {
-        node_test = parse_node_test(_source, token);
+        node_test = parse_node_test(_creator, _source, token);
       } else {
         node_test = default_node_test(axis, token);
+      }
+
+      if (! node_test) {
+        return;
       }
     }
 

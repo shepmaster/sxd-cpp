@@ -235,6 +235,11 @@ TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)
   ASSERT_THROW(compile("bogus::*"), InvalidXPathAxisException);
 }
 
+TEST_F(XPathAcceptanceTest, invalid_node_test_throws_exception)
+{
+  ASSERT_THROW(compile("bogus()"), InvalidNodeTestException);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

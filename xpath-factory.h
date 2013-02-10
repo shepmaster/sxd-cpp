@@ -16,4 +16,11 @@ struct InvalidXPathAxisException : virtual std::runtime_error
   {};
 };
 
+struct InvalidNodeTestException : virtual std::runtime_error
+{
+  InvalidNodeTestException(std::string name) :
+    std::runtime_error(name)
+  {};
+};
+
 #endif

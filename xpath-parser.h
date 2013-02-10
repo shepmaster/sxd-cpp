@@ -10,7 +10,8 @@
 class XPathCreator {
 public:
   virtual void add_step(std::unique_ptr<XPathStep> step) = 0;
-  virtual void invalid_axis(std::string error) = 0;
+  virtual void invalid_axis(std::string axis) = 0;
+  virtual void invalid_node_test(std::string name) = 0;
 };
 
 class XPathParser {
