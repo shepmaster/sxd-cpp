@@ -78,7 +78,7 @@ XPathParser::parse() {
       node_test = make_unique<NodeTestNode>();
     } else if (name == "..") {
       axis = make_unique<AxisParent>();
-      node_test = make_unique<NodeTestElement>("*");
+      node_test = make_unique<NodeTestNode>();
     } else if (token.is(XPathTokenType::DoubleSlash)) {
       axis = make_unique<AxisDescendantOrSelf>();
       node_test = make_unique<NodeTestNode>();
