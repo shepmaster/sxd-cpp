@@ -8,8 +8,10 @@ public:
   TextNode(Document *doc, const char *text);
   const std::string text() const;
   void output(Output &output) const;
-private:
 
+  std::ostream& to_stream(std::ostream& os) const;
+
+private:
   const std::string _text;
 };
 
