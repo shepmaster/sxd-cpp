@@ -17,5 +17,5 @@ void NodeTestElement::test(Node *node, Nodeset &result) const {
 
 std::ostream &
 NodeTestElement::to_stream(std::ostream &strm) const {
-  return strm << _name;
+  return strm << "element(" << _name << ")";
 }
