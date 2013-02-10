@@ -33,10 +33,10 @@ public:
   void append_child(Node *child);
   void remove_child(Node *child);
 
-  Node *first_child();
-  Node *parent();
-  Node *prev_sibling();
-  Node *next_sibling();
+  Node *first_child() const;
+  Node *parent() const;
+  Node *prev_sibling() const;
+  Node *next_sibling() const;
   void insert_next_sibling(Node *new_sibling);
 
   Document *document();

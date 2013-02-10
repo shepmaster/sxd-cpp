@@ -114,25 +114,25 @@ Node::remove_child(Node *child)
 }
 
 Node *
-Node::first_child()
+Node::first_child() const
 {
   return first_child_;
 }
 
 Node *
-Node::parent()
+Node::parent() const
 {
   return parent_;
 }
 
 Node *
-Node::prev_sibling()
+Node::prev_sibling() const
 {
   return prev_sibling_;
 }
 
 Node *
-Node::next_sibling()
+Node::next_sibling() const
 {
   return next_sibling_;
 }
