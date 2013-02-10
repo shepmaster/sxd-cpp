@@ -20,7 +20,6 @@ set(
   sxd_source
   document.cpp
   element.cpp
-  intern.cpp
   nmtoken.cpp
   node.cpp
   text-node.cpp
@@ -56,7 +55,6 @@ target_link_libraries(test-utilities ${GLIB2_LIBRARIES} sxd)
 
 set(test_programs
   element
-  intern
   document
   nmtoken
   node
