@@ -6,6 +6,8 @@
 #include "gmock/gmock.h"
 #include <iostream>
 
+using testing::ElementsAre;
+
 struct StubTokens : public XPathTokenSource {
   bool next_token_is(XPathTokenType type) {
     return has_more_tokens() && tokens[index].is(type);
@@ -48,28 +50,15 @@ protected:
     top_node = doc.new_element("top-node");
     parser = make_unique<XPathParser>(tokens, std::ref(creator));
   }
+
+  Nodeset
+  apply_xpath_step(int index, Node *context_node)
+  {
+    Nodeset result;
+    creator.saved_parts[index]->select_nodes(context_node, result);
+    return result;
+  }
 };
-
-MATCHER_P2(Selects, start_node, expected_node, "") {
-  Nodeset result;
-  arg->select_nodes(start_node, result);
-
-  if (1 == result.count()) {
-    return expected_node == result[0];
-  }
-  return false;
-}
-
-MATCHER_P3(Selects, start_node, expected_node_1, expected_node_2, "") {
-  Nodeset result;
-  arg->select_nodes(start_node, result);
-
-  if (2 == result.count()) {
-    return expected_node_1 == result[0] &&
-      expected_node_2 == result[1];
-  }
-  return false;
-}
 
 Node *
 add_child(Node *top_node, std::string name) {
@@ -96,7 +85,7 @@ TEST_F(XPathParserTest, parses_string_as_child)
   ASSERT_EQ(1, creator.saved_parts.size());
 
   auto hello = add_child(top_node, "hello");
-  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, hello));
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(hello));
 }
 
 TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
@@ -110,8 +99,8 @@ TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
 
   auto hello = add_child(top_node, "hello");
   auto world = add_child(top_node, "world");
-  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, hello));
-  ASSERT_THAT(creator.saved_parts[1], Selects(top_node, world));
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(hello));
+  ASSERT_THAT(apply_xpath_step(1, top_node), ElementsAre(world));
 }
 
 TEST_F(XPathParserTest, parses_self_axis)
@@ -123,7 +112,7 @@ TEST_F(XPathParserTest, parses_self_axis)
   parser->parse();
 
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, top_node));
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(top_node));
 }
 
 TEST_F(XPathParserTest, parses_parent_axis)
@@ -136,7 +125,7 @@ TEST_F(XPathParserTest, parses_parent_axis)
 
   auto hello = add_child(top_node, "hello");
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(hello, top_node));
+  ASSERT_THAT(apply_xpath_step(0, hello), ElementsAre(top_node));
 }
 
 TEST_F(XPathParserTest, parses_descendant_axis)
@@ -151,7 +140,7 @@ TEST_F(XPathParserTest, parses_descendant_axis)
   auto two = add_child(one, "two");
 
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, two));
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(two));
 }
 
 TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
@@ -162,7 +151,7 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 
   auto self = add_child(top_node, "self");
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(top_node, self));
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(self));
 }
 
 TEST_F(XPathParserTest, parses_double_slash)
@@ -176,7 +165,7 @@ TEST_F(XPathParserTest, parses_double_slash)
   auto two = add_child(one, "two");
 
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(one, one, two));
+  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(one, two));
 }
 
 TEST_F(XPathParserTest, parses_text_node_test)
@@ -191,7 +180,7 @@ TEST_F(XPathParserTest, parses_text_node_test)
   auto text = add_text_node(one, "text");
 
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(one, text));
+  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(text));
 }
 
 TEST_F(XPathParserTest, parses_axis_and_node_test)
@@ -208,7 +197,7 @@ TEST_F(XPathParserTest, parses_axis_and_node_test)
   auto text = add_text_node(one, "text");
 
   ASSERT_EQ(1, creator.saved_parts.size());
-  ASSERT_THAT(creator.saved_parts[0], Selects(text, text));
+  ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
 }
 
 int main(int argc, char **argv) {
