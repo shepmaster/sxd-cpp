@@ -9,10 +9,10 @@ TextNode::TextNode(Document *doc, const char *text) :
 {
 }
 
-const char *
-TextNode::text()
+const std::string
+TextNode::text() const
 {
-  return _text.c_str();
+  return _text;
 }
 
 void

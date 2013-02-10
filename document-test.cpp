@@ -87,11 +87,11 @@ _check_parse_error(GError *error, const char *file, int line)
   ASSERT_STREQ(_name, ((Element *)_node)->name());         \
 }
 
-#define CHECK_TEXT_NODE(_node, _content)                        \
-{                                                               \
-  ASSERT_EQ(NODE_TYPE_TEXT_NODE, _node->type());           \
-  ASSERT_STREQ(_content, ((TextNode *)_node)->text());    \
-}
+#define CHECK_TEXT_NODE(_node, _content)                                \
+  {                                                                     \
+    ASSERT_EQ(NODE_TYPE_TEXT_NODE, _node->type());                      \
+    ASSERT_EQ(_content, dynamic_cast<TextNode *>(_node)->text());       \
+  }
 
 class DocumentParseTest : public ::testing::Test {
 protected:

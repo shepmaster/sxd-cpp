@@ -17,7 +17,7 @@ TEST_F(TextNodeTest, new_text_node)
 
   tn = doc.new_text_node("I am text");
 
-  ASSERT_STREQ("I am text", tn->text());
+  ASSERT_EQ("I am text", tn->text());
 
   delete tn;
 }
