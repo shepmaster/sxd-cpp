@@ -4,7 +4,7 @@
 #include "nodeset.h"
 
 void
-Node::foreach_child(foreach_fn_t fn)
+Node::foreach_child(foreach_fn_t fn) const
 {
   Node *child = first_child_;
   while (child) {
@@ -15,7 +15,7 @@ Node::foreach_child(foreach_fn_t fn)
 }
 
 void
-Node::foreach_preceding_sibling(foreach_fn_t fn)
+Node::foreach_preceding_sibling(foreach_fn_t fn) const
 {
   Node *sibling = prev_sibling_;
   while (sibling) {
@@ -26,7 +26,7 @@ Node::foreach_preceding_sibling(foreach_fn_t fn)
 }
 
 void
-Node::foreach_following_sibling(foreach_fn_t fn)
+Node::foreach_following_sibling(foreach_fn_t fn) const
 {
   Node *sibling = next_sibling_;
   while (sibling) {
@@ -37,7 +37,7 @@ Node::foreach_following_sibling(foreach_fn_t fn)
 }
 
 void
-Node::foreach_ancestor(foreach_fn_t fn)
+Node::foreach_ancestor(foreach_fn_t fn) const
 {
   Node *parent;
   for (parent = parent_; parent; parent = parent->parent_) {

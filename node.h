@@ -41,10 +41,10 @@ public:
 
   Document *document();
 
-  void foreach_child(foreach_fn_t fn);
-  void foreach_preceding_sibling(foreach_fn_t fn);
-  void foreach_following_sibling(foreach_fn_t fn);
-  void foreach_ancestor(foreach_fn_t fn);
+  void foreach_child(foreach_fn_t fn) const;
+  void foreach_preceding_sibling(foreach_fn_t fn) const;
+  void foreach_following_sibling(foreach_fn_t fn) const;
+  void foreach_ancestor(foreach_fn_t fn) const;
 
   node_type_t type();
 
