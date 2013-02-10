@@ -148,6 +148,21 @@ TEST_F(XPathParserTest, parses_descendant_axis)
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(two));
 }
 
+TEST_F(XPathParserTest, parses_descendant_or_self_axis)
+{
+  tokens.push_back(XPathToken("descendant-or-self"));
+  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
+  tokens.push_back(XPathToken("*"));
+
+  parser->parse();
+
+  auto one = add_child(top_node, "one");
+  add_child(one, "two");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(2, apply_xpath_step(0, one).size());
+}
+
 TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 {
   tokens.push_back(XPathToken("self"));
