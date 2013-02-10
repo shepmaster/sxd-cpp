@@ -1,23 +1,4 @@
-#include <iostream>
-#include <glib.h>
-
-#include "document.h"
-#include "node.h"
-#include "element.h"
-#include "text-node.h"
 #include "test-utilities.h"
-
-Node *
-test_helper_new_node(Document &doc, const char * const name)
-{
-  return doc.new_element(name);
-}
-
-Node *
-test_helper_new_text_node(Document *doc, const char * const text)
-{
-  return doc->new_text_node(text);
-}
 
 StringOutput::StringOutput() :
   string_(g_string_new(NULL))
@@ -42,24 +23,4 @@ const char *
 StringOutput::string()
 {
   return string_->str;
-}
-
-
-Nodeset *
-nodeset_new_with_nodes(Node *first, ...)
-{
-  Nodeset *ns;
-  Node *node;
-  va_list ap;
-
-  ns = new Nodeset();
-  ns->add(first);
-
-  va_start(ap, first);
-  while ((node = va_arg(ap, Node *))) {
-    ns->add(node);
-  }
-  va_end(ap);
-
-  return ns;
 }
