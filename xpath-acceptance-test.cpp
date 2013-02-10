@@ -32,7 +32,7 @@ protected:
   }
 };
 
-TEST_F(XPathAcceptanceTest, can_select_child_element)
+TEST_F(XPathAcceptanceTest, name_selects_child_element)
 {
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
@@ -43,7 +43,7 @@ TEST_F(XPathAcceptanceTest, can_select_child_element)
   ASSERT_THAT(selected_nodes, ElementsAre(two));
 }
 
-TEST_F(XPathAcceptanceTest, can_select_child_wildcard_elements)
+TEST_F(XPathAcceptanceTest, asterisk_selects_all_children_elements)
 {
   Node *top = doc.new_element("top");
   Node *child1 = add_child(top, "child1");
@@ -55,7 +55,7 @@ TEST_F(XPathAcceptanceTest, can_select_child_wildcard_elements)
   ASSERT_THAT(selected_nodes, ElementsAre(child1, child2));
 }
 
-TEST_F(XPathAcceptanceTest, can_select_grandchild_element)
+TEST_F(XPathAcceptanceTest, slash_selects_grandchild_element)
 {
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
@@ -67,7 +67,7 @@ TEST_F(XPathAcceptanceTest, can_select_grandchild_element)
   ASSERT_THAT(selected_nodes, ElementsAre(three));
 }
 
-TEST_F(XPathAcceptanceTest, can_select_great_grandchild_element)
+TEST_F(XPathAcceptanceTest, multiple_slashes_select_great_grandchild_element)
 {
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
@@ -82,7 +82,7 @@ TEST_F(XPathAcceptanceTest, can_select_great_grandchild_element)
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_self_using_abbreviated_step)
+TEST_F(XPathAcceptanceTest, dot_abbreviation_selects_self)
 {
   Node *one = doc.new_element("one");
 
@@ -94,7 +94,7 @@ TEST_F(XPathAcceptanceTest, can_select_self_using_abbreviated_step)
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_self_using_axis)
+TEST_F(XPathAcceptanceTest, self_axis_selects_self)
 {
   Node *one = doc.new_element("one");
 
@@ -106,7 +106,7 @@ TEST_F(XPathAcceptanceTest, can_select_self_using_axis)
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_has_no_results)
+TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_selects_nothing)
 {
   Node *one = doc.new_element("one");
 
@@ -118,7 +118,7 @@ TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_has_no_resul
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_parent_using_abbreviated_step)
+TEST_F(XPathAcceptanceTest, double_dot_abbreviation_selects_parent)
 {
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
@@ -131,7 +131,7 @@ TEST_F(XPathAcceptanceTest, can_select_parent_using_abbreviated_step)
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_parent_using_axis)
+TEST_F(XPathAcceptanceTest, parent_axis_selects_parent)
 {
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
@@ -144,7 +144,7 @@ TEST_F(XPathAcceptanceTest, can_select_parent_using_axis)
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_grandparent)
+TEST_F(XPathAcceptanceTest, two_double_dots_selects_grandparent)
 {
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
@@ -158,7 +158,7 @@ TEST_F(XPathAcceptanceTest, can_select_grandparent)
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_node_with_same_name_as_axis)
+TEST_F(XPathAcceptanceTest, selector_with_same_name_as_an_axis_selects_element)
 {
   Node *one = doc.new_element("one");
   Node *self = add_child(one, "self");
@@ -171,7 +171,7 @@ TEST_F(XPathAcceptanceTest, can_select_node_with_same_name_as_axis)
   delete one;
 }
 
-TEST_F(XPathAcceptanceTest, descendant_selects_all_children)
+TEST_F(XPathAcceptanceTest, descendant_axis_selects_all_children)
 {
   Node *parent = doc.new_element("parent");
   Node *child = add_child(parent, "child");
@@ -185,7 +185,7 @@ TEST_F(XPathAcceptanceTest, descendant_selects_all_children)
   delete parent;
 }
 
-TEST_F(XPathAcceptanceTest, double_slash_selects_self_and_all_children)
+TEST_F(XPathAcceptanceTest, double_slash_abbreviation_selects_self_and_all_children)
 {
   Node *parent = doc.new_element("yup");
   Node *child = add_child(parent, "nope");
@@ -199,7 +199,7 @@ TEST_F(XPathAcceptanceTest, double_slash_selects_self_and_all_children)
   delete parent;
 }
 
-TEST_F(XPathAcceptanceTest, can_select_text_nodes)
+TEST_F(XPathAcceptanceTest, text_node_node_test_selects_text_nodes)
 {
   Node *parent = doc.new_element("element");
   Node *text = add_text_node(parent, "some text");
