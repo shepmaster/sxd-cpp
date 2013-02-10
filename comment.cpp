@@ -2,20 +2,16 @@
 
 #include "comment.h"
 
-Comment::Comment(Document *doc, const char * const text) :
+Comment::Comment(Document *doc, const std::string text) :
   Node(doc, NODE_TYPE_COMMENT),
-  text_(text)
+  _text(text)
 {
 }
 
-Comment::~Comment()
+const std::string
+Comment::text() const
 {
-}
-
-const char *
-Comment::text()
-{
-  return text_.c_str();
+  return _text;
 }
 
 void

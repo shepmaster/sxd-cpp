@@ -17,7 +17,7 @@ TEST_F(CommentTest, new_comment)
   c = doc.new_comment("hello");
 
   ASSERT_TRUE(c != NULL);
-  ASSERT_STREQ("hello", c->text());
+  ASSERT_EQ("hello", c->text());
   ASSERT_EQ(NODE_TYPE_COMMENT, c->type());
 
   delete c;

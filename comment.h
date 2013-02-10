@@ -6,13 +6,12 @@
 
 class Comment : public Node {
 public:
-  Comment(Document *doc, const char * const text);
-  ~Comment();
+  Comment(Document *doc, const std::string text);
 
-  const char *text();
+  const std::string text() const;
   void output(Output &output) const;
 private:
-  std::string text_;
+  std::string _text;
 };
 
 #endif
