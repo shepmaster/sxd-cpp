@@ -3,7 +3,7 @@
 #include "text-node.h"
 #include "document.h"
 
-TextNode::TextNode(Document *doc, const char *text) :
+TextNode::TextNode(Document *doc, const std::string text) :
   Node(doc, NODE_TYPE_TEXT_NODE),
   _text(text)
 {

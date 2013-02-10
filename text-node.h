@@ -5,7 +5,7 @@
 
 class TextNode : public Node {
 public:
-  TextNode(Document *doc, const char *text);
+  TextNode(Document *doc, const std::string text);
   const std::string text() const;
   void output(Output &output) const;
 
