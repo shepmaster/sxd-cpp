@@ -8,6 +8,7 @@ enum class XPathTokenType {
   String,
   LeftParen,
   RightParen,
+  AtSign,
   DoubleColon,
   DoubleSlash
 };

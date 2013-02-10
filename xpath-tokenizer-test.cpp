@@ -140,6 +140,16 @@ TEST_F(XPathTokenizerTest, tokenizes_right_paren)
   ASSERT_THAT(tokenizer, IsFinished());
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_at_sign)
+{
+  XPathTokenizer tokenizer("@");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::AtSign));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
 int
 main(int argc, char **argv)
 {
