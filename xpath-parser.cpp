@@ -34,7 +34,7 @@ looks_like_node_test(XPathTokenSource &_source) {
 }
 
 std::unique_ptr<XPathAxis>
-parse_axis(XPathTokenSource &source, XPathToken token) {
+parse_axis(XPathCreator &creator, XPathTokenSource &source, XPathToken token) {
   auto name = token.string();
   std::unique_ptr<XPathAxis> axis;
 
@@ -48,6 +48,9 @@ parse_axis(XPathTokenSource &source, XPathToken token) {
     axis = make_unique<AxisDescendantOrSelf>();
   } else if (name == "attribute") {
     axis = make_unique<AxisAttribute>();
+  } else {
+    creator.invalid_axis(name);
+    return nullptr;
   }
 
   consume(source, XPathTokenType::DoubleColon);
@@ -100,7 +103,7 @@ XPathParser::parse() {
       node_test = make_unique<NodeTestNode>();
     } else {
       if (looks_like_axis(_source)) {
-        axis = parse_axis(_source, token);
+        axis = parse_axis(_creator, _source, token);
         token = _source.next_token();
         name = token.string();
       } else if (token.is(XPathTokenType::AtSign)) {
@@ -109,6 +112,10 @@ XPathParser::parse() {
         name = token.string();
       } else {
         axis = make_unique<AxisChild>();
+      }
+
+      if (! axis) {
+        return;
       }
 
       if (looks_like_node_test(_source)) {

@@ -230,6 +230,11 @@ TEST_F(XPathAcceptanceTest, at_sign_abbreviation_selects_attributes)
   delete element;
 }
 
+TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)
+{
+  ASSERT_THROW(compile("bogus::*"), InvalidXPathAxisException);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

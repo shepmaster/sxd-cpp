@@ -9,4 +9,11 @@ public:
   XPath compile(std::string xpath);
 };
 
+struct InvalidXPathAxisException : virtual std::runtime_error
+{
+  InvalidXPathAxisException(std::string axis) :
+    std::runtime_error(axis)
+  {};
+};
+
 #endif

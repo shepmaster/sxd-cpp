@@ -10,6 +10,10 @@ public:
     steps.push_back(std::move(step));
   }
 
+  void invalid_axis(std::string axis_name) {
+    throw InvalidXPathAxisException(axis_name);
+  }
+
   XPath finalize() {
     return XPath(std::move(steps));
   }

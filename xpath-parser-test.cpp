@@ -34,7 +34,12 @@ struct XPathSaver : public XPathCreator {
     saved_parts.push_back(std::move(step));
   };
 
+  void invalid_axis(std::string axis) {
+    last_error = axis;
+  }
+
   std::vector<std::unique_ptr<XPathStep>> saved_parts;
+  std::string last_error;
 };
 
 class XPathParserTest : public ::testing::Test {
@@ -75,6 +80,10 @@ protected:
 
   int number_of_steps() {
     return creator.saved_parts.size();
+  }
+
+  std::string last_error_message() {
+    return creator.last_error;
   }
 };
 
@@ -286,6 +295,18 @@ TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
 
   ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, element), ElementsAre(attr));
+}
+
+TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
+{
+  tokens.push_back(XPathToken("bad-axis"));
+  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
+  tokens.push_back(XPathToken("*"));
+
+  parser->parse();
+
+  ASSERT_EQ(0, number_of_steps());
+  ASSERT_EQ("bad-axis", last_error_message());
 }
 
 int main(int argc, char **argv) {
