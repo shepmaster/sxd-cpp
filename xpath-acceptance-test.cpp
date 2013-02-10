@@ -2,7 +2,6 @@
 
 #include "xpath-factory.h"
 #include "document.h"
-#include "xpath-axis-test-data.h"
 
 #include "gmock/gmock.h"
 #include <iostream>
@@ -35,32 +34,37 @@ protected:
 
 TEST_F(XPathAcceptanceTest, can_select_child_element)
 {
-  XPathAxisTestData d;
+  Node *one = doc.new_element("one");
+  Node *two = add_child(one, "two");
 
   XPath xpath = compile("two");
-  Nodeset selected_nodes = d.alpha->select_nodes(xpath);
+  Nodeset selected_nodes = one->select_nodes(xpath);
 
-  ASSERT_THAT(selected_nodes, ElementsAre(d.two));
+  ASSERT_THAT(selected_nodes, ElementsAre(two));
 }
 
 TEST_F(XPathAcceptanceTest, can_select_child_wildcard_elements)
 {
-  XPathAxisTestData d;
+  Node *top = doc.new_element("top");
+  Node *child1 = add_child(top, "child1");
+  Node *child2 = add_child(top, "child2");
 
   XPath xpath = compile("*");
-  Nodeset selected_nodes = d.alpha->select_nodes(xpath);
+  Nodeset selected_nodes = top->select_nodes(xpath);
 
-  ASSERT_THAT(selected_nodes, ElementsAre(d.one, d.two));
+  ASSERT_THAT(selected_nodes, ElementsAre(child1, child2));
 }
 
 TEST_F(XPathAcceptanceTest, can_select_grandchild_element)
 {
-  XPathAxisTestData d;
+  Node *one = doc.new_element("one");
+  Node *two = add_child(one, "two");
+  Node *three = add_child(two, "three");
 
-  XPath xpath = compile("one/c");
-  Nodeset selected_nodes = d.alpha->select_nodes(xpath);
+  XPath xpath = compile("two/three");
+  Nodeset selected_nodes = one->select_nodes(xpath);
 
-  ASSERT_THAT(selected_nodes, ElementsAre(d.c));
+  ASSERT_THAT(selected_nodes, ElementsAre(three));
 }
 
 TEST_F(XPathAcceptanceTest, can_select_great_grandchild_element)
