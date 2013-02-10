@@ -69,6 +69,11 @@ add_child(Node *top_node, std::string name) {
 }
 
 Node *
+add_attribute(Node *element, std::string name, std::string value) {
+  return dynamic_cast<Element *>(element)->set_attribute(name, value);
+}
+
+Node *
 add_text_node(Node *parent, std::string value) {
   Document *doc = parent->document();
   Node *n = doc->new_text_node(value.c_str());
@@ -225,6 +230,20 @@ TEST_F(XPathParserTest, parses_axis_and_node_test)
 
   ASSERT_EQ(1, creator.saved_parts.size());
   ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
+}
+
+TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
+{
+  tokens.push_back(XPathToken(XPathTokenType::AtSign));
+  tokens.push_back(XPathToken("name"));
+
+  parser->parse();
+
+  auto element = add_child(top_node, "element");
+  auto attr = add_attribute(element, "name", "value");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(apply_xpath_step(0, element), ElementsAre(attr));
 }
 
 int main(int argc, char **argv) {

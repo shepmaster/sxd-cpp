@@ -38,9 +38,11 @@ set(
   axis-self.cpp
   axis-descendant.cpp
   axis-descendant-or-self.cpp
+  axis-attribute.cpp
   xpath-parser.cpp
   node-test-node.cpp
   node-test-element.cpp
+  node-test-attribute.cpp
   node-test-text.cpp
   xpath-step.cpp
 )

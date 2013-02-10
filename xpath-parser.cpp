@@ -5,8 +5,10 @@
 #include "axis-parent.h"
 #include "axis-descendant.h"
 #include "axis-descendant-or-self.h"
+#include "axis-attribute.h"
 #include "node-test-node.h"
 #include "node-test-element.h"
+#include "node-test-attribute.h"
 #include "node-test-text.h"
 #include "make-unique.h"
 
@@ -63,6 +65,16 @@ parse_node_test(XPathTokenSource &source, XPathToken token) {
   return node_test;
 }
 
+std::unique_ptr<XPathNodeTest>
+default_node_test(XPathAxis &axis, XPathToken token) {
+  switch (axis.principal_node_type()) {
+  case PrincipalNodeType::Attribute:
+    return make_unique<NodeTestAttribute>(token.string());
+  case PrincipalNodeType::Element:
+    return make_unique<NodeTestElement>(token.string());
+  }
+}
+
 void
 XPathParser::parse() {
   std::vector<std::unique_ptr<XPathStep>> steps;
@@ -87,6 +99,10 @@ XPathParser::parse() {
         axis = parse_axis(_source, token);
         token = _source.next_token();
         name = token.string();
+      } else if (token.is(XPathTokenType::AtSign)) {
+        axis = make_unique<AxisAttribute>();
+        token = _source.next_token();
+        name = token.string();
       } else {
         axis = make_unique<AxisChild>();
       }
@@ -94,7 +110,7 @@ XPathParser::parse() {
       if (looks_like_node_test(_source)) {
         node_test = parse_node_test(_source, token);
       } else {
-        node_test = make_unique<NodeTestElement>(name);
+        node_test = default_node_test(*axis, token);
       }
     }
 

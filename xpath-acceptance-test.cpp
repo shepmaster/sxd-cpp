@@ -30,6 +30,11 @@ protected:
     parent->append_child(n);
     return n;
   }
+
+  Node *
+  set_attribute(Node *parent, std::string name, std::string value) {
+    return dynamic_cast<Element *>(parent)->set_attribute(name, value);
+  }
 };
 
 TEST_F(XPathAcceptanceTest, name_selects_child_element)
@@ -210,6 +215,19 @@ TEST_F(XPathAcceptanceTest, text_node_node_test_selects_text_nodes)
   ASSERT_THAT(selected_nodes, ElementsAre(text));
 
   delete parent;
+}
+
+TEST_F(XPathAcceptanceTest, at_sign_abbreviation_selects_attributes)
+{
+  Node *element = doc.new_element("element");
+  Node *attribute = set_attribute(element, "name", "value");
+
+  XPath xpath = compile("@name");
+  Nodeset selected_nodes = element->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(attribute));
+
+  delete element;
 }
 
 int main(int argc, char **argv) {
