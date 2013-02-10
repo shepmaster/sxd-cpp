@@ -20,6 +20,7 @@ set(
   sxd_source
   document.cpp
   element.cpp
+  attribute.cpp
   nmtoken.cpp
   node.cpp
   text-node.cpp

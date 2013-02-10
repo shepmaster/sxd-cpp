@@ -14,6 +14,7 @@ public:
   Document();
 
   Element *new_element(const char * const name);
+  Attribute *new_attribute(const std::string name, const std::string value);
   TextNode *new_text_node(const char * const text);
   Comment *new_comment(const char * const text);
 

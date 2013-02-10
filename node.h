@@ -11,6 +11,7 @@ class Node;
 
 typedef enum {
   NODE_TYPE_ELEMENT,
+  NODE_TYPE_ATTRIBUTE,
   NODE_TYPE_TEXT_NODE,
   NODE_TYPE_COMMENT
 } node_type_t;

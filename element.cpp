@@ -13,8 +13,9 @@ void
 Element::output(Output &output) const
 {
   output.output("<%s", _name.c_str());
-  for (auto attr : _attributes) {
-    output.output(" %s=\"%s\"", attr.first.c_str(), attr.second.c_str());
+  for (auto pair : _attributes) {
+    auto attr = pair.second;
+    output.output(" %s=\"%s\"", attr->name().c_str(), attr->value().c_str());
   }
   if (first_child()) {
     output.output(">");
@@ -25,22 +26,24 @@ Element::output(Output &output) const
   }
 }
 
-void
+Attribute *
 Element::set_attribute(const std::string name, const std::string value)
 {
-  _attributes[name] = value;
+  auto attr = document()->new_attribute(name, value);
+  _attributes[name] = attr;
+  return attr;
 }
 
 const std::string
 Element::get_attribute(const std::string name)
 {
-  return _attributes[name].c_str();
+  return _attributes[name]->value();
 }
 
 const std::string
 Element::name() const
 {
-  return this->_name.c_str();
+  return this->_name;
 }
 
 std::ostream &

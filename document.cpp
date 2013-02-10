@@ -17,6 +17,12 @@ Document::new_element(const char * const name)
   return e;
 }
 
+Attribute *
+Document::new_attribute(const std::string name, const std::string value)
+{
+  return new Attribute(this, name, value);
+}
+
 TextNode *
 Document::new_text_node(const char * const text)
 {
