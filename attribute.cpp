@@ -21,7 +21,7 @@ Attribute::value() const
 void
 Attribute::output(Output &output) const
 {
-
+  output.output(" %s=\"%s\"", _name.c_str(), _value.c_str());
 }
 
 std::ostream&

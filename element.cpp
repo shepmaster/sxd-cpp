@@ -15,7 +15,7 @@ Element::output(Output &output) const
   output.output("<%s", _name.c_str());
   for (auto pair : _attributes) {
     auto attr = pair.second;
-    output.output(" %s=\"%s\"", attr->name().c_str(), attr->value().c_str());
+    attr->output(output);
   }
   if (first_child()) {
     output.output(">");
