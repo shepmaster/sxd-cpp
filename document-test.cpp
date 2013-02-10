@@ -43,8 +43,8 @@ TEST_F(DocumentTest, move_node_between_documents)
   d2.manage_node(n);
   ASSERT_EQ(0, d1.managed_node_count());
   ASSERT_EQ(1, d2.managed_node_count());
-  ASSERT_STREQ(n->name(), "hello");
-  ASSERT_STREQ(n->get_attribute("enabled"), "false");
+  ASSERT_EQ(n->name(), "hello");
+  ASSERT_EQ(n->get_attribute("enabled"), "false");
 
   delete n;
 }
@@ -82,10 +82,10 @@ _check_parse_error(GError *error, const char *file, int line)
   _check_parse_error(error, __FILE__, __LINE__)
 
 #define CHECK_ELEMENT_NAME(_node, _name)                        \
-{                                                               \
-  ASSERT_EQ(NODE_TYPE_ELEMENT, _node->type());             \
-  ASSERT_STREQ(_name, ((Element *)_node)->name());         \
-}
+  {                                                             \
+    ASSERT_EQ(NODE_TYPE_ELEMENT, _node->type());                \
+    ASSERT_EQ(_name, dynamic_cast<Element *>(_node)->name());   \
+  }
 
 #define CHECK_TEXT_NODE(_node, _content)                                \
   {                                                                     \
@@ -114,7 +114,7 @@ TEST_F(DocumentParseTest, empty)
   doc = Document::parse("<hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
 }
 
 TEST_F(DocumentParseTest, empty_with_space)
@@ -122,7 +122,7 @@ TEST_F(DocumentParseTest, empty_with_space)
   doc = Document::parse("<hello />", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
 }
 
 TEST_F(DocumentParseTest, empty_with_end_tag)
@@ -130,7 +130,7 @@ TEST_F(DocumentParseTest, empty_with_end_tag)
   doc = Document::parse("<hello></hello>", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
 }
 
 TEST_F(DocumentParseTest, preamble)
@@ -138,7 +138,7 @@ TEST_F(DocumentParseTest, preamble)
   doc = Document::parse("<?xml?><hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
 }
 
 TEST_F(DocumentParseTest, preamble_with_space)
@@ -146,7 +146,7 @@ TEST_F(DocumentParseTest, preamble_with_space)
   doc = Document::parse("<?xml?>\n<hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
 }
 
 TEST_F(DocumentParseTest, preamble_with_version)
@@ -154,7 +154,7 @@ TEST_F(DocumentParseTest, preamble_with_version)
   doc = Document::parse("<?xml version='1.0' ?><hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
 }
 
 TEST_F(DocumentParseTest, empty_with_leading_whitespace)
@@ -162,7 +162,7 @@ TEST_F(DocumentParseTest, empty_with_leading_whitespace)
   doc = Document::parse("\n\r \t<hello/>", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
 }
 
 TEST_F(DocumentParseTest, element_with_attribute)
@@ -170,8 +170,8 @@ TEST_F(DocumentParseTest, element_with_attribute)
   doc = Document::parse("<hello one='two' />", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
-  ASSERT_STREQ("two", root->get_attribute("one"));
+  ASSERT_EQ("hello", root->name());
+  ASSERT_EQ("two", root->get_attribute("one"));
 }
 
 TEST_F(DocumentParseTest, element_with_attributes)
@@ -179,9 +179,9 @@ TEST_F(DocumentParseTest, element_with_attributes)
   doc = Document::parse("<hello one='two' three='four' />", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
-  ASSERT_STREQ("two", root->get_attribute("one"));
-  ASSERT_STREQ("four", root->get_attribute("three"));
+  ASSERT_EQ("hello", root->name());
+  ASSERT_EQ("two", root->get_attribute("one"));
+  ASSERT_EQ("four", root->get_attribute("three"));
 }
 
 TEST_F(DocumentParseTest, element_with_attribute_with_nonalpha)
@@ -189,8 +189,8 @@ TEST_F(DocumentParseTest, element_with_attribute_with_nonalpha)
   doc = Document::parse("<hello one=\"check one, 2\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("hello", root->name());
-  ASSERT_STREQ("check one, 2", root->get_attribute("one"));
+  ASSERT_EQ("hello", root->name());
+  ASSERT_EQ("check one, 2", root->get_attribute("one"));
 }
 
 TEST_F(DocumentParseTest, element_with_attribute_with_entity)
@@ -198,7 +198,7 @@ TEST_F(DocumentParseTest, element_with_attribute_with_entity)
   doc = Document::parse("<hello one=\"&lt;\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("<", root->get_attribute("one"));
+  ASSERT_EQ("<", root->get_attribute("one"));
 }
 
 TEST_F(DocumentParseTest, element_with_attribute_with_char_ref)
@@ -206,7 +206,7 @@ TEST_F(DocumentParseTest, element_with_attribute_with_char_ref)
   doc = Document::parse("<hello one=\"&#114;\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("r", root->get_attribute("one"));
+  ASSERT_EQ("r", root->get_attribute("one"));
 }
 
 TEST_F(DocumentParseTest, element_with_attribute_with_char_ref_hex)
@@ -214,7 +214,7 @@ TEST_F(DocumentParseTest, element_with_attribute_with_char_ref_hex)
   doc = Document::parse("<hello one=\"&#x63;\" />", &error);
   CHECK_PARSE_ERROR(error);
   root = doc->root();
-  ASSERT_STREQ("c", root->get_attribute("one"));
+  ASSERT_EQ("c", root->get_attribute("one"));
 }
 
 TEST_F(DocumentParseTest, element_with_child)
@@ -224,7 +224,7 @@ TEST_F(DocumentParseTest, element_with_child)
   CHECK_PARSE_ERROR(error);
   root = doc->root();
   node = root->first_child();
-  ASSERT_STREQ("hello", root->name());
+  ASSERT_EQ("hello", root->name());
   CHECK_ELEMENT_NAME(node, "world");
 }
 

@@ -6,12 +6,12 @@
 
 class Element : public Node {
 public:
-  Element(Document *doc, const char * const name);
+  Element(Document *doc, const std::string name);
 
-  const char *name() const;
+  const std::string name() const;
   void output(Output &output) const;
-  void set_attribute(const char * const name, const char * const value);
-  const char *get_attribute(const char * const name);
+  void set_attribute(const std::string name, const std::string value);
+  const std::string get_attribute(const std::string name);
 
   std::ostream& to_stream(std::ostream& os) const;
 

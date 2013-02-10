@@ -18,7 +18,7 @@ TEST_F(ElementTest, new_element)
 
   element = doc.new_element(name);
   ASSERT_TRUE(element != NULL);
-  ASSERT_STREQ(element->name(), name);
+  ASSERT_EQ(element->name(), name);
   delete element;
 }
 
@@ -31,7 +31,7 @@ TEST_F(ElementTest, mutated_name)
   element = doc.new_element(name);
 
   name[0] = 'y';
-  ASSERT_STREQ(element->name(), "hello");
+  ASSERT_EQ(element->name(), "hello");
 
   delete element;
   free(name);
@@ -47,7 +47,7 @@ TEST_F(ElementTest, set_attribute)
   element = doc.new_element(element_name);
 
   element->set_attribute(attr_name, attr_value);
-  ASSERT_STREQ(element->get_attribute(attr_name), attr_value);
+  ASSERT_EQ(element->get_attribute(attr_name), attr_value);
 
   delete element;
 }
@@ -67,7 +67,7 @@ TEST_F(ElementTest, mutated_attribute)
 
   attr_name[0] = 'h';
   attr_value[0] = 'y';
-  ASSERT_STREQ(element->get_attribute("type"), "world");
+  ASSERT_EQ(element->get_attribute("type"), "world");
 
   delete element;
   free(attr_name);

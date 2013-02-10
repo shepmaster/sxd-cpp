@@ -3,7 +3,7 @@
 
 #include "document.h"
 
-Element::Element(Document *doc, const char * const name) :
+Element::Element(Document *doc, const std::string name) :
   Node(doc, NODE_TYPE_ELEMENT),
   _name(name)
 {
@@ -26,18 +26,18 @@ Element::output(Output &output) const
 }
 
 void
-Element::set_attribute(const char * const name, const char * const value)
+Element::set_attribute(const std::string name, const std::string value)
 {
   _attributes[name] = value;
 }
 
-const char *
-Element::get_attribute(const char * const name)
+const std::string
+Element::get_attribute(const std::string name)
 {
   return _attributes[name].c_str();
 }
 
-const char *
+const std::string
 Element::name() const
 {
   return this->_name.c_str();
