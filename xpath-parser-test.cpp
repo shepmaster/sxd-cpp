@@ -230,6 +230,21 @@ TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
   ASSERT_EQ(2, apply_xpath_step(0, one).size());
 }
 
+TEST_F(XPathParserTest, parses_node_node_test)
+{
+  tokens.push_back(XPathToken("node"));
+  tokens.push_back(XPathToken(XPathTokenType::LeftParen));
+  tokens.push_back(XPathToken(XPathTokenType::RightParen));
+
+  parser->parse();
+
+  auto one = add_child(top_node, "one");
+  auto two = add_child(one, "two");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(two));
+}
+
 TEST_F(XPathParserTest, parses_text_node_test)
 {
   tokens.push_back(XPathToken("text"));

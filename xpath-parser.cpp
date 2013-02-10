@@ -59,7 +59,9 @@ parse_node_test(XPathTokenSource &source, XPathToken token) {
   auto name = token.string();
   std::unique_ptr<XPathNodeTest> node_test;
 
-  if (name == "text") {
+  if (name == "node") {
+    node_test = make_unique<NodeTestNode>();
+  } else if (name == "text") {
     node_test = make_unique<NodeTestText>();
   }
 
