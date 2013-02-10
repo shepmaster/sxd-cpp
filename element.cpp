@@ -40,6 +40,14 @@ Element::get_attribute(const std::string name)
   return _attributes[name]->value();
 }
 
+void
+Element::foreach_attribute(foreach_fn_t fn) const
+{
+  for (auto pair : _attributes) {
+    fn(pair.second);
+  }
+}
+
 const std::string
 Element::name() const
 {

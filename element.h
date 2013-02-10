@@ -14,6 +14,8 @@ public:
   Attribute *set_attribute(const std::string name, const std::string value);
   const std::string get_attribute(const std::string name);
 
+  void foreach_attribute(foreach_fn_t fn) const;
+
   std::ostream& to_stream(std::ostream& os) const;
 
 private:

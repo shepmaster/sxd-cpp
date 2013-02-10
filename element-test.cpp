@@ -74,6 +74,19 @@ TEST_F(ElementTest, mutated_attribute)
   free(attr_value);
 }
 
+TEST_F(ElementTest, foreach_attribute_enumerates_the_attributes)
+{
+  auto element = doc.new_element("hello");
+  element->set_attribute("hello", "world");
+
+  int counter = 0;
+  auto counter_fn = [&](Node *attr) {
+    counter++;
+  };
+  element->foreach_attribute(counter_fn);
+  ASSERT_EQ(1, counter);
+}
+
 TEST_F(ElementTest, output_basic)
 {
   Element *element;
