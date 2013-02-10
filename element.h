@@ -18,7 +18,7 @@ public:
   std::ostream& to_stream(std::ostream& os) const;
 
 private:
-  const char * name_;
+  std::string _name;
   GHashTable *attributes;
 };
 

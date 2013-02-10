@@ -45,7 +45,7 @@ element_output_attribute(gpointer name_as_gp, gpointer value_as_gp, gpointer out
 
 Element::Element(Document *doc, const char * const name) :
   Node(doc, NODE_TYPE_ELEMENT),
-  name_(doc->intern(name)),
+  _name(name),
   attributes(element_attributes_new())
 {
 }
@@ -58,12 +58,12 @@ Element::~Element()
 void
 Element::output(Output &output)
 {
-  output.output("<%s", name_);
+  output.output("<%s", _name.c_str());
   g_hash_table_foreach(this->attributes, element_output_attribute, &output);
   if (first_child()) {
     output.output(">");
     output_children(output);
-    output.output("</%s>", name_);
+    output.output("</%s>", _name.c_str());
   } else {
     output.output(" />");
   }
@@ -86,7 +86,7 @@ Element::change_document(Document *doc)
 {
   Node::change_document(doc);
 
-  this->name_ = doc->intern(name_);
+  this->_name = _name;
 
   change_attributes_t ca;
   ca.new_attributes = element_attributes_new();
@@ -99,7 +99,7 @@ Element::change_document(Document *doc)
 const char *
 Element::name() const
 {
-  return this->name_;
+  return this->_name.c_str();
 }
 
 std::ostream &

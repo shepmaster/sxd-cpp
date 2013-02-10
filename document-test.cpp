@@ -33,11 +33,10 @@ TEST_F(DocumentTest, move_node_between_documents)
 {
   Document d1, d2;
   Element *n;
-  const char *orig_name, *orig_attr_value;
+  const char *orig_attr_value;
 
   n = d1.new_element("hello");
   n->set_attribute("enabled", "false");
-  orig_name = n->name();
   orig_attr_value = n->get_attribute("enabled");
 
   ASSERT_EQ(1, d1.managed_node_count());
@@ -48,7 +47,6 @@ TEST_F(DocumentTest, move_node_between_documents)
   ASSERT_EQ(1, d2.managed_node_count());
   ASSERT_STREQ(n->name(), "hello");
   ASSERT_STREQ(n->get_attribute("enabled"), "false");
-  ASSERT_NE(n->name(), orig_name);
   ASSERT_NE(n->get_attribute("enabled"), orig_attr_value);
 
   delete n;
