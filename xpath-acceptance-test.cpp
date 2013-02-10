@@ -1,7 +1,7 @@
 #include "nodeset.h"
 
-#include "xpath.h"
 #include "xpath-factory.h"
+#include "document.h"
 #include "xpath-axis-test-data.h"
 
 #include "gmock/gmock.h"
@@ -12,29 +12,32 @@ using testing::ElementsAre;
 class XPathAcceptanceTest : public ::testing::Test {
 protected:
   Document doc;
+
+  XPath
+  compile(std::string xpath) {
+    return XPathFactory().compile(xpath);
+  }
+
+  Node *
+  add_child(Node *top_node, std::string name) {
+    Node *n = doc.new_element(name.c_str());
+    top_node->append_child(n);
+    return n;
+  }
+
+  Node *
+  add_text_node(Node *parent, std::string text) {
+    Node *n = doc.new_text_node(text.c_str());
+    parent->append_child(n);
+    return n;
+  }
 };
-
-Node *
-add_child(Node *top_node, std::string name) {
-  Document *doc = top_node->document();
-  Node *n = doc->new_element(name.c_str());
-  top_node->append_child(n);
-  return n;
-}
-
-Node *
-add_text_node(Node *parent, std::string text) {
-  Document *doc = parent->document();
-  Node *n = doc->new_text_node(text.c_str());
-  parent->append_child(n);
-  return n;
-}
 
 TEST_F(XPathAcceptanceTest, can_select_child_element)
 {
   XPathAxisTestData d;
 
-  XPath xpath = XPathFactory().compile("two");
+  XPath xpath = compile("two");
   Nodeset selected_nodes = d.alpha->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(d.two));
@@ -44,7 +47,7 @@ TEST_F(XPathAcceptanceTest, can_select_child_wildcard_elements)
 {
   XPathAxisTestData d;
 
-  XPath xpath = XPathFactory().compile("*");
+  XPath xpath = compile("*");
   Nodeset selected_nodes = d.alpha->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(d.one, d.two));
@@ -54,7 +57,7 @@ TEST_F(XPathAcceptanceTest, can_select_grandchild_element)
 {
   XPathAxisTestData d;
 
-  XPath xpath = XPathFactory().compile("one/c");
+  XPath xpath = compile("one/c");
   Nodeset selected_nodes = d.alpha->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(d.c));
@@ -67,7 +70,7 @@ TEST_F(XPathAcceptanceTest, can_select_great_grandchild_element)
   Node *three = add_child(two, "three");
   Node *four = add_child(three, "four");
 
-  XPath xpath = XPathFactory().compile("two/three/four");
+  XPath xpath = compile("two/three/four");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(four));
@@ -79,7 +82,7 @@ TEST_F(XPathAcceptanceTest, can_select_self_using_abbreviated_step)
 {
   Node *one = doc.new_element("one");
 
-  XPath xpath = XPathFactory().compile(".");
+  XPath xpath = compile(".");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
@@ -91,7 +94,7 @@ TEST_F(XPathAcceptanceTest, can_select_self_using_axis)
 {
   Node *one = doc.new_element("one");
 
-  XPath xpath = XPathFactory().compile("self::one");
+  XPath xpath = compile("self::one");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
@@ -103,7 +106,7 @@ TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_has_no_resul
 {
   Node *one = doc.new_element("one");
 
-  XPath xpath = XPathFactory().compile("self::two");
+  XPath xpath = compile("self::two");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_TRUE(selected_nodes.empty());
@@ -116,7 +119,7 @@ TEST_F(XPathAcceptanceTest, can_select_parent_using_abbreviated_step)
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
 
-  XPath xpath = XPathFactory().compile("..");
+  XPath xpath = compile("..");
   Nodeset selected_nodes = two->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
@@ -129,7 +132,7 @@ TEST_F(XPathAcceptanceTest, can_select_parent_using_axis)
   Node *one = doc.new_element("one");
   Node *two = add_child(one, "two");
 
-  XPath xpath = XPathFactory().compile("parent::one");
+  XPath xpath = compile("parent::one");
   Nodeset selected_nodes = two->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
@@ -143,7 +146,7 @@ TEST_F(XPathAcceptanceTest, can_select_grandparent)
   Node *two = add_child(one, "two");
   Node *three = add_child(two, "three");
 
-  XPath xpath = XPathFactory().compile("../..");
+  XPath xpath = compile("../..");
   Nodeset selected_nodes = three->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
@@ -156,7 +159,7 @@ TEST_F(XPathAcceptanceTest, can_select_node_with_same_name_as_axis)
   Node *one = doc.new_element("one");
   Node *self = add_child(one, "self");
 
-  XPath xpath = XPathFactory().compile("self");
+  XPath xpath = compile("self");
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(self));
@@ -170,7 +173,7 @@ TEST_F(XPathAcceptanceTest, descendant_selects_all_children)
   Node *child = add_child(parent, "child");
   Node *grandchild = add_child(child, "grandchild");
 
-  XPath xpath = XPathFactory().compile("descendant::*");
+  XPath xpath = compile("descendant::*");
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(child, grandchild));
@@ -184,7 +187,7 @@ TEST_F(XPathAcceptanceTest, double_slash_selects_self_and_all_children)
   Node *child = add_child(parent, "nope");
   Node *grandchild = add_child(child, "yup");
 
-  XPath xpath = XPathFactory().compile(".//self::yup");
+  XPath xpath = compile(".//self::yup");
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(parent, grandchild));
@@ -197,7 +200,7 @@ TEST_F(XPathAcceptanceTest, can_select_text_nodes)
   Node *parent = doc.new_element("element");
   Node *text = add_text_node(parent, "some text");
 
-  XPath xpath = XPathFactory().compile("text()");
+  XPath xpath = compile("text()");
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(text));
