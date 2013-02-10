@@ -72,8 +72,8 @@ parse_node_test(XPathTokenSource &source, XPathToken token) {
 }
 
 std::unique_ptr<XPathNodeTest>
-default_node_test(XPathAxis &axis, XPathToken token) {
-  switch (axis.principal_node_type()) {
+default_node_test(std::unique_ptr<XPathAxis> &axis, XPathToken token) {
+  switch (axis->principal_node_type()) {
   case PrincipalNodeType::Attribute:
     return make_unique<NodeTestAttribute>(token.string());
   case PrincipalNodeType::Element:
@@ -116,7 +116,7 @@ XPathParser::parse() {
       if (looks_like_node_test(_source)) {
         node_test = parse_node_test(_source, token);
       } else {
-        node_test = default_node_test(*axis, token);
+        node_test = default_node_test(axis, token);
       }
     }
 
