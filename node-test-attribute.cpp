@@ -9,7 +9,7 @@ void
 NodeTestAttribute::test(Node *node, Nodeset &result) const {
   if (node->type() == NODE_TYPE_ATTRIBUTE) {
     Attribute *attribute = dynamic_cast<Attribute *>(node);
-    if (attribute->name() == _name) {
+    if (_name == "*" || attribute->name() == _name) {
       result.add(node);
     }
   }

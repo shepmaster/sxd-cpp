@@ -68,6 +68,7 @@ set(test_programs
   xpath-acceptance
   xpath-tokenizer
   xpath-parser
+  node-test-attribute
 )
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
