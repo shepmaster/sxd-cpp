@@ -12,7 +12,7 @@
 #include "node-test-text.h"
 #include "make-unique.h"
 
-XPathParser::XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &creator) :
+XPathParser::XPathParser(XPathTokenSource &source, XPathCreator &creator) :
   _source(source), _creator(creator)
 {
 }
@@ -83,8 +83,6 @@ default_node_test(std::unique_ptr<XPathAxis> &axis, XPathToken token) {
 
 void
 XPathParser::parse() {
-  std::vector<std::unique_ptr<XPathStep>> steps;
-
   while (_source.has_more_tokens()) {
     std::unique_ptr<XPathAxis> axis;
     std::unique_ptr<XPathNodeTest> node_test;
@@ -120,8 +118,6 @@ XPathParser::parse() {
       }
     }
 
-    steps.push_back(make_unique<XPathStep>(std::move(axis), std::move(node_test)));
+    _creator.add_step(make_unique<XPathStep>(std::move(axis), std::move(node_test)));
   }
-
-  _creator(std::move(steps));
 }

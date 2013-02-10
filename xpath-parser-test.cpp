@@ -29,9 +29,9 @@ struct StubTokens : public XPathTokenSource {
   int index = 0;
 };
 
-struct XPathCreator {
-  void operator()(std::vector<std::unique_ptr<XPathStep>> &&parts) {
-    saved_parts = std::move(parts);
+struct XPathSaver : public XPathCreator {
+  void add_step(std::unique_ptr<XPathStep> step) {
+    saved_parts.push_back(std::move(step));
   };
 
   std::vector<std::unique_ptr<XPathStep>> saved_parts;
@@ -43,7 +43,7 @@ protected:
   Node *top_node;
 
   StubTokens tokens;
-  XPathCreator creator;
+  XPathSaver creator;
   std::unique_ptr<XPathParser> parser;
 
   XPathParserTest() {

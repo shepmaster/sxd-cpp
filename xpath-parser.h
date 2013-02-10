@@ -7,16 +7,19 @@
 #include <functional>
 #include <vector>
 
+class XPathCreator {
+public:
+  virtual void add_step(std::unique_ptr<XPathStep> step) = 0;
+};
+
 class XPathParser {
 public:
-  typedef std::function<void (std::vector<std::unique_ptr<XPathStep>> &&)> xpath_creator_fn_t;
-
-  XPathParser(XPathTokenSource &source, const xpath_creator_fn_t &creator);
+  XPathParser(XPathTokenSource &source, XPathCreator &creator);
   void parse();
 
 private:
   XPathTokenSource &_source;
-  xpath_creator_fn_t _creator;
+  XPathCreator &_creator;
 };
 
 #endif
