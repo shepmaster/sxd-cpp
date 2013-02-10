@@ -167,7 +167,7 @@ TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
   ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
 }
 
-TEST_F(XPathParserTest, parses_double_slash)
+TEST_F(XPathParserTest, double_slash_abbreviation_selects_itself_and_children)
 {
   // This is a bit dubious - can you really say '//' by itself?
   tokens.push_back(XPathToken(XPathTokenType::DoubleSlash));
@@ -179,6 +179,20 @@ TEST_F(XPathParserTest, parses_double_slash)
 
   ASSERT_EQ(1, creator.saved_parts.size());
   ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(one, two));
+}
+
+TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
+{
+  // This is a bit dubious - can you really say '//' by itself?
+  tokens.push_back(XPathToken(XPathTokenType::DoubleSlash));
+
+  parser->parse();
+
+  auto one = add_child(top_node, "one");
+  add_text_node(one, "text");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(2, apply_xpath_step(0, one).size());
 }
 
 TEST_F(XPathParserTest, parses_text_node_test)
