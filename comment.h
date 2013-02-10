@@ -10,7 +10,7 @@ public:
   ~Comment();
 
   const char *text();
-  void output(Output &output);
+  void output(Output &output) const;
 private:
   std::string text_;
 };

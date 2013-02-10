@@ -27,8 +27,8 @@ public:
   Node(Document *document, node_type_t type);
   virtual ~Node();
   virtual void change_document(Document *doc);
-  virtual void output(Output &output) = 0;
-  void output_children(Output &output);
+  virtual void output(Output &output) const = 0;
+  void output_children(Output &output) const;
 
   void append_child(Node *child);
   void remove_child(Node *child);

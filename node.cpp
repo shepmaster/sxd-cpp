@@ -179,7 +179,7 @@ struct OutputWrapper {
 };
 
 void
-Node::output_children(Output &output)
+Node::output_children(Output &output) const
 {
   foreach_child(OutputWrapper(output));
 }

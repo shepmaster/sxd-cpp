@@ -16,7 +16,7 @@ TextNode::text()
 }
 
 void
-TextNode::output(Output &output)
+TextNode::output(Output &output) const
 {
   output.output("%s", _text.c_str());
 }

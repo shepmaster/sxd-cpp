@@ -19,6 +19,6 @@ Comment::text()
 }
 
 void
-Comment::output(Output &output)
+Comment::output(Output &output) const
 {
 }

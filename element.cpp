@@ -10,7 +10,7 @@ Element::Element(Document *doc, const char * const name) :
 }
 
 void
-Element::output(Output &output)
+Element::output(Output &output) const
 {
   output.output("<%s", _name.c_str());
   for (auto attr : _attributes) {

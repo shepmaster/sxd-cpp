@@ -9,7 +9,7 @@ public:
   Element(Document *doc, const char * const name);
 
   const char *name() const;
-  void output(Output &output);
+  void output(Output &output) const;
   void set_attribute(const char * const name, const char * const value);
   const char *get_attribute(const char * const name);
 
