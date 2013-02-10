@@ -163,6 +163,21 @@ TEST_F(XPathParserTest, parses_descendant_or_self_axis)
   ASSERT_EQ(2, apply_xpath_step(0, one).size());
 }
 
+TEST_F(XPathParserTest, parses_attribute_axis)
+{
+  tokens.push_back(XPathToken("attribute"));
+  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
+  tokens.push_back(XPathToken("*"));
+
+  parser->parse();
+
+  auto one = add_child(top_node, "one");
+  auto attr = add_attribute(one, "hello", "world");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(attr));
+}
+
 TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 {
   tokens.push_back(XPathToken("self"));

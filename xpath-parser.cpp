@@ -46,6 +46,8 @@ parse_axis(XPathTokenSource &source, XPathToken token) {
     axis = make_unique<AxisDescendant>();
   } else if (name == "descendant-or-self") {
     axis = make_unique<AxisDescendantOrSelf>();
+  } else if (name == "attribute") {
+    axis = make_unique<AxisAttribute>();
   }
 
   consume(source, XPathTokenType::DoubleColon);
