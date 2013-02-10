@@ -52,7 +52,7 @@ protected:
   }
 
   Node *add_child(Node *parent, std::string name) {
-    Node *n = doc.new_element(name.c_str());
+    Node *n = doc.new_element(name);
     parent->append_child(n);
     return n;
   }
@@ -62,7 +62,7 @@ protected:
   }
 
   Node *add_text_node(Node *parent, std::string value) {
-    Node *n = doc.new_text_node(value.c_str());
+    Node *n = doc.new_text_node(value);
     parent->append_child(n);
     return n;
   }

@@ -19,14 +19,14 @@ protected:
 
   Node *
   add_child(Node *top_node, std::string name) {
-    Node *n = doc.new_element(name.c_str());
+    Node *n = doc.new_element(name);
     top_node->append_child(n);
     return n;
   }
 
   Node *
   add_text_node(Node *parent, std::string text) {
-    Node *n = doc.new_text_node(text.c_str());
+    Node *n = doc.new_text_node(text);
     parent->append_child(n);
     return n;
   }

@@ -13,10 +13,10 @@ public:
   static Document *parse(const char *input, GError **error);
   Document();
 
-  Element *new_element(const char * const name);
+  Element *new_element(const std::string name);
   Attribute *new_attribute(const std::string name, const std::string value);
-  TextNode *new_text_node(const char * const text);
-  Comment *new_comment(const char * const text);
+  TextNode *new_text_node(const std::string text);
+  Comment *new_comment(const std::string text);
 
   void manage_node(Node *node);
   void stop_managing_node(Node *node);
