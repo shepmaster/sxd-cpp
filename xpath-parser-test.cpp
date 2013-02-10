@@ -154,6 +154,19 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(self));
 }
 
+TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
+{
+  tokens.push_back(XPathToken("."));
+
+  parser->parse();
+
+  auto one = add_child(top_node, "one");
+  auto text = add_text_node(one, "text");
+
+  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
+}
+
 TEST_F(XPathParserTest, parses_double_slash)
 {
   // This is a bit dubious - can you really say '//' by itself?

@@ -5,6 +5,7 @@
 #include "axis-parent.h"
 #include "axis-descendant.h"
 #include "axis-descendant-or-self.h"
+#include "node-test-node.h"
 #include "node-test-element.h"
 #include "node-test-text.h"
 #include "make-unique.h"
@@ -74,7 +75,7 @@ XPathParser::parse() {
 
     if (name == ".") {
       axis = make_unique<AxisSelf>();
-      node_test = make_unique<NodeTestElement>("*");
+      node_test = make_unique<NodeTestNode>();
     } else if (name == "..") {
       axis = make_unique<AxisParent>();
       node_test = make_unique<NodeTestElement>("*");
