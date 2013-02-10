@@ -51,35 +51,32 @@ protected:
     parser = make_unique<XPathParser>(tokens, std::ref(creator));
   }
 
-  Nodeset
-  apply_xpath_step(int index, Node *context_node)
-  {
+  Node *add_child(Node *parent, std::string name) {
+    Node *n = doc.new_element(name.c_str());
+    parent->append_child(n);
+    return n;
+  }
+
+  Node *add_attribute(Node *element, std::string name, std::string value) {
+    return dynamic_cast<Element *>(element)->set_attribute(name, value);
+  }
+
+  Node *add_text_node(Node *parent, std::string value) {
+    Node *n = doc.new_text_node(value.c_str());
+    parent->append_child(n);
+    return n;
+  }
+
+  Nodeset apply_xpath_step(int index, Node *context_node) {
     Nodeset result;
     creator.saved_parts[index]->select_nodes(context_node, result);
     return result;
   }
+
+  int number_of_steps() {
+    return creator.saved_parts.size();
+  }
 };
-
-Node *
-add_child(Node *top_node, std::string name) {
-  Document *doc = top_node->document();
-  Node *n = doc->new_element(name.c_str());
-  top_node->append_child(n);
-  return n;
-}
-
-Node *
-add_attribute(Node *element, std::string name, std::string value) {
-  return dynamic_cast<Element *>(element)->set_attribute(name, value);
-}
-
-Node *
-add_text_node(Node *parent, std::string value) {
-  Document *doc = parent->document();
-  Node *n = doc->new_text_node(value.c_str());
-  parent->append_child(n);
-  return n;
-}
 
 TEST_F(XPathParserTest, parses_string_as_child)
 {
@@ -87,7 +84,7 @@ TEST_F(XPathParserTest, parses_string_as_child)
 
   parser->parse();
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
 
   auto hello = add_child(top_node, "hello");
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(hello));
@@ -100,7 +97,7 @@ TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
 
   parser->parse();
 
-  ASSERT_EQ(2, creator.saved_parts.size());
+  ASSERT_EQ(2, number_of_steps());
 
   auto hello = add_child(top_node, "hello");
   auto world = add_child(top_node, "world");
@@ -116,7 +113,7 @@ TEST_F(XPathParserTest, parses_self_axis)
 
   parser->parse();
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(top_node));
 }
 
@@ -129,7 +126,7 @@ TEST_F(XPathParserTest, parses_parent_axis)
   parser->parse();
 
   auto hello = add_child(top_node, "hello");
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, hello), ElementsAre(top_node));
 }
 
@@ -144,7 +141,7 @@ TEST_F(XPathParserTest, parses_descendant_axis)
   auto one = add_child(top_node, "one");
   auto two = add_child(one, "two");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(two));
 }
 
@@ -159,7 +156,7 @@ TEST_F(XPathParserTest, parses_descendant_or_self_axis)
   auto one = add_child(top_node, "one");
   add_child(one, "two");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_EQ(2, apply_xpath_step(0, one).size());
 }
 
@@ -174,7 +171,7 @@ TEST_F(XPathParserTest, parses_attribute_axis)
   auto one = add_child(top_node, "one");
   auto attr = add_attribute(one, "hello", "world");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(attr));
 }
 
@@ -185,7 +182,7 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
   parser->parse();
 
   auto self = add_child(top_node, "self");
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(self));
 }
 
@@ -198,7 +195,7 @@ TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
   auto one = add_child(top_node, "one");
   auto text = add_text_node(one, "text");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
 }
 
@@ -212,7 +209,7 @@ TEST_F(XPathParserTest, double_slash_abbreviation_selects_itself_and_children)
   auto one = add_child(top_node, "one");
   auto two = add_child(one, "two");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(one, two));
 }
 
@@ -226,7 +223,7 @@ TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
   auto one = add_child(top_node, "one");
   add_text_node(one, "text");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_EQ(2, apply_xpath_step(0, one).size());
 }
 
@@ -241,7 +238,7 @@ TEST_F(XPathParserTest, parses_node_node_test)
   auto one = add_child(top_node, "one");
   auto two = add_child(one, "two");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(two));
 }
 
@@ -256,7 +253,7 @@ TEST_F(XPathParserTest, parses_text_node_test)
   auto one = add_child(top_node, "one");
   auto text = add_text_node(one, "text");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(text));
 }
 
@@ -273,7 +270,7 @@ TEST_F(XPathParserTest, parses_axis_and_node_test)
   auto one = add_child(top_node, "one");
   auto text = add_text_node(one, "text");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
 }
 
@@ -287,7 +284,7 @@ TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
   auto element = add_child(top_node, "element");
   auto attr = add_attribute(element, "name", "value");
 
-  ASSERT_EQ(1, creator.saved_parts.size());
+  ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, element), ElementsAre(attr));
 }
 
