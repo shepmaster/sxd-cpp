@@ -331,7 +331,7 @@ parse_comment(Document *doc, Element *element, tokenizer_t *tokenizer, GError **
   token_t token;
   char *text;
 
-  tokenizer_next_string(tokenizer, COMMENT_TEXT);
+  token = tokenizer_next_string(tokenizer, COMMENT_TEXT);
   if (! expect_token(STRING, tokenize, error)) return;
 
   text = dup_token_string(token);
