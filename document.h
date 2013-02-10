@@ -7,13 +7,11 @@
 #include "element.h"
 #include "text-node.h"
 #include "comment.h"
-#include "intern.h"
 
 class Document {
 public:
   static Document *parse(const char *input, GError **error);
   Document();
-  ~Document();
 
   Element *new_element(const char * const name);
   TextNode *new_text_node(const char * const text);
@@ -25,10 +23,8 @@ public:
 
   Element *root();
 
-  const char *intern(const char * const string);
 private:
   Element *root_;
-  intern_t *dict;
   unsigned int managed_node_count_;
 };
 

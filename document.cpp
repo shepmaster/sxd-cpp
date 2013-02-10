@@ -5,14 +5,8 @@
 
 Document::Document() :
   root_(nullptr),
-  dict(intern_new()),
   managed_node_count_(0)
 {
-}
-
-Document::~Document()
-{
-  intern_free(dict);
 }
 
 Element *
@@ -33,12 +27,6 @@ Comment *
 Document::new_comment(const char * const text)
 {
   return new Comment(this, text);
-}
-
-const char *
-Document::intern(const char * const string)
-{
-  return intern_intern(dict, string);
 }
 
 unsigned int
