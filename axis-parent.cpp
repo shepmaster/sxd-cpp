@@ -6,7 +6,7 @@ AxisParent::select_nodes(Node *current_node, XPathNodeTest const &node_test, Nod
 }
 
 std::ostream &
-AxisParent::to_string(std::ostream &strm) const
+AxisParent::to_stream(std::ostream &strm) const
 {
   return strm << "parent::";
 };

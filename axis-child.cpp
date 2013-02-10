@@ -10,7 +10,7 @@ AxisChild::select_nodes(Node *current_node, XPathNodeTest const &node_test, Node
 }
 
 std::ostream &
-AxisChild::to_string(std::ostream &strm) const
+AxisChild::to_stream(std::ostream &strm) const
 {
   return strm << "child::";
 };

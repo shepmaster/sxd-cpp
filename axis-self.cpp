@@ -6,7 +6,7 @@ AxisSelf::select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodes
 }
 
 std::ostream &
-AxisSelf::to_string(std::ostream &strm) const
+AxisSelf::to_stream(std::ostream &strm) const
 {
   return strm << "self::";
 };

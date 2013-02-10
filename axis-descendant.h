@@ -6,7 +6,7 @@
 class AxisDescendant : public XPathAxis {
 public:
   void select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodeset &result);
-  std::ostream &to_string(std::ostream &strm) const;
+  std::ostream &to_stream(std::ostream &strm) const;
 };
 
 #endif

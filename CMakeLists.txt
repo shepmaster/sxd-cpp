@@ -33,14 +33,12 @@ set(
   xpath-token.cpp
   xpath-tokenizer.cpp
   xpath-tokenizer-buffer.cpp
-  xpath-axis.cpp
   axis-parent.cpp
   axis-child.cpp
   axis-self.cpp
   axis-descendant.cpp
   axis-descendant-or-self.cpp
   xpath-parser.cpp
-  xpath-node-test.cpp
   node-test-node.cpp
   node-test-element.cpp
   node-test-text.cpp

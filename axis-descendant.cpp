@@ -11,7 +11,7 @@ AxisDescendant::select_nodes(Node *current_node, XPathNodeTest const & node_test
 }
 
 std::ostream &
-AxisDescendant::to_string(std::ostream &strm) const
+AxisDescendant::to_stream(std::ostream &strm) const
 {
   return strm << "descendant::";
 };

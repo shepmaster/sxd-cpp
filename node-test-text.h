@@ -6,7 +6,7 @@
 class NodeTestText : public XPathNodeTest {
 public:
   void test(Node *node, Nodeset &result) const;
-  std::ostream &to_string(std::ostream &) const;
+  std::ostream &to_stream(std::ostream &) const;
 };
 
 #endif

@@ -103,7 +103,7 @@ Element::name() const
 }
 
 std::ostream &
-Element::toStream(std::ostream& os) const
+Element::to_stream(std::ostream& os) const
 {
   return os << "Element '" << this->name() << "' <" << this << ">";
 }

@@ -7,6 +7,6 @@ void NodeTestText::test(Node *node, Nodeset &result) const {
 }
 
 std::ostream &
-NodeTestText::to_string(std::ostream &strm) const {
+NodeTestText::to_stream(std::ostream &strm) const {
   return strm << "text()";
 }

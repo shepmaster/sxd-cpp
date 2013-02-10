@@ -5,7 +5,7 @@
 
 class ToStream {
 public:
-  virtual std::ostream &toStream(std::ostream &os) const;
+  virtual std::ostream &to_stream(std::ostream &os) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const ToStream &obj);

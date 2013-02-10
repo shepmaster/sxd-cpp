@@ -10,7 +10,7 @@ AxisDescendantOrSelf::select_nodes(Node *current_node, XPathNodeTest const & nod
 }
 
 std::ostream &
-AxisDescendantOrSelf::to_string(std::ostream &strm) const
+AxisDescendantOrSelf::to_stream(std::ostream &strm) const
 {
   return strm << "descendant-or-self::";
 };

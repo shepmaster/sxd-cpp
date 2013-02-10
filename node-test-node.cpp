@@ -5,6 +5,6 @@ void NodeTestNode::test(Node *node, Nodeset &result) const {
 }
 
 std::ostream &
-NodeTestNode::to_string(std::ostream &strm) const {
+NodeTestNode::to_stream(std::ostream &strm) const {
   return strm << "node()";
 }

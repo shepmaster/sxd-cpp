@@ -15,7 +15,7 @@ public:
   const char *get_attribute(const char * const name);
   void change_document(Document *doc);
 
-  std::ostream& toStream(std::ostream& os) const;
+  std::ostream& to_stream(std::ostream& os) const;
 
 private:
   const char * name_;
