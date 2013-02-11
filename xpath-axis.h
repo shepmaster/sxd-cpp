@@ -11,10 +11,21 @@ enum class PrincipalNodeType {
   Element
 };
 
+/**
+ * A directed traversal of Node%s.
+ */
 class XPathAxis : public ToStream {
 public:
-  virtual void select_nodes(Node *current_node, XPathNodeTest const & node_test, Nodeset &result) = 0;
+  /**
+   * Applies the given node test to the nodes selected by this axis,
+   * adding matching nodes to the nodeset.
+   */
+  virtual void
+  select_nodes(Node *current_node, XPathNodeTest const & node_test, Nodeset &result) = 0;
 
+  /**
+   * Describes what node type is naturally selected by this axis.
+   */
   virtual PrincipalNodeType principal_node_type() {
     return PrincipalNodeType::Element;
   };

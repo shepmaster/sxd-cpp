@@ -3,6 +3,9 @@
 
 #include "xpath-axis.h"
 
+/**
+ * Selects the current Node.
+ */
 class AxisSelf : public XPathAxis {
 public:
   void select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodeset &result);

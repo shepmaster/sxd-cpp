@@ -3,6 +3,9 @@
 
 #include "xpath-axis.h"
 
+/**
+ * Selects children Node%s.
+ */
 class AxisChild : public XPathAxis {
 public:
   void select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodeset &result);

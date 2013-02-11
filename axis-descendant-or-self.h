@@ -3,6 +3,9 @@
 
 #include "xpath-axis.h"
 
+/**
+ * Selects this Node and all child Nodes in document order.
+ */
 class AxisDescendantOrSelf : public XPathAxis {
 public:
   void select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodeset &result);
