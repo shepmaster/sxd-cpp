@@ -5,6 +5,11 @@ XPathToken::XPathToken(std::string string) :
 {
 }
 
+XPathToken::XPathToken(double number) :
+  _type(XPathTokenType::Number), _number(number)
+{
+}
+
 XPathToken::XPathToken(XPathTokenType type) :
   _type(type)
 {
@@ -16,12 +21,17 @@ XPathToken::string() const
   return _string;
 }
 
+double
+XPathToken::number() const
+{
+  return _number;
+}
+
 bool
 XPathToken::is(XPathTokenType type) const
 {
   return type == _type;
 }
-
 
 std::ostream&
 operator<<(std::ostream &strm, const XPathTokenType &a)
@@ -29,6 +39,8 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
   switch (a) {
   case XPathTokenType::String:
     return strm << "String";
+  case XPathTokenType::Number:
+    return strm << "Number";
   case XPathTokenType::LeftParen:
     return strm << "LeftParen";
   case XPathTokenType::RightParen:
@@ -47,6 +59,8 @@ std::ostream& operator<<(std::ostream &strm, const XPathToken &a) {
 
   if (a.is(XPathTokenType::String)) {
     strm << ", '" << a.string() << "'";
+  } else if (a.is(XPathTokenType::Number)) {
+    strm << ", " << a.number();
   }
 
   return strm << ")";

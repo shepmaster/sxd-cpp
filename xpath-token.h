@@ -6,6 +6,7 @@
 
 enum class XPathTokenType {
   String,
+  Number,
   LeftParen,
   RightParen,
   AtSign,
@@ -16,14 +17,17 @@ enum class XPathTokenType {
 class XPathToken {
 public:
   XPathToken(std::string string);
+  XPathToken(double number);
   XPathToken(XPathTokenType type);
 
   std::string string() const;
+  double number() const;
   bool is(XPathTokenType type) const;
 
 private:
   XPathTokenType _type;
   std::string _string;
+  double _number;
 
   friend std::ostream& operator<<(std::ostream&, const XPathToken&);
 };

@@ -18,6 +18,11 @@ MATCHER_P(IsStringToken, expected_string, "")
   return arg.is(XPathTokenType::String) && expected_string == arg.string();
 }
 
+MATCHER_P(IsNumberToken, expected_number, "")
+{
+  return arg.is(XPathTokenType::Number) && expected_number == arg.number();
+}
+
 MATCHER_P(IsType, expected_type, "")
 {
   return arg.is(expected_type);
@@ -146,6 +151,56 @@ TEST_F(XPathTokenizerTest, tokenizes_at_sign)
 
   ASSERT_TRUE(tokenizer.has_more_tokens());
   ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::AtSign));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_single_dot)
+{
+  XPathTokenizer tokenizer(".");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken("."));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_double_dot)
+{
+  XPathTokenizer tokenizer("..");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsStringToken(".."));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_integral_number)
+{
+  XPathTokenizer tokenizer("42");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsNumberToken(42));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_decimal_number)
+{
+  XPathTokenizer tokenizer("42.42");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsNumberToken(42.42));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_decimal_number_without_integral_part)
+{
+  XPathTokenizer tokenizer(".42");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsNumberToken(.42));
 
   ASSERT_THAT(tokenizer, IsFinished());
 }
