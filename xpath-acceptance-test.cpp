@@ -46,6 +46,8 @@ TEST_F(XPathAcceptanceTest, name_selects_child_element)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(two));
+
+  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, asterisk_selects_all_children_elements)
@@ -58,6 +60,8 @@ TEST_F(XPathAcceptanceTest, asterisk_selects_all_children_elements)
   Nodeset selected_nodes = top->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(child1, child2));
+
+  delete top;
 }
 
 TEST_F(XPathAcceptanceTest, slash_selects_grandchild_element)
@@ -70,6 +74,8 @@ TEST_F(XPathAcceptanceTest, slash_selects_grandchild_element)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(three));
+
+  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, multiple_slashes_select_great_grandchild_element)

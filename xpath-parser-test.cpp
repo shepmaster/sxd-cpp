@@ -55,9 +55,13 @@ protected:
   XPathSaver creator;
   std::unique_ptr<XPathParser> parser;
 
-  XPathParserTest() {
+  void SetUp() {
     top_node = doc.new_element("top-node");
     parser = make_unique<XPathParser>(tokens, std::ref(creator));
+  }
+
+  void TearDown() {
+    delete top_node;
   }
 
   Node *add_child(Node *parent, std::string name) {
