@@ -2,6 +2,7 @@
 #define XPATH_FACTORY_H
 
 #include <string>
+#include <stdexcept>
 #include "xpath.h"
 
 class XPathFactory {

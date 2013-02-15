@@ -3,6 +3,8 @@
 #include "xpath-tokenizer-buffer.h"
 #include "xpath-parser.h"
 
+#include <memory>
+
 class XPathStepCapture : public XPathCreator
 {
 public:

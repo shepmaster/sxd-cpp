@@ -1,5 +1,7 @@
 #include "to-stream.h"
 
+#include <typeinfo>
+
 std::ostream &
 ToStream::to_stream(std::ostream& os) const {
   return os << typeid(this).name() << " <" << this << ">";

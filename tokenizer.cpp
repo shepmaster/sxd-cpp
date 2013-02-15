@@ -1,5 +1,6 @@
 #include <iostream>
 #include <glib.h>
+#include <string.h>
 
 #include "tokenizer.h"
 

@@ -6,6 +6,8 @@
 #include "node.h"
 #include "nodeset.h"
 
+#include <memory>
+
 class XPathStep {
 public:
   XPathStep(std::unique_ptr<XPathAxis> axis, std::unique_ptr<XPathNodeTest> node_test);

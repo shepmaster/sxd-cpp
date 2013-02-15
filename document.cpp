@@ -3,6 +3,8 @@
 #include "document.h"
 #include "tokenizer.h"
 
+#include <string.h>
+
 Document::Document() :
   root_(nullptr),
   managed_node_count_(0)
