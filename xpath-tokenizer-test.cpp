@@ -225,6 +225,16 @@ TEST_F(XPathTokenizerTest, tokenizes_right_bracket)
   ASSERT_THAT(tokenizer, IsFinished());
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_apostrophe)
+{
+  XPathTokenizer tokenizer("'");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::Apostrophe));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
 int
 main(int argc, char **argv)
 {
