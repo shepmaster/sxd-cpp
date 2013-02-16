@@ -10,6 +10,16 @@ XPathStep::XPathStep(std::shared_ptr<XPathAxis> axis,
 {
 }
 
+bool
+include(XPathValue value, XPathEvaluationContext context)
+{
+  if (value.is(XPathValue::Type::Number)) {
+    return context.position() == value.number();
+  } else {
+    return value.boolean();
+  }
+}
+
 void
 XPathStep::select_nodes(Node *current_node, Nodeset &result)
 {
@@ -23,7 +33,7 @@ XPathStep::select_nodes(Node *current_node, Nodeset &result)
     for (auto node : selected) {
       auto value = _predicate->evaluate(context);
 
-      if (context.position() == value.number()) {
+      if (include(value, context)) {
         result.add(node);
       }
 

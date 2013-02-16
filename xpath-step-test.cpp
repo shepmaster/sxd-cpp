@@ -88,6 +88,18 @@ TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
   ASSERT_THAT(nodes, ElementsAre(top_element));
 }
 
+TEST_F(XPathStepTest, predicate_with_string_selects_all_nodes)
+{
+  EXPECT_CALL(*axis, select_nodes(_, _, _)).WillOnce(Invoke(add_context_node));
+  EXPECT_CALL(*predicate, evaluate(_)).WillOnce(Return(XPathValue("string")));
+
+  XPathStep step(axis, node_test, predicate);
+
+  step.select_nodes(top_element, nodes);
+
+  ASSERT_THAT(nodes, ElementsAre(top_element));
+}
+
 int
 main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
