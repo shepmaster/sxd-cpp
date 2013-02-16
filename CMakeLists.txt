@@ -45,6 +45,7 @@ set(
   node-test-attribute.cpp
   node-test-text.cpp
   xpath-step.cpp
+  xpath-value.cpp
 )
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
@@ -69,6 +70,7 @@ set(test_programs
   xpath-tokenizer
   xpath-parser
   node-test-attribute
+  xpath-value
 )
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
