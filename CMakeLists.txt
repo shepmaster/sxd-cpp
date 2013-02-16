@@ -45,6 +45,7 @@ set(
   node-test-attribute.cpp
   node-test-text.cpp
   xpath-step.cpp
+  xpath-evaluation-context.cpp
   xpath-value.cpp
 )
 add_library(sxd SHARED ${sxd_source})
@@ -71,6 +72,7 @@ set(test_programs
   xpath-parser
   node-test-attribute
   xpath-value
+  xpath-evaluation-context
 )
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
