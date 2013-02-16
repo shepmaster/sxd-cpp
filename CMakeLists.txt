@@ -45,6 +45,7 @@ set(
   node-test-attribute.cpp
   node-test-text.cpp
   xpath-step.cpp
+  expression-literal.cpp
   xpath-evaluation-context.cpp
   xpath-value.cpp
 )
