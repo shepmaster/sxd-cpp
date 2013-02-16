@@ -1,7 +1,7 @@
 #include "xpath-step.h"
 
-XPathStep::XPathStep(std::unique_ptr<XPathAxis> axis, std::unique_ptr<XPathNodeTest> node_test) :
-  _axis(std::move(axis)), _node_test(std::move(node_test))
+XPathStep::XPathStep(std::shared_ptr<XPathAxis> axis, std::shared_ptr<XPathNodeTest> node_test) :
+  _axis(axis), _node_test(node_test)
 {
 }
 
