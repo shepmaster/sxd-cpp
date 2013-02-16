@@ -10,7 +10,10 @@
 #include "node-test-element.h"
 #include "node-test-attribute.h"
 #include "node-test-text.h"
+#include "expression-literal.h"
 #include "make-unique.h"
+
+using std::move;
 
 XPathParser::XPathParser(XPathTokenSource &source, XPathCreator &creator) :
   _source(source), _creator(creator)
@@ -87,6 +90,12 @@ default_node_test(std::unique_ptr<XPathAxis> &axis, XPathToken token) {
   }
 }
 
+std::unique_ptr<XPathExpression>
+parse_primary_expression(XPathTokenSource &source) {
+  auto token = source.next_token();
+  return make_unique<ExpressionLiteral>(token.number());
+}
+
 void
 XPathParser::parse() {
   while (_source.has_more_tokens()) {
@@ -132,6 +141,13 @@ XPathParser::parse() {
       }
     }
 
-    _creator.add_step(make_unique<XPathStep>(std::move(axis), std::move(node_test), nullptr));
+    std::unique_ptr<XPathExpression> predicate;
+    if (_source.next_token_is(XPathTokenType::LeftBracket)) {
+      consume(_source, XPathTokenType::LeftBracket);
+      predicate = parse_primary_expression(_source);
+      consume(_source, XPathTokenType::RightBracket);
+    }
+
+    _creator.add_step(make_unique<XPathStep>(move(axis), move(node_test), move(predicate)));
   }
 }

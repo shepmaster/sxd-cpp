@@ -305,6 +305,22 @@ TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
   ASSERT_THAT(apply_xpath_step(0, element), ElementsAre(attr));
 }
 
+TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)
+{
+  tokens.push_back(XPathToken("*"));
+  tokens.push_back(XPathToken(XPathTokenType::LeftBracket));
+  tokens.push_back(XPathToken(2));
+  tokens.push_back(XPathToken(XPathTokenType::RightBracket));
+
+  parser->parse();
+
+  add_child(top_node, "first");
+  auto second = add_child(top_node, "second");
+
+  ASSERT_EQ(1, number_of_steps());
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(second));
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.push_back(XPathToken("bad-axis"));
