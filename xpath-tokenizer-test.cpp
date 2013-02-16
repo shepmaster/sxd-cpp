@@ -235,6 +235,16 @@ TEST_F(XPathTokenizerTest, tokenizes_apostrophe)
   ASSERT_THAT(tokenizer, IsFinished());
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_double_quote)
+{
+  XPathTokenizer tokenizer("\"");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::DoubleQuote));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
 int
 main(int argc, char **argv)
 {
