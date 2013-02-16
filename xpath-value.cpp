@@ -1,5 +1,7 @@
 #include "xpath-value.h"
 
+#include <cmath>
+
 XPathValue::XPathValue(double value) :
   _number(value), _type(Type::Number)
 {}
@@ -31,7 +33,15 @@ XPathValue::string()
 bool
 XPathValue::boolean()
 {
-  return _boolean;
+  switch (_type) {
+  case Type::Number:
+    return _number != 0.0 &&
+      ! isnan(_number);
+  case Type::String:
+    return _string.length() > 0;
+  case Type::Boolean:
+    return _boolean;
+  }
 }
 
 bool
