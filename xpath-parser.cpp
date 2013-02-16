@@ -98,6 +98,10 @@ parse_primary_expression(XPathTokenSource &source) {
     token = source.next_token();
     consume(source, XPathTokenType::Apostrophe);
     return make_unique<ExpressionLiteral>(token.string());
+  } else if (token.is(XPathTokenType::DoubleQuote)) {
+    token = source.next_token();
+    consume(source, XPathTokenType::DoubleQuote);
+    return make_unique<ExpressionLiteral>(token.string());
   } else if (token.is(XPathTokenType::Number)) {
     return make_unique<ExpressionLiteral>(token.number());
   } else {
