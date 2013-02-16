@@ -8,6 +8,14 @@ XPathValue::XPathValue(std::string value) :
   _string(value), _type(Type::String)
 {}
 
+XPathValue::XPathValue(const char *value) :
+  _string(value), _type(Type::String)
+{}
+
+XPathValue::XPathValue(bool value) :
+  _boolean(value), _type(Type::Boolean)
+{}
+
 double
 XPathValue::number()
 {
@@ -18,6 +26,12 @@ std::string
 XPathValue::string()
 {
   return _string;
+}
+
+bool
+XPathValue::boolean()
+{
+  return _boolean;
 }
 
 bool

@@ -43,7 +43,7 @@ protected:
   void SetUp() {
     top_element = doc.new_element("top");
 
-    DefaultValue<XPathValue>::Set(XPathValue(0));
+    DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 
   void TearDown() {
@@ -79,7 +79,7 @@ TEST_F(XPathStepTest, predicate_is_evaluated)
 TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
 {
   EXPECT_CALL(*axis, select_nodes(_, _, _)).WillOnce(Invoke(add_context_node));
-  EXPECT_CALL(*predicate, evaluate(_)).WillOnce(Return(XPathValue(1)));
+  EXPECT_CALL(*predicate, evaluate(_)).WillOnce(Return(XPathValue(1.0)));
 
   XPathStep step(axis, node_test, predicate);
 
