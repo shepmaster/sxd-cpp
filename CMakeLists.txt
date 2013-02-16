@@ -72,6 +72,7 @@ set(test_programs
   xpath-tokenizer
   xpath-parser
   node-test-attribute
+  xpath-step
   xpath-value
   xpath-evaluation-context
 )
