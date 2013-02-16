@@ -132,6 +132,6 @@ XPathParser::parse() {
       }
     }
 
-    _creator.add_step(make_unique<XPathStep>(std::move(axis), std::move(node_test)));
+    _creator.add_step(make_unique<XPathStep>(std::move(axis), std::move(node_test), nullptr));
   }
 }

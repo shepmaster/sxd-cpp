@@ -3,6 +3,7 @@
 
 #include "xpath-axis.h"
 #include "xpath-node-test.h"
+#include "xpath-expression.h"
 #include "node.h"
 #include "nodeset.h"
 
@@ -10,13 +11,16 @@
 
 class XPathStep {
 public:
-  XPathStep(std::shared_ptr<XPathAxis> axis, std::shared_ptr<XPathNodeTest> node_test);
+  XPathStep(std::shared_ptr<XPathAxis> axis,
+            std::shared_ptr<XPathNodeTest> node_test,
+            std::shared_ptr<XPathExpression> predicate);
 
   void select_nodes(Node *current_node, Nodeset &step_result);
 
 private:
   std::shared_ptr<XPathAxis> _axis;
   std::shared_ptr<XPathNodeTest> _node_test;
+  std::shared_ptr<XPathExpression> _predicate;
 
   friend std::ostream &operator<<(std::ostream &, const XPathStep &);
 };
