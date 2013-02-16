@@ -205,6 +205,26 @@ TEST_F(XPathTokenizerTest, tokenizes_decimal_number_without_integral_part)
   ASSERT_THAT(tokenizer, IsFinished());
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_left_bracket)
+{
+  XPathTokenizer tokenizer("[");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::LeftBracket));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_right_bracket)
+{
+  XPathTokenizer tokenizer("]");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::RightBracket));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
 int
 main(int argc, char **argv)
 {

@@ -9,6 +9,8 @@ enum class XPathTokenType {
   Number,
   LeftParen,
   RightParen,
+  LeftBracket,
+  RightBracket,
   AtSign,
   DoubleColon,
   DoubleSlash

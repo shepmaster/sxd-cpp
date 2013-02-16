@@ -45,6 +45,10 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "LeftParen";
   case XPathTokenType::RightParen:
     return strm << "RightParen";
+  case XPathTokenType::LeftBracket:
+    return strm << "LeftBracket";
+  case XPathTokenType::RightBracket:
+    return strm << "RightBracket";
   case XPathTokenType::AtSign:
     return strm << "AtSign";
   case XPathTokenType::DoubleColon:
