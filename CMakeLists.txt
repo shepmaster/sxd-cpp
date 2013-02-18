@@ -49,6 +49,7 @@ set(
   expression-function.cpp
   xpath-evaluation-context.cpp
   xpath-value.cpp
+  xpath-function-library.cpp
 )
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
@@ -76,6 +77,7 @@ set(test_programs
   xpath-step
   xpath-value
   xpath-evaluation-context
+  xpath-function-library
 )
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
