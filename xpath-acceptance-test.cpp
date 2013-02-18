@@ -264,6 +264,20 @@ TEST_F(XPathAcceptanceTest, string_predicate_selects_all_children)
   delete element;
 }
 
+TEST_F(XPathAcceptanceTest, true_boolean_predicate_selects_all_children)
+{
+  Node *element = doc.new_element("element");
+  Node *one = add_child(element, "one");
+  Node *two = add_child(element, "two");
+
+  XPath xpath = compile("*[true()]");
+  Nodeset selected_nodes = element->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(one, two));
+
+  delete element;
+}
+
 TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)
 {
   ASSERT_THROW(compile("bogus::*"), InvalidXPathAxisException);
