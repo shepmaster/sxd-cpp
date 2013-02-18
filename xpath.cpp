@@ -1,4 +1,5 @@
 #include "xpath.h"
+#include "xpath-core-function-library.h"
 
 XPath::XPath()
 {
@@ -17,10 +18,13 @@ XPath::select_nodes(Node *node)
 
   for (auto &step : _steps) {
     Nodeset step_result;
+    XPathFunctionLibrary functions;
+
+    XPathCoreFunctionLibrary::register_functions(functions);
 
     for (auto i = 0; i < result.count(); i++) {
       auto *current_node = result[i];
-      step->select_nodes(current_node, step_result);
+      step->select_nodes(current_node, functions, step_result);
     }
 
     result = step_result;

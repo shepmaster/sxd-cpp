@@ -4,6 +4,7 @@
 #include "xpath-axis.h"
 #include "xpath-node-test.h"
 #include "xpath-expression.h"
+#include "xpath-function-library.h"
 #include "node.h"
 #include "nodeset.h"
 
@@ -15,7 +16,9 @@ public:
             std::shared_ptr<XPathNodeTest> node_test,
             std::shared_ptr<XPathExpression> predicate);
 
-  void select_nodes(Node *current_node, Nodeset &step_result);
+  void select_nodes(Node *current_node,
+                    const XPathFunctionLibrary &functions,
+                    Nodeset &step_result);
 
 private:
   std::shared_ptr<XPathAxis> _axis;

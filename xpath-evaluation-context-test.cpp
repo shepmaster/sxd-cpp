@@ -6,18 +6,19 @@
 class XPathEvaluationContextTest : public ::testing::Test {
 protected:
   Nodeset nodes;
+  XPathFunctionLibrary functions;
 };
 
 TEST_F(XPathEvaluationContextTest, initial_position_is_one)
 {
-  XPathEvaluationContext context(nodes);
+  XPathEvaluationContext context(nodes, functions);
 
   ASSERT_EQ(1, context.position());
 }
 
 TEST_F(XPathEvaluationContextTest, next_increments_the_position)
 {
-  XPathEvaluationContext context(nodes);
+  XPathEvaluationContext context(nodes, functions);
 
   context.next();
 

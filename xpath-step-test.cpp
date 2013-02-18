@@ -38,6 +38,8 @@ protected:
   shared_ptr<MockAxis> axis = make_shared<MockAxis>();
   shared_ptr<MockNodeTest> node_test = make_shared<MockNodeTest>();
   shared_ptr<MockExpression> predicate = make_shared<MockExpression>();
+
+  XPathFunctionLibrary functions;
   Nodeset nodes;
 
   void SetUp() {
@@ -57,7 +59,7 @@ TEST_F(XPathStepTest, axis_is_passed_the_node)
 
   XPathStep step(axis, node_test, nullptr);
 
-  step.select_nodes(top_element, nodes);
+  step.select_nodes(top_element, functions, nodes);
 }
 
 void
@@ -73,7 +75,7 @@ TEST_F(XPathStepTest, predicate_is_evaluated)
 
   XPathStep step(axis, node_test, predicate);
 
-  step.select_nodes(top_element, nodes);
+  step.select_nodes(top_element, functions, nodes);
 }
 
 TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
@@ -83,7 +85,7 @@ TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
 
   XPathStep step(axis, node_test, predicate);
 
-  step.select_nodes(top_element, nodes);
+  step.select_nodes(top_element, functions, nodes);
 
   ASSERT_THAT(nodes, ElementsAre(top_element));
 }
@@ -95,7 +97,7 @@ TEST_F(XPathStepTest, predicate_with_string_selects_all_nodes)
 
   XPathStep step(axis, node_test, predicate);
 
-  step.select_nodes(top_element, nodes);
+  step.select_nodes(top_element, functions, nodes);
 
   ASSERT_THAT(nodes, ElementsAre(top_element));
 }

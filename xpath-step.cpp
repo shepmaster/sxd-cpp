@@ -21,7 +21,9 @@ include(XPathValue value, XPathEvaluationContext context)
 }
 
 void
-XPathStep::select_nodes(Node *current_node, Nodeset &result)
+XPathStep::select_nodes(Node *current_node,
+                        const XPathFunctionLibrary &functions,
+                        Nodeset &result)
 {
   Nodeset selected;
   _axis->select_nodes(current_node, *_node_test, selected);
@@ -29,7 +31,7 @@ XPathStep::select_nodes(Node *current_node, Nodeset &result)
   if (! _predicate) {
     result.add_nodeset(selected);
   } else {
-    XPathEvaluationContext context(selected);
+    XPathEvaluationContext context(selected, functions);
     for (auto node : selected) {
       auto value = _predicate->evaluate(context);
 

@@ -1,6 +1,7 @@
 #include "xpath-parser.h"
 
 #include "document.h"
+#include "xpath-core-function-library.h"
 #include "make-unique.h"
 
 #include "gmock/gmock.h"
@@ -61,7 +62,10 @@ protected:
   XPathSaver creator;
   std::unique_ptr<XPathParser> parser;
 
+  XPathFunctionLibrary functions;
+
   void SetUp() {
+    XPathCoreFunctionLibrary::register_functions(functions);
     top_node = doc.new_element("top-node");
     parser = make_unique<XPathParser>(tokens, std::ref(creator));
   }
@@ -88,7 +92,7 @@ protected:
 
   Nodeset apply_xpath_step(int index, Node *context_node) {
     Nodeset result;
-    creator.saved_parts[index]->select_nodes(context_node, result);
+    creator.saved_parts[index]->select_nodes(context_node, functions, result);
     return result;
   }
 
@@ -407,6 +411,26 @@ TEST_F(XPathParserTest, true_function_predicate_selects_all_nodes)
 
   ASSERT_EQ(1, number_of_steps());
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(first, second));
+}
+
+TEST_F(XPathParserTest, false_function_predicate_selects_no_nodes)
+{
+  tokens.add({
+      XPathToken("*"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken("false"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen),
+      XPathToken(XPathTokenType::RightBracket)
+  });
+
+  parser->parse();
+
+  add_child(top_node, "first");
+  add_child(top_node, "second");
+
+  ASSERT_EQ(1, number_of_steps());
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre());
 }
 
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)

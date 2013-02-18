@@ -50,6 +50,9 @@ set(
   xpath-evaluation-context.cpp
   xpath-value.cpp
   xpath-function-library.cpp
+  function-true.cpp
+  function-false.cpp
+  xpath-core-function-library.cpp
 )
 add_library(sxd SHARED ${sxd_source})
 target_link_libraries(sxd ${GLIB2_LIBRARIES})
