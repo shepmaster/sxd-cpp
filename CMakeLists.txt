@@ -81,6 +81,7 @@ set(test_programs
   xpath-value
   xpath-evaluation-context
   xpath-function-library
+  xpath-core-function-library
 )
 foreach(program ${test_programs})
   add_executable(${program}-test ${program}-test.cpp)
