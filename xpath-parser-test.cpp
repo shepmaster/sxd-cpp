@@ -21,8 +21,14 @@ struct StubTokens : public XPathTokenSource {
     return index < tokens.size();
   }
 
-  void push_back(XPathToken token) {
-    tokens.push_back(token);
+  void add(std::initializer_list<XPathToken> tokens) {
+    for (auto token : tokens) {
+      this->tokens.push_back(token);
+    }
+  }
+
+  void add(XPathToken token) {
+    add({token});
   }
 
   std::vector<XPathToken> tokens;
@@ -97,7 +103,7 @@ protected:
 
 TEST_F(XPathParserTest, parses_string_as_child)
 {
-  tokens.push_back(XPathToken("hello"));
+  tokens.add(XPathToken("hello"));
 
   parser->parse();
 
@@ -109,8 +115,10 @@ TEST_F(XPathParserTest, parses_string_as_child)
 
 TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
 {
-  tokens.push_back(XPathToken("hello"));
-  tokens.push_back(XPathToken("world"));
+  tokens.add({
+      XPathToken("hello"),
+      XPathToken("world")
+  });
 
   parser->parse();
 
@@ -124,9 +132,11 @@ TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
 
 TEST_F(XPathParserTest, parses_self_axis)
 {
-  tokens.push_back(XPathToken("self"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
-  tokens.push_back(XPathToken("top-node"));
+  tokens.add({
+      XPathToken("self"),
+      XPathToken(XPathTokenType::DoubleColon),
+      XPathToken("top-node")
+  });
 
   parser->parse();
 
@@ -136,9 +146,11 @@ TEST_F(XPathParserTest, parses_self_axis)
 
 TEST_F(XPathParserTest, parses_parent_axis)
 {
-  tokens.push_back(XPathToken("parent"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
-  tokens.push_back(XPathToken("top-node"));
+  tokens.add({
+      XPathToken("parent"),
+      XPathToken(XPathTokenType::DoubleColon),
+      XPathToken("top-node")
+  });
 
   parser->parse();
 
@@ -149,9 +161,11 @@ TEST_F(XPathParserTest, parses_parent_axis)
 
 TEST_F(XPathParserTest, parses_descendant_axis)
 {
-  tokens.push_back(XPathToken("descendant"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
-  tokens.push_back(XPathToken("two"));
+  tokens.add({
+      XPathToken("descendant"),
+      XPathToken(XPathTokenType::DoubleColon),
+      XPathToken("two")
+  });
 
   parser->parse();
 
@@ -164,9 +178,11 @@ TEST_F(XPathParserTest, parses_descendant_axis)
 
 TEST_F(XPathParserTest, parses_descendant_or_self_axis)
 {
-  tokens.push_back(XPathToken("descendant-or-self"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
-  tokens.push_back(XPathToken("*"));
+  tokens.add({
+      XPathToken("descendant-or-self"),
+      XPathToken(XPathTokenType::DoubleColon),
+      XPathToken("*")
+  });
 
   parser->parse();
 
@@ -179,9 +195,11 @@ TEST_F(XPathParserTest, parses_descendant_or_self_axis)
 
 TEST_F(XPathParserTest, parses_attribute_axis)
 {
-  tokens.push_back(XPathToken("attribute"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
-  tokens.push_back(XPathToken("*"));
+  tokens.add({
+      XPathToken("attribute"),
+      XPathToken(XPathTokenType::DoubleColon),
+      XPathToken("*")}
+  );
 
   parser->parse();
 
@@ -194,7 +212,7 @@ TEST_F(XPathParserTest, parses_attribute_axis)
 
 TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 {
-  tokens.push_back(XPathToken("self"));
+  tokens.add(XPathToken("self"));
 
   parser->parse();
 
@@ -205,7 +223,7 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 
 TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
 {
-  tokens.push_back(XPathToken("."));
+  tokens.add(XPathToken("."));
 
   parser->parse();
 
@@ -219,7 +237,7 @@ TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
 TEST_F(XPathParserTest, double_slash_abbreviation_selects_itself_and_children)
 {
   // This is a bit dubious - can you really say '//' by itself?
-  tokens.push_back(XPathToken(XPathTokenType::DoubleSlash));
+  tokens.add(XPathToken(XPathTokenType::DoubleSlash));
 
   parser->parse();
 
@@ -233,7 +251,7 @@ TEST_F(XPathParserTest, double_slash_abbreviation_selects_itself_and_children)
 TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
 {
   // This is a bit dubious - can you really say '//' by itself?
-  tokens.push_back(XPathToken(XPathTokenType::DoubleSlash));
+  tokens.add(XPathToken(XPathTokenType::DoubleSlash));
 
   parser->parse();
 
@@ -246,9 +264,11 @@ TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
 
 TEST_F(XPathParserTest, parses_node_node_test)
 {
-  tokens.push_back(XPathToken("node"));
-  tokens.push_back(XPathToken(XPathTokenType::LeftParen));
-  tokens.push_back(XPathToken(XPathTokenType::RightParen));
+  tokens.add({
+      XPathToken("node"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen)
+  });
 
   parser->parse();
 
@@ -261,9 +281,11 @@ TEST_F(XPathParserTest, parses_node_node_test)
 
 TEST_F(XPathParserTest, parses_text_node_test)
 {
-  tokens.push_back(XPathToken("text"));
-  tokens.push_back(XPathToken(XPathTokenType::LeftParen));
-  tokens.push_back(XPathToken(XPathTokenType::RightParen));
+  tokens.add({
+      XPathToken("text"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen)
+  });
 
   parser->parse();
 
@@ -276,11 +298,13 @@ TEST_F(XPathParserTest, parses_text_node_test)
 
 TEST_F(XPathParserTest, parses_axis_and_node_test)
 {
-  tokens.push_back(XPathToken("self"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
-  tokens.push_back(XPathToken("text"));
-  tokens.push_back(XPathToken(XPathTokenType::LeftParen));
-  tokens.push_back(XPathToken(XPathTokenType::RightParen));
+  tokens.add({
+      XPathToken("self"),
+      XPathToken(XPathTokenType::DoubleColon),
+      XPathToken("text"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen)
+  });
 
   parser->parse();
 
@@ -293,8 +317,10 @@ TEST_F(XPathParserTest, parses_axis_and_node_test)
 
 TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
 {
-  tokens.push_back(XPathToken(XPathTokenType::AtSign));
-  tokens.push_back(XPathToken("name"));
+  tokens.add({
+      XPathToken(XPathTokenType::AtSign),
+      XPathToken("name")
+  });
 
   parser->parse();
 
@@ -307,10 +333,12 @@ TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
 
 TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)
 {
-  tokens.push_back(XPathToken("*"));
-  tokens.push_back(XPathToken(XPathTokenType::LeftBracket));
-  tokens.push_back(XPathToken(2));
-  tokens.push_back(XPathToken(XPathTokenType::RightBracket));
+  tokens.add({
+      XPathToken("*"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken(2),
+      XPathToken(XPathTokenType::RightBracket)
+  });
 
   parser->parse();
 
@@ -323,12 +351,14 @@ TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)
 
 TEST_F(XPathParserTest, apostrophe_string_predicate_selects_all_nodes)
 {
-  tokens.push_back(XPathToken("*"));
-  tokens.push_back(XPathToken(XPathTokenType::LeftBracket));
-  tokens.push_back(XPathToken(XPathTokenType::Apostrophe));
-  tokens.push_back(XPathToken("string"));
-  tokens.push_back(XPathToken(XPathTokenType::Apostrophe));
-  tokens.push_back(XPathToken(XPathTokenType::RightBracket));
+  tokens.add({
+      XPathToken("*"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken(XPathTokenType::Apostrophe),
+      XPathToken("string"),
+      XPathToken(XPathTokenType::Apostrophe),
+      XPathToken(XPathTokenType::RightBracket)
+  });
 
   parser->parse();
 
@@ -341,12 +371,14 @@ TEST_F(XPathParserTest, apostrophe_string_predicate_selects_all_nodes)
 
 TEST_F(XPathParserTest, double_quote_string_predicate_selects_all_nodes)
 {
-  tokens.push_back(XPathToken("*"));
-  tokens.push_back(XPathToken(XPathTokenType::LeftBracket));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleQuote));
-  tokens.push_back(XPathToken("string"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleQuote));
-  tokens.push_back(XPathToken(XPathTokenType::RightBracket));
+  tokens.add({
+      XPathToken("*"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken(XPathTokenType::DoubleQuote),
+      XPathToken("string"),
+      XPathToken(XPathTokenType::DoubleQuote),
+      XPathToken(XPathTokenType::RightBracket)
+  });
 
   parser->parse();
 
@@ -359,9 +391,11 @@ TEST_F(XPathParserTest, double_quote_string_predicate_selects_all_nodes)
 
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
-  tokens.push_back(XPathToken("bad-axis"));
-  tokens.push_back(XPathToken(XPathTokenType::DoubleColon));
-  tokens.push_back(XPathToken("*"));
+  tokens.add({
+      XPathToken("bad-axis"),
+      XPathToken(XPathTokenType::DoubleColon),
+      XPathToken("*")
+  });
 
   parser->parse();
 
@@ -371,9 +405,11 @@ TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 
 TEST_F(XPathParserTest, unknown_node_test_is_reported_as_an_error)
 {
-  tokens.push_back(XPathToken("bad-node-test"));
-  tokens.push_back(XPathToken(XPathTokenType::LeftParen));
-  tokens.push_back(XPathToken(XPathTokenType::RightParen));
+  tokens.add({
+      XPathToken("bad-node-test"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen)
+  });
 
   parser->parse();
 
