@@ -26,12 +26,15 @@ TEST_F(XPathFunctionLibraryTest, starts_with_no_functions)
 
 TEST_F(XPathFunctionLibraryTest, can_add_a_function)
 {
+  const std::string function_name = "a-name";
+
   auto mock_function = make_shared<MockFunction>();
   EXPECT_CALL(*mock_function, name())
-    .WillRepeatedly(Return("a-name"));
+    .WillRepeatedly(Return(function_name));
 
   library.add(mock_function);
-  auto fn = library.function_for_name("a-name");
+  ASSERT_TRUE(library.has_function(function_name));
+  auto fn = library.function_for_name(function_name);
   ASSERT_EQ(mock_function, fn);
 }
 

@@ -8,6 +8,7 @@
 class XPathFunctionLibrary {
 public:
   void add(std::shared_ptr<XPathFunction> function);
+  bool has_function(std::string name) const;
   std::shared_ptr<XPathFunction> function_for_name(std::string name) const;
 
 private:
