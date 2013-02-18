@@ -11,6 +11,7 @@
 #include "node-test-attribute.h"
 #include "node-test-text.h"
 #include "expression-literal.h"
+#include "expression-function.h"
 #include "make-unique.h"
 
 using std::move;
@@ -104,6 +105,10 @@ parse_primary_expression(XPathTokenSource &source) {
     return make_unique<ExpressionLiteral>(token.string());
   } else if (token.is(XPathTokenType::Number)) {
     return make_unique<ExpressionLiteral>(token.number());
+  } else if (token.is(XPathTokenType::String)) {
+    consume(source, XPathTokenType::LeftParen);
+    consume(source, XPathTokenType::RightParen);
+    return make_unique<ExpressionFunction>(token.string());
   } else {
     return nullptr;
   }

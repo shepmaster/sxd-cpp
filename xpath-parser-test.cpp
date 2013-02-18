@@ -389,6 +389,26 @@ TEST_F(XPathParserTest, double_quote_string_predicate_selects_all_nodes)
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(first, second));
 }
 
+TEST_F(XPathParserTest, true_function_predicate_selects_all_nodes)
+{
+  tokens.add({
+      XPathToken("*"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken("true"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen),
+      XPathToken(XPathTokenType::RightBracket)
+  });
+
+  parser->parse();
+
+  auto first = add_child(top_node, "first");
+  auto second = add_child(top_node, "second");
+
+  ASSERT_EQ(1, number_of_steps());
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(first, second));
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({
