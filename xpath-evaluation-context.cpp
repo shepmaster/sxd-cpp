@@ -2,7 +2,7 @@
 
 XPathEvaluationContext::XPathEvaluationContext(Nodeset nodes,
                                                const XPathFunctionLibrary &functions) :
-  _position(1), _functions(functions)
+  _nodes(nodes), _position(1), _functions(functions)
 {
 }
 
@@ -10,6 +10,12 @@ unsigned long
 XPathEvaluationContext::position()
 {
   return _position;
+}
+
+unsigned long
+XPathEvaluationContext::size() const
+{
+  return _nodes.size();
 }
 
 void
