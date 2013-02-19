@@ -17,11 +17,13 @@ public:
   XPathValue(const char *value);
   XPathValue(bool value);
 
-  double number();
-  std::string string();
-  bool boolean();
+  double number() const;
+  std::string string() const;
+  bool boolean() const;
 
-  bool is(Type type);
+  bool is(Type type) const;
+
+  bool operator==(const XPathValue &other) const;
 
 private:
   double _number;

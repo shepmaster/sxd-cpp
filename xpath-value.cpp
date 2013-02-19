@@ -19,19 +19,19 @@ XPathValue::XPathValue(bool value) :
 {}
 
 double
-XPathValue::number()
+XPathValue::number() const
 {
   return _number;
 }
 
 std::string
-XPathValue::string()
+XPathValue::string() const
 {
   return _string;
 }
 
 bool
-XPathValue::boolean()
+XPathValue::boolean() const
 {
   switch (_type) {
   case Type::Number:
@@ -45,7 +45,24 @@ XPathValue::boolean()
 }
 
 bool
-XPathValue::is(Type type)
+XPathValue::is(Type type) const
 {
   return type == _type;
+}
+
+bool
+XPathValue::operator==(const XPathValue &other) const
+{
+  if (! other.is(_type)) {
+    return false;
+  }
+
+  switch (_type) {
+  case Type::Number:
+    return _number == other.number();
+  case Type::String:
+    return _string == other.string();
+  case Type::Boolean:
+    return _boolean == other.boolean();
+  }
 }
