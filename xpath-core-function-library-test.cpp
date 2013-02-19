@@ -12,6 +12,11 @@ protected:
   }
 };
 
+TEST_F(XPathCoreFunctionLibraryTest, last)
+{
+  ASSERT_TRUE(library.has_function("last"));
+}
+
 TEST_F(XPathCoreFunctionLibraryTest, true)
 {
   ASSERT_TRUE(library.has_function("true"));
