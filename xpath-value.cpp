@@ -1,6 +1,7 @@
 #include "xpath-value.h"
 
 #include <cmath>
+#include <iostream>
 
 XPathValue::XPathValue(double value) :
   _number(value), _type(Type::Number)
@@ -65,4 +66,31 @@ XPathValue::operator==(const XPathValue &other) const
   case Type::Boolean:
     return _boolean == other.boolean();
   }
+}
+
+std::ostream&
+operator<<(std::ostream &os, const XPathValue::Type &type)
+{
+  switch (type) {
+  case XPathValue::Type::Number:
+    return os << "Number";
+  case XPathValue::Type::String:
+    return os << "String";
+  case XPathValue::Type::Boolean:
+    return os << "Boolean";
+  }
+}
+
+std::ostream &
+operator<<(std::ostream &os, const XPathValue &value)
+{
+  os << "XPathValue(" << value._type;
+  if (value.is(XPathValue::Type::Number)) {
+    os << ", " << value.number();
+  } else if (value.is(XPathValue::Type::String)) {
+    os << ", '" << value.string() << "'";
+  } else if (value.is(XPathValue::Type::Boolean)) {
+    os << value.boolean();;
+  }
+  return os << ")";
 }
