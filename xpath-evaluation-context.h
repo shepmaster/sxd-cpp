@@ -1,8 +1,9 @@
 #ifndef XPATH_EVALUATION_CONTEXT_H
 #define XPATH_EVALUATION_CONTEXT_H
 
+class XPathFunction;
+
 #include "nodeset.h"
-#include "xpath-function.h"
 #include "xpath-function-library.h"
 
 class XPathEvaluationContext

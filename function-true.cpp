@@ -7,7 +7,7 @@ FunctionTrue::name() const
 }
 
 XPathValue
-FunctionTrue::evaluate() const
+FunctionTrue::evaluate(const XPathEvaluationContext &context) const
 {
   return XPathValue(true);
 }

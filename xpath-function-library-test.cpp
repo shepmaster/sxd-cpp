@@ -1,5 +1,7 @@
 #include "xpath-function-library.h"
 
+#include "xpath-function.h"
+
 #include "gmock/gmock.h"
 #include <iostream>
 
@@ -10,7 +12,7 @@ using testing::Return;
 class MockFunction : public XPathFunction {
 public:
   MOCK_CONST_METHOD0(name, std::string());
-  MOCK_CONST_METHOD0(evaluate, XPathValue());
+  MOCK_CONST_METHOD1(evaluate, XPathValue(const XPathEvaluationContext &context));
 };
 
 class XPathFunctionLibraryTest : public ::testing::Test {

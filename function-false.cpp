@@ -7,7 +7,7 @@ FunctionFalse::name() const
 }
 
 XPathValue
-FunctionFalse::evaluate() const
+FunctionFalse::evaluate(const XPathEvaluationContext &context) const
 {
   return XPathValue(false);
 }

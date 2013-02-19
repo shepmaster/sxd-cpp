@@ -2,12 +2,13 @@
 #define XPATH_FUNCTION_H
 
 #include "xpath-value.h"
+#include "xpath-evaluation-context.h"
 
 class XPathFunction {
 public:
   virtual ~XPathFunction() {};
   virtual std::string name() const = 0;
-  virtual XPathValue evaluate() const = 0;
+  virtual XPathValue evaluate(const XPathEvaluationContext &context) const = 0;
 };
 
 #endif

@@ -1,5 +1,7 @@
 #include "xpath-function-library.h"
 
+#include "xpath-function.h"
+
 void
 XPathFunctionLibrary::add(std::shared_ptr<XPathFunction> function)
 {

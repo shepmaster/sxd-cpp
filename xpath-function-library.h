@@ -1,7 +1,7 @@
 #ifndef XPATH_FUNCTION_LIBRARY_H
 #define XPATH_FUNCTION_LIBRARY_H
 
-#include "xpath-function.h"
+class XPathFunction;
 
 #include <map>
 

@@ -5,7 +5,7 @@
 
 class FunctionFalse : public XPathFunction {
   std::string name() const;
-  XPathValue evaluate() const;
+  XPathValue evaluate(const XPathEvaluationContext &context) const;
 };
 
 #endif
