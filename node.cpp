@@ -6,33 +6,26 @@
 void
 Node::foreach_child(foreach_fn_t fn) const
 {
-  Node *child = _first_child;
-  while (child) {
-    Node *next = child->_next_sibling;
+  for (auto child : _children) {
     fn(child);
-    child = next;
   }
 }
 
 void
 Node::foreach_preceding_sibling(foreach_fn_t fn) const
 {
-  Node *sibling = _prev_sibling;
-  while (sibling) {
-    Node *next = sibling->_prev_sibling;
-    fn(sibling);
-    sibling = next;
+  auto in_position = std::find(_parent->_children.rbegin(), _parent->_children.rend(), this);
+  for (auto sibling = in_position; sibling != _parent->_children.rend(); ++sibling) {
+    fn(*sibling);
   }
 }
 
 void
 Node::foreach_following_sibling(foreach_fn_t fn) const
 {
-  Node *sibling = _next_sibling;
-  while (sibling) {
-    Node *next = sibling->_next_sibling;
-    fn(sibling);
-    sibling = next;
+  auto in_position = std::find(_parent->_children.begin(), _parent->_children.end(), this);
+  for (auto sibling = in_position; sibling != _parent->_children.end(); ++sibling) {
+    fn(*sibling);
   }
 }
 
@@ -45,25 +38,17 @@ Node::foreach_ancestor(foreach_fn_t fn) const
   }
 }
 
-struct FreeChildren {
-  virtual void operator() (Node *node) { delete node; }
-};
-
 Node::~Node()
 {
   if (_parent) {
     _parent->remove_child(this);
   }
-
-  foreach_child(FreeChildren());
 }
 
 Node::Node(Document *doc, node_type_t type) :
-  _type(type), _doc(doc),
-  _parent(nullptr),
-  _first_child(nullptr),
-  _prev_sibling(nullptr),
-  _next_sibling(nullptr)
+  _type(type),
+  _doc(doc),
+  _parent(nullptr)
 {
 }
 
@@ -82,39 +67,26 @@ node_cast_to_node(Node *n)
 void
 Node::append_child(Node *child)
 {
-  Node *my_child = _first_child;
-  if (my_child) {
-    while (my_child->_next_sibling) {
-      my_child = my_child->_next_sibling;
-    }
-    my_child->insert_next_sibling(child);
-  } else {
-    _first_child = child;
-  }
+  _children.push_back(child);
   child->_parent = this;
 }
 
 void
 Node::remove_child(Node *child)
 {
-  if (child->_prev_sibling) {
-    child->_prev_sibling->_next_sibling = child->_next_sibling;
-  }
-
-  if (child->_next_sibling) {
-    child->_next_sibling->_prev_sibling = child->_prev_sibling;
-  }
-
-  if (child->_parent && child->_parent->_first_child == child) {
-    child->_parent->_first_child = child->_next_sibling;
-  }
+  _children.erase(std::remove(_children.begin(),
+                              _children.end(),
+                              child));
   child->_parent = nullptr;
 }
 
 Node *
 Node::first_child() const
 {
-  return _first_child;
+  if (_children.empty()) {
+    return NULL;
+  }
+  return _children[0];
 }
 
 Node *
@@ -126,26 +98,25 @@ Node::parent() const
 Node *
 Node::prev_sibling() const
 {
-  return _prev_sibling;
+  auto in_position = std::find(_parent->_children.rbegin(), _parent->_children.rend(), this);
+  ++in_position;
+  if (in_position == _parent->_children.rend()) {
+    return NULL;
+  } else {
+    return *in_position;
+  }
 }
 
 Node *
 Node::next_sibling() const
 {
-  return _next_sibling;
-}
-
-void
-Node::insert_next_sibling(Node *new_sibling)
-{
-  if (_next_sibling) {
-    _next_sibling->_prev_sibling = new_sibling;
+  auto in_position = std::find(_parent->_children.begin(), _parent->_children.end(), this);
+  ++in_position;
+  if (in_position == _parent->_children.end()) {
+    return NULL;
+  } else {
+    return *in_position;
   }
-
-  new_sibling->_prev_sibling = this;
-  new_sibling->_next_sibling = _next_sibling;
-
-  _next_sibling = new_sibling;
 }
 
 Document *

@@ -78,31 +78,6 @@ TEST_F(NodeTest, sibling)
   delete parent;
 }
 
-TEST_F(NodeTest, insert_next_sibling)
-{
-  Node *a = new_node();
-  Node *b = new_node();
-  Node *c = new_node();
-
-  a->insert_next_sibling(c);
-  ASSERT_EQ(NULL, a->prev_sibling());
-  ASSERT_EQ(c, a->next_sibling());
-  ASSERT_EQ(a, c->prev_sibling());
-  ASSERT_EQ(NULL, c->next_sibling());
-
-  a->insert_next_sibling(b);
-  ASSERT_EQ(NULL, a->prev_sibling());
-  ASSERT_EQ(b, a->next_sibling());
-  ASSERT_EQ(a, b->prev_sibling());
-  ASSERT_EQ(c, b->next_sibling());
-  ASSERT_EQ(b, c->prev_sibling());
-  ASSERT_EQ(NULL, c->next_sibling());
-
-  delete a;
-  delete b;
-  delete c;
-}
-
 TEST_F(NodeTest, append_child_siblings)
 {
   Node *parent = new_node();

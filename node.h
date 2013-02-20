@@ -9,6 +9,8 @@ class Node;
 #include "output.h"
 #include "to-stream.h"
 
+#include <vector>
+
 typedef enum {
   NODE_TYPE_ELEMENT,
   NODE_TYPE_ATTRIBUTE,
@@ -38,7 +40,6 @@ public:
   Node *parent() const;
   Node *prev_sibling() const;
   Node *next_sibling() const;
-  void insert_next_sibling(Node *new_sibling);
 
   Document *document();
 
@@ -55,9 +56,7 @@ protected:
   node_type_t _type;
   Document *_doc;
   Node *_parent;
-  Node *_first_child;
-  Node *_prev_sibling;
-  Node *_next_sibling;
+  std::vector<Node *>_children;
 };
 
 #endif
