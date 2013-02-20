@@ -18,15 +18,10 @@ public:
   TextNode *new_text_node(const std::string text);
   Comment *new_comment(const std::string text);
 
-  void manage_node(Node *node);
-  void stop_managing_node(Node *node);
-  unsigned int managed_node_count();
-
   Element *root();
 
 private:
   Element *root_;
-  unsigned int managed_node_count_;
 };
 
 #define DOCUMENT_PARSE_ERROR document_parse_error_quark()

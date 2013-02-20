@@ -8,47 +8,6 @@
 class DocumentTest : public ::testing::Test
 {};
 
-TEST_F(DocumentTest, managed_count)
-{
-  Document doc;
-  Element *n1, *n2, *n3;
-
-  n1 = doc.new_element("alpha");
-  ASSERT_EQ(1, doc.managed_node_count());
-  n2 = doc.new_element("beta");
-  ASSERT_EQ(2, doc.managed_node_count());
-  n3 = doc.new_element("omega");
-  ASSERT_EQ(3, doc.managed_node_count());
-
-  n1->append_child(n2);
-  n2->append_child(n3);
-
-  delete n3;
-  ASSERT_EQ(2, doc.managed_node_count());
-  delete n1;
-  ASSERT_EQ(0, doc.managed_node_count());
-}
-
-TEST_F(DocumentTest, move_node_between_documents)
-{
-  Document d1, d2;
-  Element *n;
-
-  n = d1.new_element("hello");
-  n->set_attribute("enabled", "false");
-
-  ASSERT_EQ(1, d1.managed_node_count());
-  ASSERT_EQ(0, d2.managed_node_count());
-
-  d2.manage_node(n);
-  ASSERT_EQ(0, d1.managed_node_count());
-  ASSERT_EQ(1, d2.managed_node_count());
-  ASSERT_EQ(n->name(), "hello");
-  ASSERT_EQ(n->get_attribute("enabled"), "false");
-
-  delete n;
-}
-
 class DocumentParseErrorTest : public ::testing::Test {
 protected:
   Document *doc;

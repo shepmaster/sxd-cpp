@@ -56,8 +56,6 @@ Node::~Node()
   }
 
   foreach_child(FreeChildren());
-
-  _doc->stop_managing_node(this);
 }
 
 Node::Node(Document *doc, node_type_t type) :
@@ -165,8 +163,6 @@ struct ChangeDocumentChildren {
 void
 Node::change_document(Document *doc)
 {
-  _doc->stop_managing_node(this);
-
   _doc = doc;
 
   foreach_child(ChangeDocumentChildren(doc));

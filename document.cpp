@@ -6,8 +6,7 @@
 #include <string.h>
 
 Document::Document() :
-  root_(nullptr),
-  managed_node_count_(0)
+  root_(nullptr)
 {
 }
 
@@ -15,7 +14,6 @@ Element *
 Document::new_element(const std::string name)
 {
   Element *e = new Element(this, name);
-  managed_node_count_++;
   return e;
 }
 
@@ -35,25 +33,6 @@ Comment *
 Document::new_comment(const std::string text)
 {
   return new Comment(this, text);
-}
-
-unsigned int
-Document::managed_node_count()
-{
-  return managed_node_count_;
-}
-
-void
-Document::stop_managing_node(Node *node)
-{
-  managed_node_count_--;
-}
-
-void
-Document::manage_node(Node *node)
-{
-  node->change_document(this);
-  managed_node_count_++;
 }
 
 GQuark
