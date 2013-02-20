@@ -52,12 +52,12 @@ public:
   Nodeset select_nodes(NodeSelector &selector);
 
 protected:
-  node_type_t type_;
-  Document *doc;
-  Node *parent_;
-  Node *first_child_;
-  Node *prev_sibling_;
-  Node *next_sibling_;
+  node_type_t _type;
+  Document *_doc;
+  Node *_parent;
+  Node *_first_child;
+  Node *_prev_sibling;
+  Node *_next_sibling;
 };
 
 #endif
