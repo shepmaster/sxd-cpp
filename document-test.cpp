@@ -1,7 +1,5 @@
 #include "document.h"
 
-//#include "test-utilities.h"
-
 #include "gmock/gmock.h"
 #include <iostream>
 
@@ -16,7 +14,6 @@ protected:
   void TearDown(void)
   {
     if (doc) {
-      delete doc->root();
       delete doc;
     }
     if (error) g_error_free(error);
@@ -61,7 +58,6 @@ protected:
   void TearDown(void)
   {
     if (doc) {
-      delete doc->root();
       delete doc;
     }
     if (error) g_error_free(error);

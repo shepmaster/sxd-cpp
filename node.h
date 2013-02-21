@@ -28,7 +28,7 @@ public:
   typedef std::function<void (Node *)> foreach_fn_t;
 
   Node(Document *document, node_type_t type);
-  virtual ~Node();
+  virtual ~Node() {};
   virtual void change_document(Document *doc);
   virtual void output(Output &output) const = 0;
   void output_children(Output &output) const;

@@ -36,8 +36,6 @@ TEST_F(XPathEvaluationContextTest, size_is_the_count_of_nodes)
   XPathEvaluationContext context(nodes, functions);
 
   ASSERT_EQ(1, context.size());
-
-  delete element;
 }
 
 int

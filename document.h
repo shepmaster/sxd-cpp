@@ -8,6 +8,8 @@
 #include "text-node.h"
 #include "comment.h"
 
+#include <set>
+
 class Document {
 public:
   static Document *parse(const char *input, GError **error);
@@ -22,6 +24,7 @@ public:
 
 private:
   Element *root_;
+  std::set<std::unique_ptr<Node>> _nodes;
 };
 
 #define DOCUMENT_PARSE_ERROR document_parse_error_quark()

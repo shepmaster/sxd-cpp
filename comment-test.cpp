@@ -19,8 +19,6 @@ TEST_F(CommentTest, new_comment)
   ASSERT_TRUE(c != NULL);
   ASSERT_EQ("hello", c->text());
   ASSERT_EQ(NODE_TYPE_COMMENT, c->type());
-
-  delete c;
 }
 
 int

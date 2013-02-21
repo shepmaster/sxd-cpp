@@ -46,8 +46,6 @@ TEST_F(XPathAcceptanceTest, name_selects_child_element)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(two));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, asterisk_selects_all_children_elements)
@@ -60,8 +58,6 @@ TEST_F(XPathAcceptanceTest, asterisk_selects_all_children_elements)
   Nodeset selected_nodes = top->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(child1, child2));
-
-  delete top;
 }
 
 TEST_F(XPathAcceptanceTest, slash_selects_grandchild_element)
@@ -74,8 +70,6 @@ TEST_F(XPathAcceptanceTest, slash_selects_grandchild_element)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(three));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, multiple_slashes_select_great_grandchild_element)
@@ -89,8 +83,6 @@ TEST_F(XPathAcceptanceTest, multiple_slashes_select_great_grandchild_element)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(four));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, dot_abbreviation_selects_self)
@@ -101,8 +93,6 @@ TEST_F(XPathAcceptanceTest, dot_abbreviation_selects_self)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, self_axis_selects_self)
@@ -113,8 +103,6 @@ TEST_F(XPathAcceptanceTest, self_axis_selects_self)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_selects_nothing)
@@ -125,8 +113,6 @@ TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_selects_noth
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_TRUE(selected_nodes.empty());
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, double_dot_abbreviation_selects_parent)
@@ -138,8 +124,6 @@ TEST_F(XPathAcceptanceTest, double_dot_abbreviation_selects_parent)
   Nodeset selected_nodes = two->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, parent_axis_selects_parent)
@@ -151,8 +135,6 @@ TEST_F(XPathAcceptanceTest, parent_axis_selects_parent)
   Nodeset selected_nodes = two->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, two_double_dots_selects_grandparent)
@@ -165,8 +147,6 @@ TEST_F(XPathAcceptanceTest, two_double_dots_selects_grandparent)
   Nodeset selected_nodes = three->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, selector_with_same_name_as_an_axis_selects_element)
@@ -178,8 +158,6 @@ TEST_F(XPathAcceptanceTest, selector_with_same_name_as_an_axis_selects_element)
   Nodeset selected_nodes = one->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(self));
-
-  delete one;
 }
 
 TEST_F(XPathAcceptanceTest, descendant_axis_selects_all_children)
@@ -192,8 +170,6 @@ TEST_F(XPathAcceptanceTest, descendant_axis_selects_all_children)
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(child, grandchild));
-
-  delete parent;
 }
 
 TEST_F(XPathAcceptanceTest, double_slash_abbreviation_selects_self_and_all_children)
@@ -206,8 +182,6 @@ TEST_F(XPathAcceptanceTest, double_slash_abbreviation_selects_self_and_all_child
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(parent, grandchild));
-
-  delete parent;
 }
 
 TEST_F(XPathAcceptanceTest, text_node_node_test_selects_text_nodes)
@@ -219,8 +193,6 @@ TEST_F(XPathAcceptanceTest, text_node_node_test_selects_text_nodes)
   Nodeset selected_nodes = parent->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(text));
-
-  delete parent;
 }
 
 TEST_F(XPathAcceptanceTest, at_sign_abbreviation_selects_attributes)
@@ -232,8 +204,6 @@ TEST_F(XPathAcceptanceTest, at_sign_abbreviation_selects_attributes)
   Nodeset selected_nodes = element->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(attribute));
-
-  delete element;
 }
 
 TEST_F(XPathAcceptanceTest, numeric_predicate_selects_nth_child)
@@ -246,8 +216,6 @@ TEST_F(XPathAcceptanceTest, numeric_predicate_selects_nth_child)
   Nodeset selected_nodes = element->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(two));
-
-  delete element;
 }
 
 TEST_F(XPathAcceptanceTest, string_predicate_selects_all_children)
@@ -260,8 +228,6 @@ TEST_F(XPathAcceptanceTest, string_predicate_selects_all_children)
   Nodeset selected_nodes = element->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one, two));
-
-  delete element;
 }
 
 TEST_F(XPathAcceptanceTest, true_boolean_predicate_selects_all_children)
@@ -274,8 +240,6 @@ TEST_F(XPathAcceptanceTest, true_boolean_predicate_selects_all_children)
   Nodeset selected_nodes = element->select_nodes(xpath);
 
   ASSERT_THAT(selected_nodes, ElementsAre(one, two));
-
-  delete element;
 }
 
 TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)

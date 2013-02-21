@@ -19,7 +19,6 @@ TEST_F(ElementTest, new_element)
   element = doc.new_element(name);
   ASSERT_TRUE(element != NULL);
   ASSERT_EQ(element->name(), name);
-  delete element;
 }
 
 TEST_F(ElementTest, mutated_name)
@@ -33,7 +32,6 @@ TEST_F(ElementTest, mutated_name)
   name[0] = 'y';
   ASSERT_EQ(element->name(), "hello");
 
-  delete element;
   free(name);
 }
 
@@ -48,8 +46,6 @@ TEST_F(ElementTest, set_attribute)
 
   element->set_attribute(attr_name, attr_value);
   ASSERT_EQ(element->get_attribute(attr_name), attr_value);
-
-  delete element;
 }
 
 TEST_F(ElementTest, mutated_attribute)
@@ -69,7 +65,6 @@ TEST_F(ElementTest, mutated_attribute)
   attr_value[0] = 'y';
   ASSERT_EQ(element->get_attribute("type"), "world");
 
-  delete element;
   free(attr_name);
   free(attr_value);
 }
@@ -96,8 +91,6 @@ TEST_F(ElementTest, output_basic)
 
   element->output(out);
   ASSERT_STREQ("<one />", out.string());
-
-  delete element;
 }
 
 TEST_F(ElementTest, output_attribute)
@@ -110,8 +103,6 @@ TEST_F(ElementTest, output_attribute)
 
   element->output(out);
   ASSERT_STREQ("<one hi=\"there\" />", out.string());
-
-  delete element;
 }
 
 TEST_F(ElementTest, output_child)
@@ -126,8 +117,6 @@ TEST_F(ElementTest, output_child)
 
   element->output(out);
   ASSERT_STREQ("<one><two /></one>", out.string());
-
-  delete element;
 }
 
 int main(int argc, char **argv) {

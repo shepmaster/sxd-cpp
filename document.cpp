@@ -2,6 +2,7 @@
 
 #include "document.h"
 #include "tokenizer.h"
+#include "make-unique.h"
 
 #include <string.h>
 
@@ -13,26 +14,37 @@ Document::Document() :
 Element *
 Document::new_element(const std::string name)
 {
-  Element *e = new Element(this, name);
-  return e;
+  auto saved_element = make_unique<Element>(this, name);
+  auto returned_element = saved_element.get();
+  _nodes.insert(std::move(saved_element));
+  return returned_element;
 }
 
 Attribute *
 Document::new_attribute(const std::string name, const std::string value)
 {
-  return new Attribute(this, name, value);
+  auto saved_attribute = make_unique<Attribute>(this, name, value);
+  auto returned_attribute = saved_attribute.get();
+  _nodes.insert(std::move(saved_attribute));
+  return returned_attribute;
 }
 
 TextNode *
 Document::new_text_node(const std::string text)
 {
-  return new TextNode(this, text);
+  auto saved_text_node = make_unique<TextNode>(this, text);
+  auto returned_text_node = saved_text_node.get();
+  _nodes.insert(std::move(saved_text_node));
+  return returned_text_node;
 }
 
 Comment *
 Document::new_comment(const std::string text)
 {
-  return new Comment(this, text);
+  auto saved_comment = make_unique<Comment>(this, text);
+  auto returned_comment = saved_comment.get();
+  _nodes.insert(std::move(saved_comment));
+  return returned_comment;
 }
 
 GQuark

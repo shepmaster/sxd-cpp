@@ -25,8 +25,6 @@ TEST_F(NodeTest, append_child)
   parent->append_child(child);
   ASSERT_EQ(child, parent->first_child());
   ASSERT_EQ(parent, child->parent());
-
-  delete parent;
 }
 
 TEST_F(NodeTest, remove_child)
@@ -40,24 +38,6 @@ TEST_F(NodeTest, remove_child)
   parent->append_child(child);
   parent->remove_child(child);
   ASSERT_EQ(NULL, parent->first_child());
-
-  delete parent;
-  delete child;
-}
-
-TEST_F(NodeTest, free_child)
-{
-  Node *parent;
-  Node *child;
-
-  parent = new_node();
-  child = new_node();
-
-  parent->append_child(child);
-  delete child;
-  ASSERT_EQ(NULL, parent->first_child());
-
-  delete parent;
 }
 
 TEST_F(NodeTest, sibling)
@@ -74,8 +54,6 @@ TEST_F(NodeTest, sibling)
   parent->append_child(child2);
 
   ASSERT_EQ(child2, child1->next_sibling());
-
-  delete parent;
 }
 
 TEST_F(NodeTest, append_child_siblings)
@@ -102,8 +80,6 @@ TEST_F(NodeTest, append_child_siblings)
   ASSERT_EQ(c, b->next_sibling());
   ASSERT_EQ(b, c->prev_sibling());
   ASSERT_EQ(NULL, c->next_sibling());
-
-  delete parent;
 }
 
 int main(int argc, char **argv) {

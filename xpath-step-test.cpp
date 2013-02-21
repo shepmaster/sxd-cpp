@@ -47,10 +47,6 @@ protected:
 
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
-
-  void TearDown() {
-    delete top_element;
-  }
 };
 
 TEST_F(XPathStepTest, axis_is_passed_the_node)

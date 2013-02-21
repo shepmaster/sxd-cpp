@@ -34,8 +34,6 @@ TEST_F(FunctionLastTest, returns_number_of_nodes_in_context)
   auto result = function->evaluate(*context);
 
   ASSERT_EQ(XPathValue(1.0), result);
-
-  delete element;
 }
 
 int

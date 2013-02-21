@@ -38,13 +38,6 @@ Node::foreach_ancestor(foreach_fn_t fn) const
   }
 }
 
-Node::~Node()
-{
-  if (_parent) {
-    _parent->remove_child(this);
-  }
-}
-
 Node::Node(Document *doc, node_type_t type) :
   _type(type),
   _doc(doc),

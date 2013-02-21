@@ -70,10 +70,6 @@ protected:
     parser = make_unique<XPathParser>(tokens, std::ref(creator));
   }
 
-  void TearDown() {
-    delete top_node;
-  }
-
   Node *add_child(Node *parent, std::string name) {
     Node *n = doc.new_element(name);
     parent->append_child(n);

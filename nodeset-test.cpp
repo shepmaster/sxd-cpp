@@ -18,10 +18,6 @@ protected:
   void SetUp() {
     node = new_node();
   }
-
-  void TearDown() {
-    delete node;
-  }
 };
 
 TEST_F(NodesetTest, add_node)
@@ -54,8 +50,6 @@ TEST_F(NodesetTest, add_nodeset)
   ASSERT_EQ(2, nodeset.count());
   ASSERT_EQ(node, nodeset[0]);
   ASSERT_EQ(n2, nodeset[1]);
-
-  delete n2;
 }
 
 int main(int argc, char **argv) {

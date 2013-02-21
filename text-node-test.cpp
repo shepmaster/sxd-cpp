@@ -18,8 +18,6 @@ TEST_F(TextNodeTest, new_text_node)
   tn = doc.new_text_node("I am text");
 
   ASSERT_EQ("I am text", tn->text());
-
-  delete tn;
 }
 
 TEST_F(TextNodeTest, output)
@@ -32,8 +30,6 @@ TEST_F(TextNodeTest, output)
   tn->output(out);
 
   ASSERT_STREQ("I am text", out.string());
-
-  delete tn;
 }
 
 int main(int argc, char **argv) {
