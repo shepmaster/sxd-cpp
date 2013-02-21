@@ -8,7 +8,8 @@ class XPathFunction {
 public:
   virtual ~XPathFunction() {};
   virtual std::string name() const = 0;
-  virtual XPathValue evaluate(const XPathEvaluationContext &context) const = 0;
+  virtual XPathValue evaluate(const XPathEvaluationContext &context,
+                              const std::vector<XPathValue> arguments) const = 0;
 };
 
 #endif

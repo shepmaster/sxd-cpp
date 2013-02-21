@@ -13,6 +13,7 @@ protected:
   Document doc;
   Nodeset nodes;
   XPathFunctionLibrary functions;
+  std::vector<XPathValue> arguments;
   shared_ptr<FunctionLast> function = make_shared<FunctionLast>();
 };
 
@@ -20,7 +21,7 @@ TEST_F(FunctionLastTest, empty_context_returns_zero)
 {
   auto context = make_shared<XPathEvaluationContext>(nodes, functions);
 
-  auto result = function->evaluate(*context);
+  auto result = function->evaluate(*context, arguments);
 
   ASSERT_EQ(XPathValue(0.0), result);
 }
@@ -31,7 +32,7 @@ TEST_F(FunctionLastTest, returns_number_of_nodes_in_context)
   nodes.add(element);
   auto context = make_shared<XPathEvaluationContext>(nodes, functions);
 
-  auto result = function->evaluate(*context);
+  auto result = function->evaluate(*context, arguments);
 
   ASSERT_EQ(XPathValue(1.0), result);
 }

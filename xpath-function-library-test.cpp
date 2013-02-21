@@ -12,7 +12,8 @@ using testing::Return;
 class MockFunction : public XPathFunction {
 public:
   MOCK_CONST_METHOD0(name, std::string());
-  MOCK_CONST_METHOD1(evaluate, XPathValue(const XPathEvaluationContext &context));
+  MOCK_CONST_METHOD2(evaluate, XPathValue(const XPathEvaluationContext &context,
+                                          const std::vector<XPathValue> arguments));
 };
 
 class XPathFunctionLibraryTest : public ::testing::Test {

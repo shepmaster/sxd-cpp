@@ -7,7 +7,8 @@ FunctionFalse::name() const
 }
 
 XPathValue
-FunctionFalse::evaluate(const XPathEvaluationContext &context) const
+FunctionFalse::evaluate(const XPathEvaluationContext &context,
+                        const std::vector<XPathValue> arguments) const
 {
   return XPathValue(false);
 }

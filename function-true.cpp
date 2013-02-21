@@ -7,7 +7,8 @@ FunctionTrue::name() const
 }
 
 XPathValue
-FunctionTrue::evaluate(const XPathEvaluationContext &context) const
+FunctionTrue::evaluate(const XPathEvaluationContext &context,
+                      const std::vector<XPathValue> arguments) const
 {
   return XPathValue(true);
 }

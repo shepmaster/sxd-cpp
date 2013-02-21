@@ -6,7 +6,8 @@
 class FunctionLast : public XPathFunction {
 public:
   std::string name() const;
-  XPathValue evaluate(const XPathEvaluationContext &context) const;
+  XPathValue evaluate(const XPathEvaluationContext &context,
+                      const std::vector<XPathValue> arguments) const;
 };
 
 #endif
