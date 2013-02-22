@@ -242,6 +242,18 @@ TEST_F(XPathAcceptanceTest, true_boolean_predicate_selects_all_children)
   ASSERT_THAT(selected_nodes, ElementsAre(one, two));
 }
 
+TEST_F(XPathAcceptanceTest, predicate_functions_can_accept_one_argument)
+{
+  Node *element = doc.new_element("element");
+  add_child(element, "one");
+  add_child(element, "two");
+
+  XPath xpath = compile("*[not(true())]");
+  Nodeset selected_nodes = element->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre());
+}
+
 TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)
 {
   ASSERT_THROW(compile("bogus::*"), InvalidXPathAxisException);
