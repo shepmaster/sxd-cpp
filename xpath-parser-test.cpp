@@ -429,6 +429,29 @@ TEST_F(XPathParserTest, false_function_predicate_selects_no_nodes)
   ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre());
 }
 
+TEST_F(XPathParserTest, functions_accept_arguments)
+{
+  tokens.add({
+      XPathToken("*"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken("not"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken("true"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen),
+      XPathToken(XPathTokenType::RightParen),
+      XPathToken(XPathTokenType::RightBracket)
+  });
+
+  parser->parse();
+
+  add_child(top_node, "first");
+  add_child(top_node, "second");
+
+  ASSERT_EQ(1, number_of_steps());
+  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({

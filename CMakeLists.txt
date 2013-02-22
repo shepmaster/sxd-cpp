@@ -81,6 +81,7 @@ set(test_programs
   node-test-attribute
   xpath-step
   xpath-value
+  expression-function
   xpath-evaluation-context
   xpath-function-library
   function-last

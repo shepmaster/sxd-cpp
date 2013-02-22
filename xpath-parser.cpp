@@ -106,9 +106,14 @@ parse_primary_expression(XPathTokenSource &source) {
   } else if (token.is(XPathTokenType::Number)) {
     return make_unique<ExpressionLiteral>(token.number());
   } else if (token.is(XPathTokenType::String)) {
+    std::vector<std::shared_ptr<XPathExpression>> arguments;
     consume(source, XPathTokenType::LeftParen);
+    while (! source.next_token_is(XPathTokenType::RightParen)) {
+      // TODO: this should be the top-level expression
+      arguments.push_back(parse_primary_expression(source));
+    }
     consume(source, XPathTokenType::RightParen);
-    return make_unique<ExpressionFunction>(token.string());
+    return make_unique<ExpressionFunction>(token.string(), std::move(arguments));
   } else {
     return nullptr;
   }
