@@ -19,6 +19,10 @@ XPathValue::XPathValue(bool value) :
   _boolean(value), _type(Type::Boolean)
 {}
 
+XPathValue::XPathValue(Nodeset value) :
+  _nodeset(value), _type(Type::Nodeset)
+{}
+
 double
 XPathValue::number() const
 {
@@ -42,7 +46,15 @@ XPathValue::boolean() const
     return _string.length() > 0;
   case Type::Boolean:
     return _boolean;
+  case Type::Nodeset:
+    return _nodeset.size() > 0;
   }
+}
+
+Nodeset
+XPathValue::nodeset() const
+{
+  return _nodeset;
 }
 
 bool
@@ -65,6 +77,8 @@ XPathValue::operator==(const XPathValue &other) const
     return _string == other.string();
   case Type::Boolean:
     return _boolean == other.boolean();
+  case Type::Nodeset:
+    return _nodeset == other.nodeset();
   }
 }
 
@@ -78,6 +92,8 @@ operator<<(std::ostream &os, const XPathValue::Type &type)
     return os << "String";
   case XPathValue::Type::Boolean:
     return os << "Boolean";
+  case XPathValue::Type::Nodeset:
+    return os << "Nodeset";
   }
 }
 

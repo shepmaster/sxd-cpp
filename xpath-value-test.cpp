@@ -1,9 +1,13 @@
 #include "xpath-value.h"
 
+#include "document.h"
+
 #include "gmock/gmock.h"
 #include <iostream>
 
 class XPathValueTest : public ::testing::Test {
+protected:
+  Document doc;
 };
 
 TEST_F(XPathValueTest, can_be_numeric)
@@ -24,6 +28,13 @@ TEST_F(XPathValueTest, can_be_a_boolean)
   ASSERT_EQ(true, value.boolean());
 }
 
+TEST_F(XPathValueTest, can_be_a_nodeset)
+{
+  Nodeset nodes;
+  XPathValue value(nodes);
+  ASSERT_EQ(nodes, value.nodeset());
+}
+
 TEST_F(XPathValueTest, knows_the_native_type_is_number)
 {
   XPathValue value(3.0);
@@ -40,6 +51,13 @@ TEST_F(XPathValueTest, knows_the_native_type_is_boolean)
 {
   XPathValue value(false);
   ASSERT_TRUE(value.is(XPathValue::Type::Boolean));
+}
+
+TEST_F(XPathValueTest, knows_the_native_type_is_nodeset)
+{
+  Nodeset nodes;
+  XPathValue value(nodes);
+  ASSERT_TRUE(value.is(XPathValue::Type::Nodeset));
 }
 
 TEST_F(XPathValueTest, converts_empty_string_to_false)
@@ -76,6 +94,21 @@ TEST_F(XPathValueTest, converts_nan_to_false)
 TEST_F(XPathValueTest, converts_other_number_to_true)
 {
   XPathValue value(42.42);
+  ASSERT_EQ(true, value.boolean());
+}
+
+TEST_F(XPathValueTest, converts_empty_nodeset_to_false)
+{
+  Nodeset nodes;
+  XPathValue value(nodes);
+  ASSERT_EQ(false, value.boolean());
+}
+
+TEST_F(XPathValueTest, converts_non_empty_nodeset_to_true)
+{
+  Nodeset nodes;
+  nodes.add(doc.new_element("a-node"));
+  XPathValue value(nodes);
   ASSERT_EQ(true, value.boolean());
 }
 
