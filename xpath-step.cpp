@@ -31,7 +31,7 @@ XPathStep::select_nodes(Node *current_node,
   if (! _predicate) {
     result.add_nodeset(selected);
   } else {
-    XPathEvaluationContext context(selected, functions);
+    XPathEvaluationContext context(current_node, selected, functions);
     for (auto node : selected) {
       auto value = _predicate->evaluate(context);
 

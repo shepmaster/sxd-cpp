@@ -8,6 +8,7 @@
 class FunctionLastTest : public ::testing::Test {
 protected:
   Document doc;
+  Node *node = doc.new_element("context-node");
   Nodeset nodes;
   XPathFunctionLibrary functions;
   std::vector<XPathValue> arguments;
@@ -16,7 +17,7 @@ protected:
 
 TEST_F(FunctionLastTest, empty_context_returns_zero)
 {
-  XPathEvaluationContext context(nodes, functions);
+  XPathEvaluationContext context(node, nodes, functions);
 
   auto result = function.evaluate(context, arguments);
 
@@ -26,7 +27,7 @@ TEST_F(FunctionLastTest, empty_context_returns_zero)
 TEST_F(FunctionLastTest, returns_number_of_nodes_in_context)
 {
   nodes.add(doc.new_element("element"));
-  XPathEvaluationContext context(nodes, functions);
+  XPathEvaluationContext context(node, nodes, functions);
 
   auto result = function.evaluate(context, arguments);
 

@@ -8,6 +8,7 @@
 class FunctionNotTest : public ::testing::Test {
 protected:
   Document doc;
+  Node *node = doc.new_element("context-node");
   Nodeset nodes;
   XPathFunctionLibrary functions;
   std::vector<XPathValue> arguments;
@@ -16,7 +17,7 @@ protected:
 
 TEST_F(FunctionNotTest, inverts_input_boolean)
 {
-  XPathEvaluationContext context(nodes, functions);
+  XPathEvaluationContext context(node, nodes, functions);
 
   arguments.push_back(XPathValue(false));
 

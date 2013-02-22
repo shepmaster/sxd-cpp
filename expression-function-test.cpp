@@ -18,6 +18,7 @@ using testing::_;
 class ExpressionFunctionTest : public ::testing::Test {
 protected:
   Document doc;
+  Node *node = doc.new_element("context-node");
   Nodeset nodes;
   XPathFunctionLibrary functions;
   std::vector<std::shared_ptr<XPathExpression>> arguments;
@@ -33,7 +34,7 @@ protected:
 
 TEST_F(ExpressionFunctionTest, evaluates_input_arguments)
 {
-  XPathEvaluationContext context(nodes, functions);
+  XPathEvaluationContext context(node, nodes, functions);
 
   auto argument = make_shared<MockExpression>();
   EXPECT_CALL(*argument, evaluate(Ref(context)));

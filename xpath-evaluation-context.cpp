@@ -1,9 +1,18 @@
 #include "xpath-evaluation-context.h"
 
-XPathEvaluationContext::XPathEvaluationContext(Nodeset nodes,
+XPathEvaluationContext::XPathEvaluationContext(Node *node, Nodeset nodes,
                                                const XPathFunctionLibrary &functions) :
-  _nodes(nodes), _position(1), _functions(functions)
+  _node(node),
+  _nodes(nodes),
+  _position(1),
+  _functions(functions)
 {
+}
+
+Node *
+XPathEvaluationContext::node() const
+{
+  return _node;
 }
 
 unsigned long
