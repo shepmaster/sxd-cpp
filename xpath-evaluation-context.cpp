@@ -16,7 +16,7 @@ XPathEvaluationContext::node() const
 }
 
 unsigned long
-XPathEvaluationContext::position()
+XPathEvaluationContext::position() const
 {
   return _position;
 }

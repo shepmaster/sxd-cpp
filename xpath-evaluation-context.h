@@ -11,7 +11,7 @@ class XPathEvaluationContext
 public:
   XPathEvaluationContext(Node *node, Nodeset nodes, const XPathFunctionLibrary &functions);
   Node *node() const;
-  unsigned long position();
+  unsigned long position() const;
   unsigned long size() const;
   void next();
   std::shared_ptr<XPathFunction> function_for_name(std::string name) const;
