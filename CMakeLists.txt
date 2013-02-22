@@ -51,6 +51,7 @@ set(
   xpath-value.cpp
   xpath-function-library.cpp
   function-last.cpp
+  function-not.cpp
   function-true.cpp
   function-false.cpp
   xpath-core-function-library.cpp
@@ -83,6 +84,7 @@ set(test_programs
   xpath-evaluation-context
   xpath-function-library
   function-last
+  function-not
   xpath-core-function-library
 )
 foreach(program ${test_programs})
