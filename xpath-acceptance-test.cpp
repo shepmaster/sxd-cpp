@@ -17,30 +17,30 @@ protected:
     return XPathFactory().compile(xpath);
   }
 
-  Node *
+  Element *
   add_child(Node *top_node, std::string name) {
-    Node *n = doc.new_element(name);
+    auto n = doc.new_element(name);
     top_node->append_child(n);
     return n;
   }
 
-  Node *
+  TextNode *
   add_text_node(Node *parent, std::string text) {
-    Node *n = doc.new_text_node(text);
-    parent->append_child(n);
-    return n;
+    auto tn = doc.new_text_node(text);
+    parent->append_child(tn);
+    return tn;
   }
 
-  Node *
-  set_attribute(Node *parent, std::string name, std::string value) {
-    return dynamic_cast<Element *>(parent)->set_attribute(name, value);
+  Attribute *
+  set_attribute(Element *parent, std::string name, std::string value) {
+    return parent->set_attribute(name, value);
   }
 };
 
 TEST_F(XPathAcceptanceTest, name_selects_child_element)
 {
-  Node *one = doc.new_element("one");
-  Node *two = add_child(one, "two");
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
 
   XPath xpath = compile("two");
   Nodeset selected_nodes = one->select_nodes(xpath);
@@ -50,9 +50,9 @@ TEST_F(XPathAcceptanceTest, name_selects_child_element)
 
 TEST_F(XPathAcceptanceTest, asterisk_selects_all_children_elements)
 {
-  Node *top = doc.new_element("top");
-  Node *child1 = add_child(top, "child1");
-  Node *child2 = add_child(top, "child2");
+  Element *top = doc.new_element("top");
+  Element *child1 = add_child(top, "child1");
+  Element *child2 = add_child(top, "child2");
 
   XPath xpath = compile("*");
   Nodeset selected_nodes = top->select_nodes(xpath);
@@ -62,9 +62,9 @@ TEST_F(XPathAcceptanceTest, asterisk_selects_all_children_elements)
 
 TEST_F(XPathAcceptanceTest, slash_selects_grandchild_element)
 {
-  Node *one = doc.new_element("one");
-  Node *two = add_child(one, "two");
-  Node *three = add_child(two, "three");
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
+  Element *three = add_child(two, "three");
 
   XPath xpath = compile("two/three");
   Nodeset selected_nodes = one->select_nodes(xpath);
@@ -74,10 +74,10 @@ TEST_F(XPathAcceptanceTest, slash_selects_grandchild_element)
 
 TEST_F(XPathAcceptanceTest, multiple_slashes_select_great_grandchild_element)
 {
-  Node *one = doc.new_element("one");
-  Node *two = add_child(one, "two");
-  Node *three = add_child(two, "three");
-  Node *four = add_child(three, "four");
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
+  Element *three = add_child(two, "three");
+  Element *four = add_child(three, "four");
 
   XPath xpath = compile("two/three/four");
   Nodeset selected_nodes = one->select_nodes(xpath);
@@ -87,7 +87,7 @@ TEST_F(XPathAcceptanceTest, multiple_slashes_select_great_grandchild_element)
 
 TEST_F(XPathAcceptanceTest, dot_abbreviation_selects_self)
 {
-  Node *one = doc.new_element("one");
+  Element *one = doc.new_element("one");
 
   XPath xpath = compile(".");
   Nodeset selected_nodes = one->select_nodes(xpath);
@@ -97,7 +97,7 @@ TEST_F(XPathAcceptanceTest, dot_abbreviation_selects_self)
 
 TEST_F(XPathAcceptanceTest, self_axis_selects_self)
 {
-  Node *one = doc.new_element("one");
+  Element *one = doc.new_element("one");
 
   XPath xpath = compile("self::one");
   Nodeset selected_nodes = one->select_nodes(xpath);
@@ -107,7 +107,7 @@ TEST_F(XPathAcceptanceTest, self_axis_selects_self)
 
 TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_selects_nothing)
 {
-  Node *one = doc.new_element("one");
+  Element *one = doc.new_element("one");
 
   XPath xpath = compile("self::two");
   Nodeset selected_nodes = one->select_nodes(xpath);
@@ -117,8 +117,8 @@ TEST_F(XPathAcceptanceTest, self_axis_without_matching_element_name_selects_noth
 
 TEST_F(XPathAcceptanceTest, double_dot_abbreviation_selects_parent)
 {
-  Node *one = doc.new_element("one");
-  Node *two = add_child(one, "two");
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
 
   XPath xpath = compile("..");
   Nodeset selected_nodes = two->select_nodes(xpath);
@@ -128,8 +128,8 @@ TEST_F(XPathAcceptanceTest, double_dot_abbreviation_selects_parent)
 
 TEST_F(XPathAcceptanceTest, parent_axis_selects_parent)
 {
-  Node *one = doc.new_element("one");
-  Node *two = add_child(one, "two");
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
 
   XPath xpath = compile("parent::one");
   Nodeset selected_nodes = two->select_nodes(xpath);
@@ -139,9 +139,9 @@ TEST_F(XPathAcceptanceTest, parent_axis_selects_parent)
 
 TEST_F(XPathAcceptanceTest, two_double_dots_selects_grandparent)
 {
-  Node *one = doc.new_element("one");
-  Node *two = add_child(one, "two");
-  Node *three = add_child(two, "three");
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
+  Element *three = add_child(two, "three");
 
   XPath xpath = compile("../..");
   Nodeset selected_nodes = three->select_nodes(xpath);
@@ -151,8 +151,8 @@ TEST_F(XPathAcceptanceTest, two_double_dots_selects_grandparent)
 
 TEST_F(XPathAcceptanceTest, selector_with_same_name_as_an_axis_selects_element)
 {
-  Node *one = doc.new_element("one");
-  Node *self = add_child(one, "self");
+  Element *one = doc.new_element("one");
+  Element *self = add_child(one, "self");
 
   XPath xpath = compile("self");
   Nodeset selected_nodes = one->select_nodes(xpath);
@@ -162,9 +162,9 @@ TEST_F(XPathAcceptanceTest, selector_with_same_name_as_an_axis_selects_element)
 
 TEST_F(XPathAcceptanceTest, descendant_axis_selects_all_children)
 {
-  Node *parent = doc.new_element("parent");
-  Node *child = add_child(parent, "child");
-  Node *grandchild = add_child(child, "grandchild");
+  Element *parent = doc.new_element("parent");
+  Element *child = add_child(parent, "child");
+  Element *grandchild = add_child(child, "grandchild");
 
   XPath xpath = compile("descendant::*");
   Nodeset selected_nodes = parent->select_nodes(xpath);
@@ -174,9 +174,9 @@ TEST_F(XPathAcceptanceTest, descendant_axis_selects_all_children)
 
 TEST_F(XPathAcceptanceTest, double_slash_abbreviation_selects_self_and_all_children)
 {
-  Node *parent = doc.new_element("yup");
-  Node *child = add_child(parent, "nope");
-  Node *grandchild = add_child(child, "yup");
+  Element *parent = doc.new_element("yup");
+  Element *child = add_child(parent, "nope");
+  Element *grandchild = add_child(child, "yup");
 
   XPath xpath = compile(".//self::yup");
   Nodeset selected_nodes = parent->select_nodes(xpath);
@@ -186,8 +186,8 @@ TEST_F(XPathAcceptanceTest, double_slash_abbreviation_selects_self_and_all_child
 
 TEST_F(XPathAcceptanceTest, text_node_node_test_selects_text_nodes)
 {
-  Node *parent = doc.new_element("element");
-  Node *text = add_text_node(parent, "some text");
+  Element *parent = doc.new_element("element");
+  TextNode *text = add_text_node(parent, "some text");
 
   XPath xpath = compile("text()");
   Nodeset selected_nodes = parent->select_nodes(xpath);
@@ -197,8 +197,8 @@ TEST_F(XPathAcceptanceTest, text_node_node_test_selects_text_nodes)
 
 TEST_F(XPathAcceptanceTest, at_sign_abbreviation_selects_attributes)
 {
-  Node *element = doc.new_element("element");
-  Node *attribute = set_attribute(element, "name", "value");
+  Element *element = doc.new_element("element");
+  Attribute *attribute = set_attribute(element, "name", "value");
 
   XPath xpath = compile("@name");
   Nodeset selected_nodes = element->select_nodes(xpath);
@@ -208,9 +208,9 @@ TEST_F(XPathAcceptanceTest, at_sign_abbreviation_selects_attributes)
 
 TEST_F(XPathAcceptanceTest, numeric_predicate_selects_nth_child)
 {
-  Node *element = doc.new_element("element");
+  Element *element = doc.new_element("element");
   add_child(element, "one");
-  Node *two = add_child(element, "two");
+  Element *two = add_child(element, "two");
 
   XPath xpath = compile("*[2]");
   Nodeset selected_nodes = element->select_nodes(xpath);
@@ -220,9 +220,9 @@ TEST_F(XPathAcceptanceTest, numeric_predicate_selects_nth_child)
 
 TEST_F(XPathAcceptanceTest, string_predicate_selects_all_children)
 {
-  Node *element = doc.new_element("element");
-  Node *one = add_child(element, "one");
-  Node *two = add_child(element, "two");
+  Element *element = doc.new_element("element");
+  Element *one = add_child(element, "one");
+  Element *two = add_child(element, "two");
 
   XPath xpath = compile("*['hello']");
   Nodeset selected_nodes = element->select_nodes(xpath);
@@ -232,9 +232,9 @@ TEST_F(XPathAcceptanceTest, string_predicate_selects_all_children)
 
 TEST_F(XPathAcceptanceTest, true_boolean_predicate_selects_all_children)
 {
-  Node *element = doc.new_element("element");
-  Node *one = add_child(element, "one");
-  Node *two = add_child(element, "two");
+  Element *element = doc.new_element("element");
+  Element *one = add_child(element, "one");
+  Element *two = add_child(element, "two");
 
   XPath xpath = compile("*[true()]");
   Nodeset selected_nodes = element->select_nodes(xpath);
@@ -244,7 +244,7 @@ TEST_F(XPathAcceptanceTest, true_boolean_predicate_selects_all_children)
 
 TEST_F(XPathAcceptanceTest, predicate_functions_can_accept_one_argument)
 {
-  Node *element = doc.new_element("element");
+  Element *element = doc.new_element("element");
   add_child(element, "one");
   add_child(element, "two");
 
