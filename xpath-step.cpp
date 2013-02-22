@@ -21,25 +21,25 @@ include(XPathValue value, XPathEvaluationContext context)
 }
 
 void
-XPathStep::select_nodes(Node *current_node,
-                        const XPathFunctionLibrary &functions,
+XPathStep::select_nodes(const XPathEvaluationContext &context,
                         Nodeset &result)
 {
   Nodeset selected;
-  _axis->select_nodes(current_node, *_node_test, selected);
+  _axis->select_nodes(context.node(), *_node_test, selected);
 
   if (! _predicate) {
     result.add_nodeset(selected);
   } else {
-    XPathEvaluationContext context(current_node, selected, functions);
+    // FIXME: The context node should be the child we are looping on
+    auto sub_context = context.new_context_for(context.node(), selected);
     for (auto node : selected) {
-      auto value = _predicate->evaluate(context);
+      auto value = _predicate->evaluate(sub_context);
 
-      if (include(value, context)) {
+      if (include(value, sub_context)) {
         result.add(node);
       }
 
-      context.next();
+      sub_context.next();
     }
   }
 }

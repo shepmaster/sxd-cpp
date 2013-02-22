@@ -16,15 +16,19 @@ XPath::select_nodes(Node *node)
   Nodeset result;
   result.add(node);
 
+  Nodeset junk;
+  XPathFunctionLibrary functions;
+  XPathCoreFunctionLibrary::register_functions(functions);
+
   for (auto &step : _steps) {
     Nodeset step_result;
-    XPathFunctionLibrary functions;
-
-    XPathCoreFunctionLibrary::register_functions(functions);
 
     for (auto i = 0; i < result.count(); i++) {
       auto *current_node = result[i];
-      step->select_nodes(current_node, functions, step_result);
+
+      XPathEvaluationContext context(current_node, junk, functions);
+
+      step->select_nodes(context, step_result);
     }
 
     result = step_result;

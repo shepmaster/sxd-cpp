@@ -16,8 +16,7 @@ public:
             std::shared_ptr<XPathNodeTest> node_test,
             std::shared_ptr<XPathExpression> predicate);
 
-  void select_nodes(Node *current_node,
-                    const XPathFunctionLibrary &functions,
+  void select_nodes(const XPathEvaluationContext &context,
                     Nodeset &step_result);
 
 private:

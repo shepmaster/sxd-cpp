@@ -16,6 +16,8 @@ public:
   void next();
   std::shared_ptr<XPathFunction> function_for_name(std::string name) const;
 
+  XPathEvaluationContext new_context_for(Node *node, Nodeset nodes) const;
+
 private:
   Node *_node;
   Nodeset _nodes;

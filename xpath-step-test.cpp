@@ -22,18 +22,16 @@ using testing::_;
 class XPathStepTest : public ::testing::Test {
 protected:
   Document doc;
-  Element *top_element;
+  Element *top_element = doc.new_element("top");
 
   shared_ptr<MockAxis> axis = make_shared<MockAxis>();
   shared_ptr<MockNodeTest> node_test = make_shared<MockNodeTest>();
   shared_ptr<MockExpression> predicate = make_shared<MockExpression>();
 
-  XPathFunctionLibrary functions;
   Nodeset nodes;
+  XPathFunctionLibrary functions;
 
   void SetUp() {
-    top_element = doc.new_element("top");
-
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 };
@@ -44,7 +42,8 @@ TEST_F(XPathStepTest, axis_is_passed_the_node)
 
   XPathStep step(axis, node_test, nullptr);
 
-  step.select_nodes(top_element, functions, nodes);
+  XPathEvaluationContext context(top_element, nodes, functions);
+  step.select_nodes(context, nodes);
 }
 
 void
@@ -60,7 +59,8 @@ TEST_F(XPathStepTest, predicate_is_evaluated)
 
   XPathStep step(axis, node_test, predicate);
 
-  step.select_nodes(top_element, functions, nodes);
+  XPathEvaluationContext context(top_element, nodes, functions);
+  step.select_nodes(context, nodes);
 }
 
 TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
@@ -70,7 +70,8 @@ TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
 
   XPathStep step(axis, node_test, predicate);
 
-  step.select_nodes(top_element, functions, nodes);
+  XPathEvaluationContext context(top_element, nodes, functions);
+  step.select_nodes(context, nodes);
 
   ASSERT_THAT(nodes, ElementsAre(top_element));
 }
@@ -82,7 +83,8 @@ TEST_F(XPathStepTest, predicate_with_string_selects_all_nodes)
 
   XPathStep step(axis, node_test, predicate);
 
-  step.select_nodes(top_element, functions, nodes);
+  XPathEvaluationContext context(top_element, nodes, functions);
+  step.select_nodes(context, nodes);
 
   ASSERT_THAT(nodes, ElementsAre(top_element));
 }

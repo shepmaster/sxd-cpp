@@ -38,3 +38,9 @@ XPathEvaluationContext::function_for_name(std::string name) const
 {
   return _functions.function_for_name(name);
 }
+
+XPathEvaluationContext
+XPathEvaluationContext::new_context_for(Node *node, Nodeset nodes) const
+{
+  return XPathEvaluationContext(node, nodes, _functions);
+}

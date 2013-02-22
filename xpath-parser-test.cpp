@@ -88,7 +88,10 @@ protected:
 
   Nodeset apply_xpath_step(int index, Node *context_node) {
     Nodeset result;
-    creator.saved_parts[index]->select_nodes(context_node, functions, result);
+    Nodeset junk;
+    XPathEvaluationContext context(context_node, junk, functions);
+
+    creator.saved_parts[index]->select_nodes(context, result);
     return result;
   }
 
