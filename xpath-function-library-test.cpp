@@ -3,18 +3,13 @@
 #include "xpath-function.h"
 
 #include "gmock/gmock.h"
+#include "mock-xpath-function.h"
+
 #include <iostream>
 
 using std::make_shared;
 
 using testing::Return;
-
-class MockFunction : public XPathFunction {
-public:
-  MOCK_CONST_METHOD0(name, std::string());
-  MOCK_CONST_METHOD2(evaluate, XPathValue(const XPathEvaluationContext &context,
-                                          const std::vector<XPathValue> arguments));
-};
 
 class XPathFunctionLibraryTest : public ::testing::Test {
 protected:

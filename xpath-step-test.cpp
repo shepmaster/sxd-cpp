@@ -3,6 +3,10 @@
 #include "document.h"
 
 #include "gmock/gmock.h"
+#include "mock-xpath-axis.h"
+#include "mock-xpath-node-test.h"
+#include "mock-xpath-expression.h"
+
 #include <iostream>
 
 using std::shared_ptr;
@@ -14,21 +18,6 @@ using testing::Invoke;
 using testing::Return;
 using testing::Unused;
 using testing::_;
-
-class MockAxis : public XPathAxis {
-public:
-  MOCK_METHOD3(select_nodes, void(Node *node, XPathNodeTest const &test, Nodeset &result));
-};
-
-class MockNodeTest : public XPathNodeTest {
-public:
-  MOCK_CONST_METHOD2(test, void(Node *node, Nodeset &result));
-};
-
-class MockExpression : public XPathExpression {
-public:
-  MOCK_CONST_METHOD1(evaluate, XPathValue(const XPathEvaluationContext &context));
-};
 
 class XPathStepTest : public ::testing::Test {
 protected:
