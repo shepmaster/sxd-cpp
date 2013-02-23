@@ -1,6 +1,6 @@
 #include "xpath-tokenizer-buffer.h"
 
-XPathTokenizerBuffer::XPathTokenizerBuffer(XPathTokenizer tokenizer) :
+XPathTokenizerBuffer::XPathTokenizerBuffer(XPathRawTokenSource &tokenizer) :
   _tokenizer(tokenizer), _token_is_saved(false), _token(XPathToken(""))
 {
 }

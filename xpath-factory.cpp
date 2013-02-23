@@ -20,7 +20,8 @@ public:
 XPath
 XPathFactory::compile(std::string xpath)
 {
-  auto tokenizer = XPathTokenizerBuffer(XPathTokenizer(xpath));
+  auto base_tokenizer = XPathTokenizer(xpath);
+  auto tokenizer = XPathTokenizerBuffer(base_tokenizer);
   FatalParseErrors fatal_errors;
 
   XPathParser parser(tokenizer, fatal_errors);

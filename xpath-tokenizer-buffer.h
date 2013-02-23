@@ -6,7 +6,7 @@
 
 class XPathTokenizerBuffer : public XPathTokenSource {
 public:
-  XPathTokenizerBuffer(XPathTokenizer tokenizer);
+  XPathTokenizerBuffer(XPathRawTokenSource &tokenizer);
   bool has_more_tokens();
   XPathToken next_token();
   bool next_token_is(XPathTokenType type);
@@ -14,7 +14,7 @@ public:
 private:
   XPathToken peek_token();
 
-  XPathTokenizer _tokenizer;
+  XPathRawTokenSource &_tokenizer;
   bool _token_is_saved;
   XPathToken _token;
 };
