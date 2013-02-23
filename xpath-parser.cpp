@@ -13,6 +13,7 @@
 #include "expression-literal.h"
 #include "expression-function.h"
 #include "expression-path.h"
+#include "expression-addition.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
@@ -124,6 +125,8 @@ looks_like_path(XPathTokenSource &source)
 std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &_source)
 {
+  if (! _source.next_token_is(XPathTokenType::String)) return nullptr;
+
   std::vector<std::unique_ptr<XPathStep>> steps;
 
   while(true) {
@@ -174,9 +177,20 @@ parse_path_expression(XPathTokenSource &_source)
 
 std::unique_ptr<XPathExpression>
 XPathParser::parse() {
-  if (looks_like_path(_source)) {
-    return parse_path_expression(_source);
-  } else {
-    return parse_primary_expression(_source);
+  std::unique_ptr<XPathExpression> expr;
+
+  expr = parse_path_expression(_source);
+  if (expr) return expr;
+
+  expr = parse_primary_expression(_source);
+  if (expr) {
+    if (_source.next_token_is(XPathTokenType::PlusSign)) {
+      consume(_source, XPathTokenType::PlusSign);
+      auto expr2 = parse_primary_expression(_source);
+      return make_unique<ExpressionAddition>(move(expr), move(expr2));
+    }
+    return expr;
   }
+
+  return nullptr;
 }

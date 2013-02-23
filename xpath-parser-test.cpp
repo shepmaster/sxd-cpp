@@ -384,6 +384,19 @@ TEST_F(XPathParserTest, literal_at_the_top_level)
   ASSERT_EQ(3.2, evaluate(expr).number());
 }
 
+TEST_F(XPathParserTest, addition_of_two_literals)
+{
+  tokens.add({
+      XPathToken(1.1),
+        XPathToken(XPathTokenType::PlusSign),
+        XPathToken(2.2)
+  });
+
+  auto expr = parser->parse();
+
+  ASSERT_DOUBLE_EQ(3.3, evaluate(expr).number());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({
