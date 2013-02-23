@@ -47,6 +47,7 @@ set(
   xpath-step.cpp
   expression-literal.cpp
   expression-function.cpp
+  expression-path.cpp
   xpath-evaluation-context.cpp
   xpath-value.cpp
   xpath-function-library.cpp

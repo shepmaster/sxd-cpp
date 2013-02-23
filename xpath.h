@@ -5,17 +5,17 @@
 #include "nodeset.h"
 #include "node.h"
 
-#include "xpath-step.h"
+#include "xpath-expression.h"
 
 class XPath : public NodeSelector {
 public:
   XPath();
-  XPath(std::vector<std::unique_ptr<XPathStep>> &&steps);
+  XPath(std::unique_ptr<XPathExpression> expression);
 
-  Nodeset select_nodes(Node *node);
+  Nodeset select_nodes(Node *node) const;
 
 private:
-  std::vector<std::unique_ptr<XPathStep>> _steps;
+  std::unique_ptr<XPathExpression> _expression;
 };
 
 #endif

@@ -145,7 +145,7 @@ Node::output_children(Output &output) const
 }
 
 Nodeset
-Node::select_nodes(NodeSelector &selector)
+Node::select_nodes(const NodeSelector &selector)
 {
   return selector.select_nodes(this);
 }

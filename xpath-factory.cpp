@@ -5,13 +5,9 @@
 
 #include <memory>
 
-class XPathStepCapture : public XPathCreator
+class FatalParseErrors : public XPathParseErrorNotifier
 {
 public:
-  void add_step(std::unique_ptr<XPathStep> step) {
-    steps.push_back(std::move(step));
-  }
-
   void invalid_axis(std::string axis_name) {
     throw InvalidXPathAxisException(axis_name);
   }
@@ -19,23 +15,14 @@ public:
   void invalid_node_test(std::string name) {
     throw InvalidNodeTestException(name);
   }
-
-  XPath finalize() {
-    return XPath(std::move(steps));
-  }
-
-private:
-  std::vector<std::unique_ptr<XPathStep>> steps;
 };
 
 XPath
 XPathFactory::compile(std::string xpath)
 {
   auto tokenizer = XPathTokenizerBuffer(XPathTokenizer(xpath));
-  XPathStepCapture captor;
+  FatalParseErrors fatal_errors;
 
-  XPathParser parser(tokenizer, captor);
-  parser.parse();
-
-  return captor.finalize();
+  XPathParser parser(tokenizer, fatal_errors);
+  return XPath(parser.parse());
 }

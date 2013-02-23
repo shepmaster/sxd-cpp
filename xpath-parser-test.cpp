@@ -36,11 +36,7 @@ struct StubTokens : public XPathTokenSource {
   int index = 0;
 };
 
-struct XPathSaver : public XPathCreator {
-  void add_step(std::unique_ptr<XPathStep> step) {
-    saved_parts.push_back(std::move(step));
-  };
-
+struct ParseErrorSaver : public XPathParseErrorNotifier {
   void invalid_axis(std::string axis) {
     last_error = axis;
   }
@@ -49,7 +45,6 @@ struct XPathSaver : public XPathCreator {
     last_error = name;
   }
 
-  std::vector<std::unique_ptr<XPathStep>> saved_parts;
   std::string last_error;
 };
 
@@ -59,7 +54,7 @@ protected:
   Node *top_node;
 
   StubTokens tokens;
-  XPathSaver creator;
+  ParseErrorSaver error_saver;
   std::unique_ptr<XPathParser> parser;
 
   XPathFunctionLibrary functions;
@@ -67,7 +62,7 @@ protected:
   void SetUp() {
     XPathCoreFunctionLibrary::register_functions(functions);
     top_node = doc.new_element("top-node");
-    parser = make_unique<XPathParser>(tokens, std::ref(creator));
+    parser = make_unique<XPathParser>(tokens, std::ref(error_saver));
   }
 
   Node *add_child(Node *parent, std::string name) {
@@ -86,21 +81,17 @@ protected:
     return n;
   }
 
-  Nodeset apply_xpath_step(int index, Node *context_node) {
-    Nodeset result;
-    Nodeset junk;
-    XPathEvaluationContext context(context_node, junk, functions);
-
-    creator.saved_parts[index]->select_nodes(context, result);
-    return result;
-  }
-
-  int number_of_steps() {
-    return creator.saved_parts.size();
+  XPathValue
+  evaluate_on(const std::unique_ptr<XPathExpression> &expr, Node *node) {
+    Nodeset empty_nodeset;
+    XPathFunctionLibrary functions;
+    XPathCoreFunctionLibrary::register_functions(functions);
+    XPathEvaluationContext context(node, empty_nodeset, functions);
+    return expr->evaluate(context);
   }
 
   std::string last_error_message() {
-    return creator.last_error;
+    return error_saver.last_error;
   }
 };
 
@@ -108,12 +99,11 @@ TEST_F(XPathParserTest, parses_string_as_child)
 {
   tokens.add(XPathToken("hello"));
 
-  parser->parse();
-
-  ASSERT_EQ(1, number_of_steps());
+  auto expr = parser->parse();
 
   auto hello = add_child(top_node, "hello");
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(hello));
+
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(hello));
 }
 
 TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
@@ -123,14 +113,12 @@ TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
       XPathToken("world")
   });
 
-  parser->parse();
-
-  ASSERT_EQ(2, number_of_steps());
+  auto expr = parser->parse();
 
   auto hello = add_child(top_node, "hello");
-  auto world = add_child(top_node, "world");
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(hello));
-  ASSERT_THAT(apply_xpath_step(1, top_node), ElementsAre(world));
+  auto world = add_child(hello, "world");
+
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(world));
 }
 
 TEST_F(XPathParserTest, parses_self_axis)
@@ -141,10 +129,9 @@ TEST_F(XPathParserTest, parses_self_axis)
       XPathToken("top-node")
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(top_node));
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(top_node));
 }
 
 TEST_F(XPathParserTest, parses_parent_axis)
@@ -155,11 +142,10 @@ TEST_F(XPathParserTest, parses_parent_axis)
       XPathToken("top-node")
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto hello = add_child(top_node, "hello");
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, hello), ElementsAre(top_node));
+  ASSERT_THAT(evaluate_on(expr, hello).nodeset(), ElementsAre(top_node));
 }
 
 TEST_F(XPathParserTest, parses_descendant_axis)
@@ -170,13 +156,12 @@ TEST_F(XPathParserTest, parses_descendant_axis)
       XPathToken("two")
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
   auto two = add_child(one, "two");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(two));
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(two));
 }
 
 TEST_F(XPathParserTest, parses_descendant_or_self_axis)
@@ -187,13 +172,12 @@ TEST_F(XPathParserTest, parses_descendant_or_self_axis)
       XPathToken("*")
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
-  add_child(one, "two");
+  auto two = add_child(one, "two");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_EQ(2, apply_xpath_step(0, one).size());
+  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(one, two));
 }
 
 TEST_F(XPathParserTest, parses_attribute_axis)
@@ -204,37 +188,34 @@ TEST_F(XPathParserTest, parses_attribute_axis)
       XPathToken("*")}
   );
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
   auto attr = add_attribute(one, "hello", "world");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(attr));
+  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(attr));
 }
 
 TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 {
   tokens.add(XPathToken("self"));
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto self = add_child(top_node, "self");
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(self));
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(self));
 }
 
 TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
 {
   tokens.add(XPathToken("."));
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
   auto text = add_text_node(one, "text");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
+  ASSERT_THAT(evaluate_on(expr, text).nodeset(), ElementsAre(text));
 }
 
 TEST_F(XPathParserTest, double_slash_abbreviation_selects_itself_and_children)
@@ -242,13 +223,12 @@ TEST_F(XPathParserTest, double_slash_abbreviation_selects_itself_and_children)
   // This is a bit dubious - can you really say '//' by itself?
   tokens.add(XPathToken(XPathTokenType::DoubleSlash));
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
   auto two = add_child(one, "two");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(one, two));
+  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(one, two));
 }
 
 TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
@@ -256,13 +236,12 @@ TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
   // This is a bit dubious - can you really say '//' by itself?
   tokens.add(XPathToken(XPathTokenType::DoubleSlash));
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
-  add_text_node(one, "text");
+  auto text = add_text_node(one, "text");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_EQ(2, apply_xpath_step(0, one).size());
+  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(one, text));
 }
 
 TEST_F(XPathParserTest, parses_node_node_test)
@@ -273,13 +252,12 @@ TEST_F(XPathParserTest, parses_node_node_test)
       XPathToken(XPathTokenType::RightParen)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
   auto two = add_child(one, "two");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(two));
+  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(two));
 }
 
 TEST_F(XPathParserTest, parses_text_node_test)
@@ -290,13 +268,12 @@ TEST_F(XPathParserTest, parses_text_node_test)
       XPathToken(XPathTokenType::RightParen)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
   auto text = add_text_node(one, "text");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, one), ElementsAre(text));
+  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(text));
 }
 
 TEST_F(XPathParserTest, parses_axis_and_node_test)
@@ -309,13 +286,12 @@ TEST_F(XPathParserTest, parses_axis_and_node_test)
       XPathToken(XPathTokenType::RightParen)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto one = add_child(top_node, "one");
   auto text = add_text_node(one, "text");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, text), ElementsAre(text));
+  ASSERT_THAT(evaluate_on(expr, text).nodeset(), ElementsAre(text));
 }
 
 TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
@@ -325,13 +301,12 @@ TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
       XPathToken("name")
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto element = add_child(top_node, "element");
   auto attr = add_attribute(element, "name", "value");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, element), ElementsAre(attr));
+  ASSERT_THAT(evaluate_on(expr, element).nodeset(), ElementsAre(attr));
 }
 
 TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)
@@ -343,13 +318,12 @@ TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)
       XPathToken(XPathTokenType::RightBracket)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   add_child(top_node, "first");
   auto second = add_child(top_node, "second");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(second));
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(second));
 }
 
 TEST_F(XPathParserTest, apostrophe_string_predicate_selects_all_nodes)
@@ -363,13 +337,12 @@ TEST_F(XPathParserTest, apostrophe_string_predicate_selects_all_nodes)
       XPathToken(XPathTokenType::RightBracket)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto first = add_child(top_node, "first");
   auto second = add_child(top_node, "second");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(first, second));
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(first, second));
 }
 
 TEST_F(XPathParserTest, double_quote_string_predicate_selects_all_nodes)
@@ -383,13 +356,12 @@ TEST_F(XPathParserTest, double_quote_string_predicate_selects_all_nodes)
       XPathToken(XPathTokenType::RightBracket)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto first = add_child(top_node, "first");
   auto second = add_child(top_node, "second");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(first, second));
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(first, second));
 }
 
 TEST_F(XPathParserTest, true_function_predicate_selects_all_nodes)
@@ -403,13 +375,12 @@ TEST_F(XPathParserTest, true_function_predicate_selects_all_nodes)
       XPathToken(XPathTokenType::RightBracket)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   auto first = add_child(top_node, "first");
   auto second = add_child(top_node, "second");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre(first, second));
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(first, second));
 }
 
 TEST_F(XPathParserTest, false_function_predicate_selects_no_nodes)
@@ -423,13 +394,12 @@ TEST_F(XPathParserTest, false_function_predicate_selects_no_nodes)
       XPathToken(XPathTokenType::RightBracket)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   add_child(top_node, "first");
   add_child(top_node, "second");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre());
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre());
 }
 
 TEST_F(XPathParserTest, functions_accept_arguments)
@@ -446,13 +416,12 @@ TEST_F(XPathParserTest, functions_accept_arguments)
       XPathToken(XPathTokenType::RightBracket)
   });
 
-  parser->parse();
+  auto expr = parser->parse();
 
   add_child(top_node, "first");
   add_child(top_node, "second");
 
-  ASSERT_EQ(1, number_of_steps());
-  ASSERT_THAT(apply_xpath_step(0, top_node), ElementsAre());
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre());
 }
 
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
@@ -465,7 +434,6 @@ TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 
   parser->parse();
 
-  ASSERT_EQ(0, number_of_steps());
   ASSERT_EQ("bad-axis", last_error_message());
 }
 
@@ -479,7 +447,6 @@ TEST_F(XPathParserTest, unknown_node_test_is_reported_as_an_error)
 
   parser->parse();
 
-  ASSERT_EQ(0, number_of_steps());
   ASSERT_EQ("bad-node-test", last_error_message());
 }
 

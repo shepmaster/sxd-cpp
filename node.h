@@ -20,7 +20,7 @@ typedef enum {
 
 class NodeSelector {
 public:
-  virtual Nodeset select_nodes(Node *node) = 0;
+  virtual Nodeset select_nodes(Node *node) const = 0;
 };
 
 class Node : public ToStream {
@@ -50,7 +50,7 @@ public:
 
   node_type_t type();
 
-  Nodeset select_nodes(NodeSelector &selector);
+  Nodeset select_nodes(const NodeSelector &selector);
 
 protected:
   node_type_t _type;

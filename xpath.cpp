@@ -5,34 +5,17 @@ XPath::XPath()
 {
 }
 
-XPath::XPath(std::vector<std::unique_ptr<XPathStep>> &&steps) :
-  _steps(std::move(steps))
+XPath::XPath(std::unique_ptr<XPathExpression> expression) :
+  _expression(std::move(expression))
 {
 }
 
 Nodeset
-XPath::select_nodes(Node *node)
+XPath::select_nodes(Node *node) const
 {
-  Nodeset result;
-  result.add(node);
-
-  Nodeset junk;
+  Nodeset empty_nodeset;
   XPathFunctionLibrary functions;
   XPathCoreFunctionLibrary::register_functions(functions);
-
-  for (auto &step : _steps) {
-    Nodeset step_result;
-
-    for (auto i = 0; i < result.count(); i++) {
-      auto *current_node = result[i];
-
-      XPathEvaluationContext context(current_node, junk, functions);
-
-      step->select_nodes(context, step_result);
-    }
-
-    result = step_result;
-  }
-
-  return result;
+  XPathEvaluationContext context(node, empty_nodeset, functions);
+  return _expression->evaluate(context).nodeset();
 }
