@@ -35,11 +35,13 @@ TEST_F(XPathTokenDeabbreviatorTest, converts_double_slash_to_descendant_or_self)
 
   XPathTokenDeabbreviator deabbrv(raw_tokenizer);
 
-  ASSERT_THAT(all_tokens(deabbrv), ElementsAre(XPathToken("descendant-or-self"),
+  ASSERT_THAT(all_tokens(deabbrv), ElementsAre(XPathToken(XPathTokenType::Slash),
+                                               XPathToken("descendant-or-self"),
                                                XPathToken(XPathTokenType::DoubleColon),
                                                XPathToken("node"),
                                                XPathToken(XPathTokenType::LeftParen),
-                                               XPathToken(XPathTokenType::RightParen)));
+                                               XPathToken(XPathTokenType::RightParen),
+                                               XPathToken(XPathTokenType::Slash)));
 }
 
 int

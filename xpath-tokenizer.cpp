@@ -67,6 +67,9 @@ XPathTokenizer::next_token()
   } else if ('/' == c && '/' == _xpath[_start + 1]) {
     _start += 2;
     return XPathToken(XPathTokenType::DoubleSlash);
+  } else if ('/' == c) {
+    _start += 1;
+    return XPathTokenType::Slash;
   } else if ('(' == c) {
     _start += 1;
     return XPathToken(XPathTokenType::LeftParen);
@@ -110,12 +113,6 @@ XPathTokenizer::next_token()
   } else {
     auto offset = _start;
     auto current_start = _start;
-
-    if ('/' == c) {
-      // Ugly. Should be it's own token?
-      current_start++;
-      offset++;
-    }
 
     offset = while_valid_string(_xpath, offset);
 

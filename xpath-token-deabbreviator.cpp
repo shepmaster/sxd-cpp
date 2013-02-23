@@ -18,11 +18,13 @@ XPathTokenDeabbreviator::next_token() {
       _buffer.push_back(XPathToken("attribute"));
       _buffer.push_back(XPathTokenType::DoubleColon);
     } else if (token.is(XPathTokenType::DoubleSlash)) {
+      _buffer.push_back(XPathToken(XPathTokenType::Slash));
       _buffer.push_back(XPathToken("descendant-or-self"));
       _buffer.push_back(XPathToken(XPathTokenType::DoubleColon));
       _buffer.push_back(XPathToken("node"));
       _buffer.push_back(XPathToken(XPathTokenType::LeftParen));
       _buffer.push_back(XPathToken(XPathTokenType::RightParen));
+      _buffer.push_back(XPathToken(XPathTokenType::Slash));
     } else {
       _buffer.push_back(token);
     }

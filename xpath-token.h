@@ -15,6 +15,7 @@ enum class XPathTokenType {
   RightBracket,
   AtSign,
   DoubleColon,
+  Slash,
   DoubleSlash
 };
 

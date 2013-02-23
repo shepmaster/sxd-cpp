@@ -50,6 +50,9 @@ TEST_F(XPathTokenizerTest, tokenizes_grandchild_selector)
   ASSERT_THAT(tokenizer.next_token(), IsStringToken("hello"));
 
   ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::Slash));
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
   ASSERT_THAT(tokenizer.next_token(), IsStringToken("world"));
 
   ASSERT_THAT(tokenizer, IsFinished());
@@ -63,7 +66,13 @@ TEST_F(XPathTokenizerTest, tokenizes_great_grandchild_selector)
   ASSERT_THAT(tokenizer.next_token(), IsStringToken("hello"));
 
   ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::Slash));
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
   ASSERT_THAT(tokenizer.next_token(), IsStringToken("there"));
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::Slash));
 
   ASSERT_TRUE(tokenizer.has_more_tokens());
   ASSERT_THAT(tokenizer.next_token(), IsStringToken("world"));
@@ -93,6 +102,16 @@ TEST_F(XPathTokenizerTest, tokenizes_axis_selector)
 
   ASSERT_TRUE(tokenizer.has_more_tokens());
   ASSERT_THAT(tokenizer.next_token(), IsStringToken("world"));
+
+  ASSERT_THAT(tokenizer, IsFinished());
+}
+
+TEST_F(XPathTokenizerTest, tokenizes_single_slash)
+{
+  XPathTokenizer tokenizer("/");
+
+  ASSERT_TRUE(tokenizer.has_more_tokens());
+  ASSERT_THAT(tokenizer.next_token(), IsType(XPathTokenType::Slash));
 
   ASSERT_THAT(tokenizer, IsFinished());
 }

@@ -115,6 +115,7 @@ TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
 {
   tokens.add({
       XPathToken("hello"),
+      XPathToken(XPathTokenType::Slash),
       XPathToken("world")
   });
 

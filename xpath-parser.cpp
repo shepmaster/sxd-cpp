@@ -133,7 +133,7 @@ parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error
 {
   std::vector<std::unique_ptr<XPathStep>> steps;
 
-  while (_source.has_more_tokens()) {
+  while(true) {
     std::unique_ptr<XPathAxis> axis;
     std::unique_ptr<XPathNodeTest> node_test;
     auto token = _source.next_token();
@@ -177,6 +177,12 @@ parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error
     }
 
     steps.push_back(make_unique<XPathStep>(move(axis), move(node_test), move(predicate)));
+
+    if (_source.next_token_is(XPathTokenType::Slash)) {
+      consume(_source, XPathTokenType::Slash);
+    } else {
+      break;
+    }
   }
 
   return make_unique<ExpressionPath>(move(steps));
