@@ -1,6 +1,7 @@
 #include "xpath-factory.h"
 
 #include "xpath-tokenizer-buffer.h"
+#include "xpath-token-deabbreviator.h"
 #include "xpath-parser.h"
 
 #include <memory>
@@ -20,8 +21,9 @@ public:
 XPath
 XPathFactory::compile(std::string xpath)
 {
-  auto base_tokenizer = XPathTokenizer(xpath);
-  auto tokenizer = XPathTokenizerBuffer(base_tokenizer);
+  XPathTokenizer base_tokenizer(xpath);
+  XPathTokenDeabbreviator deabbrev(base_tokenizer);
+  XPathTokenizerBuffer tokenizer(deabbrev);
   FatalParseErrors fatal_errors;
 
   XPathParser parser(tokenizer, fatal_errors);

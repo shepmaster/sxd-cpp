@@ -223,32 +223,6 @@ TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
   ASSERT_THAT(evaluate_on(expr, text).nodeset(), ElementsAre(text));
 }
 
-TEST_F(XPathParserTest, double_slash_abbreviation_selects_itself_and_children)
-{
-  // This is a bit dubious - can you really say '//' by itself?
-  tokens.add(XPathToken(XPathTokenType::DoubleSlash));
-
-  auto expr = parser->parse();
-
-  auto one = add_child(top_node, "one");
-  auto two = add_child(one, "two");
-
-  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(one, two));
-}
-
-TEST_F(XPathParserTest, double_slash_abbreviation_can_select_text_nodes)
-{
-  // This is a bit dubious - can you really say '//' by itself?
-  tokens.add(XPathToken(XPathTokenType::DoubleSlash));
-
-  auto expr = parser->parse();
-
-  auto one = add_child(top_node, "one");
-  auto text = add_text_node(one, "text");
-
-  ASSERT_THAT(evaluate_on(expr, one).nodeset(), ElementsAre(one, text));
-}
-
 TEST_F(XPathParserTest, parses_node_node_test)
 {
   tokens.add({
@@ -297,21 +271,6 @@ TEST_F(XPathParserTest, parses_axis_and_node_test)
   auto text = add_text_node(one, "text");
 
   ASSERT_THAT(evaluate_on(expr, text).nodeset(), ElementsAre(text));
-}
-
-TEST_F(XPathParserTest, at_sign_abbreviation_selects_attributes)
-{
-  tokens.add({
-      XPathToken(XPathTokenType::AtSign),
-      XPathToken("name")
-  });
-
-  auto expr = parser->parse();
-
-  auto element = add_child(top_node, "element");
-  auto attr = add_attribute(element, "name", "value");
-
-  ASSERT_THAT(evaluate_on(expr, element).nodeset(), ElementsAre(attr));
 }
 
 TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)

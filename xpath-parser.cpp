@@ -145,16 +145,9 @@ parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error
     } else if (name == "..") {
       axis = make_unique<AxisParent>();
       node_test = make_unique<NodeTestNode>();
-    } else if (token.is(XPathTokenType::DoubleSlash)) {
-      axis = make_unique<AxisDescendantOrSelf>();
-      node_test = make_unique<NodeTestNode>();
     } else {
       if (looks_like_axis(_source)) {
         axis = parse_axis(_error_notifier, _source, token);
-        token = _source.next_token();
-        name = token.string();
-      } else if (token.is(XPathTokenType::AtSign)) {
-        axis = make_unique<AxisAttribute>();
         token = _source.next_token();
         name = token.string();
       } else {
