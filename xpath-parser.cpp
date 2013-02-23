@@ -121,7 +121,8 @@ parse_primary_expression(XPathTokenSource &source) {
 }
 
 std::unique_ptr<XPathExpression>
-XPathParser::parse() {
+parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error_notifier)
+{
   std::vector<std::unique_ptr<XPathStep>> steps;
 
   while (_source.has_more_tokens()) {
@@ -178,4 +179,9 @@ XPathParser::parse() {
   }
 
   return make_unique<ExpressionPath>(move(steps));
+}
+
+std::unique_ptr<XPathExpression>
+XPathParser::parse() {
+  return parse_path_expression(_source, _error_notifier);
 }
