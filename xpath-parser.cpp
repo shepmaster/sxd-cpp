@@ -14,11 +14,12 @@
 #include "expression-function.h"
 #include "expression-path.h"
 #include "make-unique.h"
+#include "xpath-parsing-exceptions.h"
 
 using std::move;
 
-XPathParser::XPathParser(XPathTokenSource &source, XPathParseErrorNotifier &error_notifier) :
-  _source(source), _error_notifier(error_notifier)
+XPathParser::XPathParser(XPathTokenSource &source) :
+  _source(source)
 {
 }
 
@@ -39,7 +40,7 @@ looks_like_node_test(XPathTokenSource &_source) {
 }
 
 std::unique_ptr<XPathAxis>
-parse_axis(XPathParseErrorNotifier &error_notifier, XPathTokenSource &source, XPathToken token) {
+parse_axis(XPathTokenSource &source, XPathToken token) {
   auto name = token.string();
   std::unique_ptr<XPathAxis> axis;
 
@@ -54,8 +55,7 @@ parse_axis(XPathParseErrorNotifier &error_notifier, XPathTokenSource &source, XP
   } else if (name == "attribute") {
     axis = make_unique<AxisAttribute>();
   } else {
-    error_notifier.invalid_axis(name);
-    return nullptr;
+    throw InvalidXPathAxisException(name);
   }
 
   consume(source, XPathTokenType::DoubleColon);
@@ -63,7 +63,7 @@ parse_axis(XPathParseErrorNotifier &error_notifier, XPathTokenSource &source, XP
 }
 
 std::unique_ptr<XPathNodeTest>
-parse_node_test(XPathParseErrorNotifier &error_notifier, XPathTokenSource &source, XPathToken token) {
+parse_node_test(XPathTokenSource &source, XPathToken token) {
   auto name = token.string();
   std::unique_ptr<XPathNodeTest> node_test;
 
@@ -72,8 +72,7 @@ parse_node_test(XPathParseErrorNotifier &error_notifier, XPathTokenSource &sourc
   } else if (name == "text") {
     node_test = make_unique<NodeTestText>();
   } else {
-    error_notifier.invalid_node_test(name);
-    return nullptr;
+    throw InvalidNodeTestException(name);
   }
 
   consume(source, XPathTokenType::LeftParen);
@@ -129,7 +128,7 @@ looks_like_path(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error_notifier)
+parse_path_expression(XPathTokenSource &_source)
 {
   std::vector<std::unique_ptr<XPathStep>> steps;
 
@@ -147,7 +146,7 @@ parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error
       node_test = make_unique<NodeTestNode>();
     } else {
       if (looks_like_axis(_source)) {
-        axis = parse_axis(_error_notifier, _source, token);
+        axis = parse_axis(_source, token);
         token = _source.next_token();
         name = token.string();
       } else {
@@ -159,7 +158,7 @@ parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error
       }
 
       if (looks_like_node_test(_source)) {
-        node_test = parse_node_test(_error_notifier, _source, token);
+        node_test = parse_node_test(_source, token);
       } else {
         node_test = default_node_test(axis, token);
       }
@@ -191,7 +190,7 @@ parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error
 std::unique_ptr<XPathExpression>
 XPathParser::parse() {
   if (looks_like_path(_source)) {
-    return parse_path_expression(_source, _error_notifier);
+    return parse_path_expression(_source);
   } else {
     return parse_primary_expression(_source);
   }

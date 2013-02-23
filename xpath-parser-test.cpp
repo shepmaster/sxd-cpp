@@ -3,6 +3,7 @@
 #include "document.h"
 #include "xpath-core-function-library.h"
 #include "make-unique.h"
+#include "xpath-parsing-exceptions.h"
 
 #include "gmock/gmock.h"
 #include <iostream>
@@ -36,25 +37,12 @@ struct StubTokens : public XPathTokenSource {
   int index = 0;
 };
 
-struct ParseErrorSaver : public XPathParseErrorNotifier {
-  void invalid_axis(std::string axis) {
-    last_error = axis;
-  }
-
-  void invalid_node_test(std::string name) {
-    last_error = name;
-  }
-
-  std::string last_error;
-};
-
 class XPathParserTest : public ::testing::Test {
 protected:
   Document doc;
   Element *top_node;
 
   StubTokens tokens;
-  ParseErrorSaver error_saver;
   std::unique_ptr<XPathParser> parser;
 
   XPathFunctionLibrary functions;
@@ -62,7 +50,7 @@ protected:
   void SetUp() {
     XPathCoreFunctionLibrary::register_functions(functions);
     top_node = doc.new_element("top-node");
-    parser = make_unique<XPathParser>(tokens, std::ref(error_saver));
+    parser = make_unique<XPathParser>(tokens);
   }
 
   Element *add_child(Element *parent, std::string name) {
@@ -93,10 +81,6 @@ protected:
     XPathCoreFunctionLibrary::register_functions(functions);
     XPathEvaluationContext context(node, empty_nodeset, functions);
     return expr->evaluate(context);
-  }
-
-  std::string last_error_message() {
-    return error_saver.last_error;
   }
 };
 
@@ -408,9 +392,7 @@ TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
       XPathToken("*")
   });
 
-  parser->parse();
-
-  ASSERT_EQ("bad-axis", last_error_message());
+  ASSERT_THROW(parser->parse(), InvalidXPathAxisException);
 }
 
 TEST_F(XPathParserTest, unknown_node_test_is_reported_as_an_error)
@@ -421,9 +403,7 @@ TEST_F(XPathParserTest, unknown_node_test_is_reported_as_an_error)
       XPathToken(XPathTokenType::RightParen)
   });
 
-  parser->parse();
-
-  ASSERT_EQ("bad-node-test", last_error_message());
+  ASSERT_THROW(parser->parse(), InvalidNodeTestException);
 }
 
 int main(int argc, char **argv) {

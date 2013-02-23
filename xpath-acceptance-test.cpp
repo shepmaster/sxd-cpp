@@ -1,6 +1,7 @@
 #include "nodeset.h"
 
 #include "xpath-factory.h"
+#include "xpath-parsing-exceptions.h"
 #include "document.h"
 
 #include "gmock/gmock.h"
