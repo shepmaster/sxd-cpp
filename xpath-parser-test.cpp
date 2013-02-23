@@ -82,6 +82,11 @@ protected:
   }
 
   XPathValue
+  evaluate(const std::unique_ptr<XPathExpression> &expr) {
+    return evaluate_on(expr, nullptr);
+  }
+
+  XPathValue
   evaluate_on(const std::unique_ptr<XPathExpression> &expr, Node *node) {
     Nodeset empty_nodeset;
     XPathFunctionLibrary functions;
@@ -422,6 +427,17 @@ TEST_F(XPathParserTest, functions_accept_arguments)
   add_child(top_node, "second");
 
   ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre());
+}
+
+TEST_F(XPathParserTest, literal_at_the_top_level)
+{
+  tokens.add({
+      XPathToken(3.2)
+  });
+
+  auto expr = parser->parse();
+
+  ASSERT_EQ(3.2, evaluate(expr).number());
 }
 
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)

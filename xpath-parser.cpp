@@ -120,6 +120,14 @@ parse_primary_expression(XPathTokenSource &source) {
   }
 }
 
+bool
+looks_like_path(XPathTokenSource &source)
+{
+  return source.next_token_is(XPathTokenType::String) ||
+    source.next_token_is(XPathTokenType::DoubleSlash) ||
+    source.next_token_is(XPathTokenType::AtSign);
+}
+
 std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error_notifier)
 {
@@ -183,5 +191,9 @@ parse_path_expression(XPathTokenSource &_source, XPathParseErrorNotifier &_error
 
 std::unique_ptr<XPathExpression>
 XPathParser::parse() {
-  return parse_path_expression(_source, _error_notifier);
+  if (looks_like_path(_source)) {
+    return parse_path_expression(_source, _error_notifier);
+  } else {
+    return parse_primary_expression(_source);
+  }
 }
