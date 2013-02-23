@@ -51,7 +51,7 @@ struct ParseErrorSaver : public XPathParseErrorNotifier {
 class XPathParserTest : public ::testing::Test {
 protected:
   Document doc;
-  Node *top_node;
+  Element *top_node;
 
   StubTokens tokens;
   ParseErrorSaver error_saver;
@@ -65,20 +65,20 @@ protected:
     parser = make_unique<XPathParser>(tokens, std::ref(error_saver));
   }
 
-  Node *add_child(Node *parent, std::string name) {
-    Node *n = doc.new_element(name);
+  Element *add_child(Element *parent, std::string name) {
+    auto n = doc.new_element(name);
     parent->append_child(n);
     return n;
   }
 
-  Node *add_attribute(Node *element, std::string name, std::string value) {
-    return dynamic_cast<Element *>(element)->set_attribute(name, value);
+  Attribute *add_attribute(Element *element, std::string name, std::string value) {
+    return element->set_attribute(name, value);
   }
 
-  Node *add_text_node(Node *parent, std::string value) {
-    Node *n = doc.new_text_node(value);
-    parent->append_child(n);
-    return n;
+  TextNode *add_text_node(Element *parent, std::string value) {
+    auto tn = doc.new_text_node(value);
+    parent->append_child(tn);
+    return tn;
   }
 
   XPathValue
