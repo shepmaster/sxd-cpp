@@ -170,6 +170,13 @@ TEST_F(XPathTokenizerTest, tokenizes_double_quote)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::DoubleQuote)));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_plus_sign)
+{
+  XPathTokenizer tokenizer("+");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::PlusSign)));
+}
+
 int
 main(int argc, char **argv)
 {

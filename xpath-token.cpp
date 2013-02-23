@@ -58,6 +58,8 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "String";
   case XPathTokenType::Number:
     return strm << "Number";
+  case XPathTokenType::PlusSign:
+    return strm << "PlusSign";
   case XPathTokenType::Apostrophe:
     return strm << "Apostrophe";
   case XPathTokenType::DoubleQuote:

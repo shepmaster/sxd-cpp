@@ -7,6 +7,7 @@
 enum class XPathTokenType {
   String,
   Number,
+  PlusSign,
   Apostrophe,
   DoubleQuote,
   LeftParen,
