@@ -1,7 +1,5 @@
 #include "xpath-tokenizer.h"
 
-#include "document.h"
-
 #include "gmock/gmock.h"
 #include <iostream>
 
