@@ -4,19 +4,12 @@
 #include "xpath-tokenizer.h"
 
 #include "gmock/gmock.h"
+#include "xpath-raw-token-source-test.h"
 #include <iostream>
 
 using testing::ElementsAre;
 
 class XPathTokenDeabbreviatorTest : public ::testing::Test {
-protected:
-  std::vector<XPathToken> all_tokens(XPathRawTokenSource &tokenizer) {
-    std::vector<XPathToken> result;
-    while (tokenizer.has_more_tokens()) {
-      result.push_back(tokenizer.next_token());
-    }
-    return result;
-  }
 };
 
 TEST_F(XPathTokenDeabbreviatorTest, converts_at_sign_to_attribute_axis)
