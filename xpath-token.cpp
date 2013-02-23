@@ -33,6 +33,23 @@ XPathToken::is(XPathTokenType type) const
   return type == _type;
 }
 
+bool
+XPathToken::operator==(const XPathToken &other) const
+{
+  if (! other.is(_type)) {
+    return false;
+  }
+
+  switch(_type) {
+  case XPathTokenType::String:
+    return _string == other._string;
+  case XPathTokenType::Number:
+    return _number == other._number;
+  default:
+    return true;
+  }
+}
+
 std::ostream&
 operator<<(std::ostream &strm, const XPathTokenType &a)
 {

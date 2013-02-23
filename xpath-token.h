@@ -28,6 +28,8 @@ public:
   double number() const;
   bool is(XPathTokenType type) const;
 
+  bool operator==(const XPathToken &other) const;
+
 private:
   XPathTokenType _type;
   std::string _string;
