@@ -28,37 +28,29 @@ consume(XPathTokenSource &source, XPathTokenType type) {
   source.next_token();
 }
 
-bool
-looks_like_axis(XPathTokenSource &_source) {
-  return _source.next_token_is(XPathTokenType::DoubleColon);
-}
-
-bool
-looks_like_node_test(XPathTokenSource &_source) {
-  // Should we also look for the closing paren?
-  return _source.next_token_is(XPathTokenType::LeftParen);
-}
-
 std::unique_ptr<XPathAxis>
 parse_axis(XPathTokenSource &source, XPathToken token) {
   auto name = token.string();
   std::unique_ptr<XPathAxis> axis;
 
-  if (name == "self") {
-    axis = make_unique<AxisSelf>();
-  } else if (name == "parent") {
-    axis = make_unique<AxisParent>();
-  } else if (name == "descendant") {
-    axis = make_unique<AxisDescendant>();
-  } else if (name == "descendant-or-self") {
-    axis = make_unique<AxisDescendantOrSelf>();
-  } else if (name == "attribute") {
-    axis = make_unique<AxisAttribute>();
-  } else {
-    throw InvalidXPathAxisException(name);
+  if (source.next_token_is(XPathTokenType::DoubleColon)) {
+    if (name == "self") {
+      axis = make_unique<AxisSelf>();
+    } else if (name == "parent") {
+      axis = make_unique<AxisParent>();
+    } else if (name == "descendant") {
+      axis = make_unique<AxisDescendant>();
+    } else if (name == "descendant-or-self") {
+      axis = make_unique<AxisDescendantOrSelf>();
+    } else if (name == "attribute") {
+      axis = make_unique<AxisAttribute>();
+    } else {
+      throw InvalidXPathAxisException(name);
+    }
+
+    consume(source, XPathTokenType::DoubleColon);
   }
 
-  consume(source, XPathTokenType::DoubleColon);
   return axis;
 }
 
@@ -67,16 +59,18 @@ parse_node_test(XPathTokenSource &source, XPathToken token) {
   auto name = token.string();
   std::unique_ptr<XPathNodeTest> node_test;
 
-  if (name == "node") {
-    node_test = make_unique<NodeTestNode>();
-  } else if (name == "text") {
-    node_test = make_unique<NodeTestText>();
-  } else {
-    throw InvalidNodeTestException(name);
-  }
+  if (source.next_token_is(XPathTokenType::LeftParen)) {
+    if (name == "node") {
+      node_test = make_unique<NodeTestNode>();
+    } else if (name == "text") {
+      node_test = make_unique<NodeTestText>();
+    } else {
+      throw InvalidNodeTestException(name);
+    }
 
-  consume(source, XPathTokenType::LeftParen);
-  consume(source, XPathTokenType::RightParen);
+    consume(source, XPathTokenType::LeftParen);
+    consume(source, XPathTokenType::RightParen);
+  }
 
   return node_test;
 }
@@ -145,26 +139,17 @@ parse_path_expression(XPathTokenSource &_source)
       axis = make_unique<AxisParent>();
       node_test = make_unique<NodeTestNode>();
     } else {
-      if (looks_like_axis(_source)) {
-        axis = parse_axis(_source, token);
+      axis = parse_axis(_source, token);
+      if (axis) {
         token = _source.next_token();
         name = token.string();
       } else {
         axis = make_unique<AxisChild>();
       }
 
-      if (! axis) {
-        return nullptr;
-      }
-
-      if (looks_like_node_test(_source)) {
-        node_test = parse_node_test(_source, token);
-      } else {
-        node_test = default_node_test(axis, token);
-      }
-
+      node_test = parse_node_test(_source, token);
       if (! node_test) {
-        return nullptr;
+        node_test = default_node_test(axis, token);
       }
     }
 
