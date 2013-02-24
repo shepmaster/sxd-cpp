@@ -177,6 +177,13 @@ TEST_F(XPathTokenizerTest, tokenizes_plus_sign)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::PlusSign)));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_minus_sign)
+{
+  XPathTokenizer tokenizer("-");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::MinusSign)));
+}
+
 int
 main(int argc, char **argv)
 {

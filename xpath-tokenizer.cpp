@@ -27,7 +27,8 @@ size_t while_valid_string(std::string xpath, size_t offset)
         '(' == c || ')' == c ||
         '[' == c || ']' == c ||
         '@' == c || '\'' == c ||
-        '"' == c || '+' == c)
+        '"' == c || '+' == c ||
+        '-' == c)
     {
       break;
     }
@@ -94,6 +95,9 @@ XPathTokenizer::next_token()
   } else if ('+' == c) {
     _start += 1;
     return XPathToken(XPathTokenType::PlusSign);
+  } else if ('-' == c) {
+    _start += 1;
+    return XPathToken(XPathTokenType::MinusSign);
   } else if ('.' == c && ! isdigit(_xpath[_start + 1])) {
     // Ugly. Should we use START / FOLLOW constructs?
     if ('.' == _xpath[_start + 1]) {
