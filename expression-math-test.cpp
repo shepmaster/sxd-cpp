@@ -45,7 +45,7 @@ TEST_F(ExpressionMathTest, evaluates_both_arguments)
   expression.evaluate(*context);
 }
 
-TEST_F(ExpressionMathTest, adds_arguments_together)
+TEST_F(ExpressionMathTest, adds_arguments)
 {
   auto expression = ExpressionMath::Addition(left, right);
 
@@ -54,6 +54,17 @@ TEST_F(ExpressionMathTest, adds_arguments_together)
 
   auto result = expression->evaluate(*context);
   ASSERT_DOUBLE_EQ(1.0, result.number());
+}
+
+TEST_F(ExpressionMathTest, subtracts_arguments)
+{
+  auto expression = ExpressionMath::Subtraction(left, right);
+
+  EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(-2.0));
+  EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(3.0));
+
+  auto result = expression->evaluate(*context);
+  ASSERT_DOUBLE_EQ(-5.0, result.number());
 }
 
 int

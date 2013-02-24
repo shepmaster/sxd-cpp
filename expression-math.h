@@ -11,6 +11,10 @@ public:
   Addition(std::shared_ptr<XPathExpression> left,
            std::shared_ptr<XPathExpression> right);
 
+  static std::unique_ptr<ExpressionMath>
+  Subtraction(std::shared_ptr<XPathExpression> left,
+              std::shared_ptr<XPathExpression> right);
+
   ExpressionMath(std::shared_ptr<XPathExpression> left,
                  std::shared_ptr<XPathExpression> right,
                  BinaryMathOp operation);
@@ -20,6 +24,7 @@ public:
 private:
   std::shared_ptr<XPathExpression> _left;
   std::shared_ptr<XPathExpression> _right;
+  BinaryMathOp _operation;
 };
 
 #endif

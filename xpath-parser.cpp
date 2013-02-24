@@ -190,6 +190,11 @@ XPathParser::parse() {
         auto expr2 = parse();
         return ExpressionMath::Addition(move(expr), move(expr2));
       }
+      if (_source.next_token_is(XPathTokenType::MinusSign)) {
+        consume(_source, XPathTokenType::MinusSign);
+        auto expr2 = parse();
+        return ExpressionMath::Subtraction(move(expr), move(expr2));
+      }
     }
     return expr;
   }
