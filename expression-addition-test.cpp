@@ -25,32 +25,32 @@ protected:
   Node *node = doc.new_element("context-node");
   Nodeset nodes;
   XPathFunctionLibrary functions;
+  shared_ptr<XPathEvaluationContext> context;
 
   void SetUp() {
+    context = make_shared<XPathEvaluationContext>(node, nodes, functions);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 };
 
 TEST_F(ExpressionAdditionTest, evaluates_both_arguments)
 {
-  XPathEvaluationContext context(node, nodes, functions);
   ExpressionAddition expression(left, right);
 
-  EXPECT_CALL(*left, evaluate(Ref(context)));
-  EXPECT_CALL(*right, evaluate(Ref(context)));
+  EXPECT_CALL(*left, evaluate(Ref(*context)));
+  EXPECT_CALL(*right, evaluate(Ref(*context)));
 
-  expression.evaluate(context);
+  expression.evaluate(*context);
 }
 
 TEST_F(ExpressionAdditionTest, adds_arguments_together)
 {
-  XPathEvaluationContext context(node, nodes, functions);
   ExpressionAddition expression(left, right);
 
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(-2.0));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(3.0));
 
-  auto result = expression.evaluate(context);
+  auto result = expression.evaluate(*context);
   ASSERT_DOUBLE_EQ(1.0, result.number());
 }
 
