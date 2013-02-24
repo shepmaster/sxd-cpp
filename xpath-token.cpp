@@ -60,12 +60,17 @@ XPathToken::precedes_expression() const
 bool
 XPathToken::is_operator() const
 {
-  // To add: Pipe, RelOps, Multiply, NamedOperators
+  // To add: Pipe, RelOps
   switch (_type) {
   case XPathTokenType::Slash:
   case XPathTokenType::DoubleSlash:
   case XPathTokenType::PlusSign:
   case XPathTokenType::MinusSign:
+  case XPathTokenType::And:
+  case XPathTokenType::Or:
+  case XPathTokenType::Remainder:
+  case XPathTokenType::Divide:
+  case XPathTokenType::Multiply:
     return true;
   default:
     return false;
@@ -101,6 +106,16 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "PlusSign";
   case XPathTokenType::MinusSign:
     return strm << "MinusSign";
+  case XPathTokenType::And:
+    return strm << "And";
+  case XPathTokenType::Or:
+    return strm << "Or";
+  case XPathTokenType::Remainder:
+    return strm << "Remainder";
+  case XPathTokenType::Divide:
+    return strm << "Divide";
+  case XPathTokenType::Multiply:
+    return strm << "Multiply";
   case XPathTokenType::Apostrophe:
     return strm << "Apostrophe";
   case XPathTokenType::DoubleQuote:

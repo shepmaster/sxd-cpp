@@ -58,7 +58,18 @@ while_valid_number(std::string xpath, size_t offset)
   return offset;
 }
 
-static std::vector<std::string> operator_names = {"and", "or", "mod", "div", "*"};
+struct NamedOperator {
+  std::string name;
+  XPathTokenType type;
+};
+
+static std::vector<NamedOperator> named_operators = {
+  {"and", XPathTokenType::And},
+  {"or",  XPathTokenType::Or},
+  {"mod", XPathTokenType::Remainder},
+  {"div", XPathTokenType::Divide},
+  {"*",   XPathTokenType::Multiply},
+};
 
 XPathToken
 XPathTokenizer::raw_next_token()
@@ -125,11 +136,11 @@ XPathTokenizer::raw_next_token()
     auto current_start = _start;
 
     if (_prefer_recognition_of_operator_names) {
-      for (auto operator_name : operator_names) {
-        auto len = operator_name.length();
-        if (0 == _xpath.compare(offset, len, operator_name)) {
+      for (auto named_op : named_operators) {
+        auto len = named_op.name.length();
+        if (0 == _xpath.compare(offset, len, named_op.name)) {
           _start += len;
-          return XPathToken(_xpath.substr(current_start, len));
+          return XPathToken(named_op.type);
         }
       }
     }

@@ -189,7 +189,7 @@ TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_and)
   XPathTokenizer tokenizer("1andz2");
 
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(1),
-                                                 XPathToken("and"),
+                                                 XPathToken(XPathTokenType::And),
                                                  XPathToken("z2")));
 }
 
@@ -198,7 +198,7 @@ TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_or)
   XPathTokenizer tokenizer("2oror");
 
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(2),
-                                                 XPathToken("or"),
+                                                 XPathToken(XPathTokenType::Or),
                                                  XPathToken("or")));
 }
 
@@ -207,7 +207,7 @@ TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_mod)
   XPathTokenizer tokenizer("3moddiv");
 
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(3),
-                                                 XPathToken("mod"),
+                                                 XPathToken(XPathTokenType::Remainder),
                                                  XPathToken("div")));
 }
 
@@ -216,7 +216,7 @@ TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_div)
   XPathTokenizer tokenizer("1divz2");
 
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(1),
-                                                 XPathToken("div"),
+                                                 XPathToken(XPathTokenType::Divide),
                                                  XPathToken("z2")));
 }
 
@@ -225,7 +225,7 @@ TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_multipl
   XPathTokenizer tokenizer("1*2");
 
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(1),
-                                                 XPathToken("*"),
+                                                 XPathToken(XPathTokenType::Multiply),
                                                  XPathToken(2)));
 }
 
