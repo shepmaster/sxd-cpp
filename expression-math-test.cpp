@@ -1,4 +1,4 @@
-#include "expression-addition.h"
+#include "expression-math.h"
 
 #include "document.h"
 
@@ -16,7 +16,7 @@ using testing::Ref;
 using testing::Return;
 using testing::_;
 
-class ExpressionAdditionTest : public ::testing::Test {
+class ExpressionMathTest : public ::testing::Test {
 protected:
   shared_ptr<MockExpression> left = make_shared<NiceMock<MockExpression>>();
   shared_ptr<MockExpression> right = make_shared<NiceMock<MockExpression>>();
@@ -33,7 +33,7 @@ protected:
   }
 };
 
-TEST_F(ExpressionAdditionTest, evaluates_both_arguments)
+TEST_F(ExpressionMathTest, evaluates_both_arguments)
 {
   ExpressionAddition expression(left, right);
 
@@ -43,7 +43,7 @@ TEST_F(ExpressionAdditionTest, evaluates_both_arguments)
   expression.evaluate(*context);
 }
 
-TEST_F(ExpressionAdditionTest, adds_arguments_together)
+TEST_F(ExpressionMathTest, adds_arguments_together)
 {
   ExpressionAddition expression(left, right);
 

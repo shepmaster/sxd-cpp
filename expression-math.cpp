@@ -1,4 +1,4 @@
-#include "expression-addition.h"
+#include "expression-math.h"
 
 ExpressionAddition::ExpressionAddition(std::shared_ptr<XPathExpression> left,
                                        std::shared_ptr<XPathExpression> right) :

@@ -13,7 +13,7 @@
 #include "expression-literal.h"
 #include "expression-function.h"
 #include "expression-path.h"
-#include "expression-addition.h"
+#include "expression-math.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
