@@ -4,6 +4,7 @@
 
 double add(double left, double right) { return left + right; }
 double subtract(double left, double right) { return left - right; }
+double multiply(double left, double right) { return left * right; }
 
 std::unique_ptr<ExpressionMath>
 ExpressionMath::Addition(std::shared_ptr<XPathExpression> left,
@@ -17,6 +18,13 @@ ExpressionMath::Subtraction(std::shared_ptr<XPathExpression> left,
                             std::shared_ptr<XPathExpression> right)
 {
   return make_unique<ExpressionMath>(left, right, subtract);
+}
+
+std::unique_ptr<ExpressionMath>
+ExpressionMath::Multiplication(std::shared_ptr<XPathExpression> left,
+                               std::shared_ptr<XPathExpression> right)
+{
+  return make_unique<ExpressionMath>(left, right, multiply);
 }
 
 ExpressionMath::ExpressionMath(std::shared_ptr<XPathExpression> left,
