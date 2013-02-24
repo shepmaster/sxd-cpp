@@ -87,31 +87,70 @@ default_node_test(std::unique_ptr<XPathAxis> &axis, XPathToken token) {
 }
 
 std::unique_ptr<XPathExpression>
-parse_primary_expression(XPathTokenSource &source) {
-  auto token = source.next_token();
-
-  if (token.is(XPathTokenType::Apostrophe)) {
-    token = source.next_token();
+parse_string_literal(XPathTokenSource &source) {
+  if (source.next_token_is(XPathTokenType::Apostrophe)) {
+    consume(source, XPathTokenType::Apostrophe);
+    auto token = source.next_token();
     consume(source, XPathTokenType::Apostrophe);
     return make_unique<ExpressionLiteral>(token.string());
-  } else if (token.is(XPathTokenType::DoubleQuote)) {
-    token = source.next_token();
+  } else if (source.next_token_is(XPathTokenType::DoubleQuote)) {
+    consume(source, XPathTokenType::DoubleQuote);
+    auto token = source.next_token();
     consume(source, XPathTokenType::DoubleQuote);
     return make_unique<ExpressionLiteral>(token.string());
-  } else if (token.is(XPathTokenType::Number)) {
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_numeric_literal(XPathTokenSource &source)
+{
+  if (source.next_token_is(XPathTokenType::Number)) {
+    auto token = source.next_token();
     return make_unique<ExpressionLiteral>(token.number());
-  } else if (token.is(XPathTokenType::String)) {
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_primary_expression(XPathTokenSource &source);
+
+std::unique_ptr<XPathExpression>
+parse_function_call(XPathTokenSource &source)
+{
+  if (source.next_token_is(XPathTokenType::String)) {
     std::vector<std::shared_ptr<XPathExpression>> arguments;
+
+    auto token = source.next_token();
     consume(source, XPathTokenType::LeftParen);
     while (! source.next_token_is(XPathTokenType::RightParen)) {
       // TODO: this should be the top-level expression
       arguments.push_back(parse_primary_expression(source));
     }
     consume(source, XPathTokenType::RightParen);
+
     return make_unique<ExpressionFunction>(token.string(), std::move(arguments));
-  } else {
-    return nullptr;
   }
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_primary_expression(XPathTokenSource &source) {
+  std::unique_ptr<XPathExpression> expr;
+
+  expr = parse_string_literal(source);
+  if (expr) return expr;
+
+  expr = parse_numeric_literal(source);
+  if (expr) return expr;
+
+  expr = parse_function_call(source);
+  if (expr) return expr;
+
+  return nullptr;
 }
 
 std::unique_ptr<XPathExpression>
