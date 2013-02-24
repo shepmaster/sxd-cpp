@@ -188,7 +188,7 @@ XPathParser::parse() {
       if (_source.next_token_is(XPathTokenType::PlusSign)) {
         consume(_source, XPathTokenType::PlusSign);
         auto expr2 = parse();
-        return make_unique<ExpressionAddition>(move(expr), move(expr2));
+        return ExpressionMath::Addition(move(expr), move(expr2));
       }
     }
     return expr;
