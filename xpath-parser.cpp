@@ -157,35 +157,27 @@ parse_primary_expression(XPathTokenSource &source) {
 std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &_source)
 {
-  if (! (_source.next_token_is(XPathTokenType::String) ||
-         _source.next_token_is(XPathTokenType::ParentNode))) {
+  if (! (_source.next_token_is(XPathTokenType::String))) {
     return nullptr;
   }
 
   std::vector<std::unique_ptr<XPathStep>> steps;
 
   while(true) {
-    std::unique_ptr<XPathAxis> axis;
-    std::unique_ptr<XPathNodeTest> node_test;
     auto token = _source.next_token();
     auto name = token.string();
 
-    if (token.is(XPathTokenType::ParentNode)) {
-      axis = make_unique<AxisParent>();
-      node_test = make_unique<NodeTestNode>();
+    auto axis = parse_axis(_source, token);
+    if (axis) {
+      token = _source.next_token();
+      name = token.string();
     } else {
-      axis = parse_axis(_source, token);
-      if (axis) {
-        token = _source.next_token();
-        name = token.string();
-      } else {
-        axis = make_unique<AxisChild>();
-      }
+      axis = make_unique<AxisChild>();
+    }
 
-      node_test = parse_node_test(_source, token);
-      if (! node_test) {
-        node_test = default_node_test(axis, token);
-      }
+    auto node_test = parse_node_test(_source, token);
+    if (! node_test) {
+      node_test = default_node_test(axis, token);
     }
 
     std::unique_ptr<XPathExpression> predicate;

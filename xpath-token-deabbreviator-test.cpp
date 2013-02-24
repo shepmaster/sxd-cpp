@@ -50,6 +50,19 @@ TEST_F(XPathTokenDeabbreviatorTest, converts_current_node_to_self_node)
                                                XPathToken(XPathTokenType::RightParen)));
 }
 
+TEST_F(XPathTokenDeabbreviatorTest, converts_parent_node_to_parent_node)
+{
+  XPathTokenizer raw_tokenizer("..");
+
+  XPathTokenDeabbreviator deabbrv(raw_tokenizer);
+
+  ASSERT_THAT(all_tokens(deabbrv), ElementsAre(XPathToken("parent"),
+                                               XPathToken(XPathTokenType::DoubleColon),
+                                               XPathToken("node"),
+                                               XPathToken(XPathTokenType::LeftParen),
+                                               XPathToken(XPathTokenType::RightParen)));
+}
+
 int
 main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
