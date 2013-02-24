@@ -158,7 +158,6 @@ std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &_source)
 {
   if (! (_source.next_token_is(XPathTokenType::String) ||
-         _source.next_token_is(XPathTokenType::CurrentNode) ||
          _source.next_token_is(XPathTokenType::ParentNode))) {
     return nullptr;
   }
@@ -171,10 +170,7 @@ parse_path_expression(XPathTokenSource &_source)
     auto token = _source.next_token();
     auto name = token.string();
 
-    if (token.is(XPathTokenType::CurrentNode)) {
-      axis = make_unique<AxisSelf>();
-      node_test = make_unique<NodeTestNode>();
-    } else if (token.is(XPathTokenType::ParentNode)) {
+    if (token.is(XPathTokenType::ParentNode)) {
       axis = make_unique<AxisParent>();
       node_test = make_unique<NodeTestNode>();
     } else {

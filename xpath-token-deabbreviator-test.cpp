@@ -37,6 +37,19 @@ TEST_F(XPathTokenDeabbreviatorTest, converts_double_slash_to_descendant_or_self)
                                                XPathToken(XPathTokenType::Slash)));
 }
 
+TEST_F(XPathTokenDeabbreviatorTest, converts_current_node_to_self_node)
+{
+  XPathTokenizer raw_tokenizer(".");
+
+  XPathTokenDeabbreviator deabbrv(raw_tokenizer);
+
+  ASSERT_THAT(all_tokens(deabbrv), ElementsAre(XPathToken("self"),
+                                               XPathToken(XPathTokenType::DoubleColon),
+                                               XPathToken("node"),
+                                               XPathToken(XPathTokenType::LeftParen),
+                                               XPathToken(XPathTokenType::RightParen)));
+}
+
 int
 main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

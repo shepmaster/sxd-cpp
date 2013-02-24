@@ -25,6 +25,12 @@ XPathTokenDeabbreviator::next_token() {
       _buffer.push_back(XPathToken(XPathTokenType::LeftParen));
       _buffer.push_back(XPathToken(XPathTokenType::RightParen));
       _buffer.push_back(XPathToken(XPathTokenType::Slash));
+    } else if (token.is(XPathTokenType::CurrentNode)) {
+      _buffer.push_back(XPathToken("self"));
+      _buffer.push_back(XPathToken(XPathTokenType::DoubleColon));
+      _buffer.push_back(XPathToken("node"));
+      _buffer.push_back(XPathToken(XPathTokenType::LeftParen));
+      _buffer.push_back(XPathToken(XPathTokenType::RightParen));
     } else {
       _buffer.push_back(token);
     }
