@@ -466,6 +466,19 @@ TEST_F(XPathParserTest, division_of_two_literals)
   ASSERT_DOUBLE_EQ(71, evaluate(expr).number());
 }
 
+TEST_F(XPathParserTest, remainder_of_two_literals)
+{
+  tokens.add({
+      XPathToken(7.1),
+      XPathToken(XPathTokenType::Remainder),
+      XPathToken(3),
+  });
+
+  auto expr = parser->parse();
+
+  ASSERT_DOUBLE_EQ(1.1, evaluate(expr).number());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({

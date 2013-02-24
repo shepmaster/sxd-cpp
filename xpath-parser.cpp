@@ -221,6 +221,10 @@ parse_multiplicative_expression(XPathTokenSource &source)
       consume(source, XPathTokenType::Divide);
       auto right = parse_primary_expression(source);
       left = ExpressionMath::Division(move(left), move(right));
+    } else if (source.next_token_is(XPathTokenType::Remainder)) {
+      consume(source, XPathTokenType::Remainder);
+      auto right = parse_primary_expression(source);
+      left = ExpressionMath::Remainder(move(left), move(right));
     } else {
       break;
     }
