@@ -181,16 +181,17 @@ parse_additive_expression(XPathTokenSource &source)
   auto left = parse_primary_expression(source);
   if (!left) return nullptr;
 
-  if (source.has_more_tokens()) {
+  while (source.has_more_tokens()) {
     if (source.next_token_is(XPathTokenType::PlusSign)) {
       consume(source, XPathTokenType::PlusSign);
-      auto right = parse_additive_expression(source);
-      return ExpressionMath::Addition(move(left), move(right));
-    }
-    if (source.next_token_is(XPathTokenType::MinusSign)) {
+      auto right = parse_primary_expression(source);
+      left = ExpressionMath::Addition(move(left), move(right));
+    } else if (source.next_token_is(XPathTokenType::MinusSign)) {
       consume(source, XPathTokenType::MinusSign);
-      auto right = parse_additive_expression(source);
-      return ExpressionMath::Subtraction(move(left), move(right));
+      auto right = parse_primary_expression(source);
+      left = ExpressionMath::Subtraction(move(left), move(right));
+    } else {
+      break;
     }
   }
 
