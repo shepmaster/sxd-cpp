@@ -6,12 +6,24 @@ XPath::XPath(std::unique_ptr<XPathExpression> expression) :
 {
 }
 
-Nodeset
-XPath::select_nodes(Node *node) const
+static XPathValue
+evaluate(Node *node, XPathExpression &expr)
 {
   Nodeset empty_nodeset;
   XPathFunctionLibrary functions;
   XPathCoreFunctionLibrary::register_functions(functions);
   XPathEvaluationContext context(node, empty_nodeset, functions);
-  return _expression->evaluate(context).nodeset();
+  return expr.evaluate(context);
+}
+
+Nodeset
+XPath::select_nodes(Node *node) const
+{
+  return evaluate(node, *_expression).nodeset();
+}
+
+double
+XPath::number() const
+{
+  return evaluate(nullptr, *_expression).number();
 }

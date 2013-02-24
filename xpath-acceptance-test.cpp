@@ -255,6 +255,13 @@ TEST_F(XPathAcceptanceTest, predicate_functions_can_accept_one_argument)
   ASSERT_THAT(selected_nodes, ElementsAre());
 }
 
+TEST_F(XPathAcceptanceTest, basic_math_operations)
+{
+  XPath xpath = compile("1-2+3");
+
+  ASSERT_DOUBLE_EQ(2.0, xpath.number());
+}
+
 TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)
 {
   ASSERT_THROW(compile("bogus::*"), InvalidXPathAxisException);

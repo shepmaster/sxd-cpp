@@ -12,6 +12,7 @@ public:
   XPath(std::unique_ptr<XPathExpression> expression);
 
   Nodeset select_nodes(Node *node) const;
+  double number() const;
 
 private:
   std::unique_ptr<XPathExpression> _expression;
