@@ -176,28 +176,36 @@ parse_path_expression(XPathTokenSource &_source)
 }
 
 std::unique_ptr<XPathExpression>
+parse_additive_expression(XPathTokenSource &source)
+{
+  auto left = parse_primary_expression(source);
+  if (!left) return nullptr;
+
+  if (source.has_more_tokens()) {
+    if (source.next_token_is(XPathTokenType::PlusSign)) {
+      consume(source, XPathTokenType::PlusSign);
+      auto right = parse_additive_expression(source);
+      return ExpressionMath::Addition(move(left), move(right));
+    }
+    if (source.next_token_is(XPathTokenType::MinusSign)) {
+      consume(source, XPathTokenType::MinusSign);
+      auto right = parse_additive_expression(source);
+      return ExpressionMath::Subtraction(move(left), move(right));
+    }
+  }
+
+  return left;
+}
+
+std::unique_ptr<XPathExpression>
 XPathParser::parse() {
   std::unique_ptr<XPathExpression> expr;
 
   expr = parse_path_expression(_source);
   if (expr) return expr;
 
-  expr = parse_primary_expression(_source);
-  if (expr) {
-    if (_source.has_more_tokens()) {
-      if (_source.next_token_is(XPathTokenType::PlusSign)) {
-        consume(_source, XPathTokenType::PlusSign);
-        auto expr2 = parse();
-        return ExpressionMath::Addition(move(expr), move(expr2));
-      }
-      if (_source.next_token_is(XPathTokenType::MinusSign)) {
-        consume(_source, XPathTokenType::MinusSign);
-        auto expr2 = parse();
-        return ExpressionMath::Subtraction(move(expr), move(expr2));
-      }
-    }
-    return expr;
-  }
+  expr = parse_additive_expression(_source);
+  if (expr) return expr;
 
   return nullptr;
 }
