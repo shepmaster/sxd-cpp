@@ -1,6 +1,7 @@
 #include "expression-math.h"
 
 #include "make-unique.h"
+#include <cmath>
 
 double add(double left, double right) { return left + right; }
 double subtract(double left, double right) { return left - right; }
@@ -33,6 +34,13 @@ ExpressionMath::Division(std::shared_ptr<XPathExpression> left,
                          std::shared_ptr<XPathExpression> right)
 {
   return make_unique<ExpressionMath>(left, right, divide);
+}
+
+std::unique_ptr<ExpressionMath>
+ExpressionMath::Remainder(std::shared_ptr<XPathExpression> left,
+                          std::shared_ptr<XPathExpression> right)
+{
+  return make_unique<ExpressionMath>(left, right, fmod);
 }
 
 ExpressionMath::ExpressionMath(std::shared_ptr<XPathExpression> left,

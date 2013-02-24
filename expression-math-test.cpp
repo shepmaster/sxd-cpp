@@ -14,6 +14,7 @@ using testing::DefaultValue;
 using testing::NiceMock;
 using testing::Ref;
 using testing::Return;
+using testing::ValuesIn;
 using testing::_;
 
 class ExpressionMathTest : public ::testing::Test {
@@ -88,6 +89,49 @@ TEST_F(ExpressionMathTest, divides_arguments)
   auto result = expression->evaluate(*context);
   ASSERT_DOUBLE_EQ(-0.25, result.number());
 }
+
+TEST_F(ExpressionMathTest, calculates_remainder_of_division_of_arguments)
+{
+  auto expression = ExpressionMath::Remainder(left, right);
+
+  EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(1.5));
+  EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(0.4));
+
+  auto result = expression->evaluate(*context);
+  ASSERT_DOUBLE_EQ(0.3, result.number());
+}
+
+struct ModuloParams {
+  double left;
+  double right;
+  double result;
+};
+
+// These examples taken directly from the spec
+ModuloParams params[] = {{ 5,  2,  1 },
+                         { 5, -2,  1 },
+                         {-5,  2, -1 },
+                         {-5, -2, -1 }};
+
+class ExpressionMathRemainderTest : public ExpressionMathTest,
+                                    public ::testing::WithParamInterface<ModuloParams>
+{};
+
+TEST_P(ExpressionMathRemainderTest, remainder_truncates)
+{
+  auto expression = ExpressionMath::Remainder(left, right);
+  auto params = GetParam();
+
+  EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(params.left));
+  EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(params.right));
+
+  auto result = expression->evaluate(*context);
+  ASSERT_DOUBLE_EQ(params.result, result.number());
+}
+
+INSTANTIATE_TEST_CASE_P(TruncatingRemainder,
+                        ExpressionMathRemainderTest,
+                        ValuesIn(params));
 
 int
 main(int argc, char **argv) {

@@ -23,6 +23,10 @@ public:
   Division(std::shared_ptr<XPathExpression> left,
            std::shared_ptr<XPathExpression> right);
 
+  static std::unique_ptr<ExpressionMath>
+  Remainder(std::shared_ptr<XPathExpression> left,
+            std::shared_ptr<XPathExpression> right);
+
   ExpressionMath(std::shared_ptr<XPathExpression> left,
                  std::shared_ptr<XPathExpression> right,
                  BinaryMathOp operation);
