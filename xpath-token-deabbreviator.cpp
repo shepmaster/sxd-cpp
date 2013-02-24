@@ -38,7 +38,7 @@ XPathTokenDeabbreviator::next_token() {
       _buffer.push_back(XPathToken(XPathTokenType::LeftParen));
       _buffer.push_back(XPathToken(XPathTokenType::RightParen));
     } else {
-      _buffer.push_back(token);
+      return token;
     }
   }
 
