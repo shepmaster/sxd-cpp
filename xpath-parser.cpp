@@ -207,19 +207,38 @@ parse_path_expression(XPathTokenSource &_source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_additive_expression(XPathTokenSource &source)
+parse_multiplicative_expression(XPathTokenSource &source)
 {
   auto left = parse_primary_expression(source);
   if (!left) return nullptr;
 
   while (source.has_more_tokens()) {
+    if (source.next_token_is(XPathTokenType::Multiply)) {
+      consume(source, XPathTokenType::Multiply);
+      auto right = parse_primary_expression(source);
+      left = ExpressionMath::Multiplication(move(left), move(right));
+    } else {
+      break;
+    }
+  }
+
+  return left;
+}
+
+std::unique_ptr<XPathExpression>
+parse_additive_expression(XPathTokenSource &source)
+{
+  auto left = parse_multiplicative_expression(source);
+  if (!left) return nullptr;
+
+  while (source.has_more_tokens()) {
     if (source.next_token_is(XPathTokenType::PlusSign)) {
       consume(source, XPathTokenType::PlusSign);
-      auto right = parse_primary_expression(source);
+      auto right = parse_multiplicative_expression(source);
       left = ExpressionMath::Addition(move(left), move(right));
     } else if (source.next_token_is(XPathTokenType::MinusSign)) {
       consume(source, XPathTokenType::MinusSign);
-      auto right = parse_primary_expression(source);
+      auto right = parse_multiplicative_expression(source);
       left = ExpressionMath::Subtraction(move(left), move(right));
     } else {
       break;

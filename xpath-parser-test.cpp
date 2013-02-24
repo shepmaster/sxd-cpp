@@ -440,6 +440,19 @@ TEST_F(XPathParserTest, additive_expression_is_left_associative)
   ASSERT_DOUBLE_EQ(-4.4, evaluate(expr).number());
 }
 
+TEST_F(XPathParserTest, multiplication_of_two_literals)
+{
+  tokens.add({
+      XPathToken(1.1),
+      XPathToken(XPathTokenType::Multiply),
+      XPathToken(2.2),
+  });
+
+  auto expr = parser->parse();
+
+  ASSERT_DOUBLE_EQ(2.42, evaluate(expr).number());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({
