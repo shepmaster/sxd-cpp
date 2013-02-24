@@ -1,6 +1,7 @@
 #include "xpath-tokenizer.h"
 
 #include <stdlib.h>
+#include <vector>
 
 XPathTokenizer::XPathTokenizer(std::string xpath) :
   _xpath(xpath),
@@ -57,8 +58,10 @@ while_valid_number(std::string xpath, size_t offset)
   return offset;
 }
 
+static std::vector<std::string> operator_names = {"and", "or", "mod", "div", "*"};
+
 XPathToken
-XPathTokenizer::next_token()
+XPathTokenizer::raw_next_token()
 {
   auto c = _xpath[_start];
 
@@ -121,11 +124,36 @@ XPathTokenizer::next_token()
     auto offset = _start;
     auto current_start = _start;
 
+    if (_prefer_recognition_of_operator_names) {
+      for (auto operator_name : operator_names) {
+        auto len = operator_name.length();
+        if (0 == _xpath.compare(offset, len, operator_name)) {
+          _start += len;
+          return XPathToken(_xpath.substr(current_start, len));
+        }
+      }
+    }
+
     offset = while_valid_string(_xpath, offset);
 
     _start = offset;
     return XPathToken(_xpath.substr(current_start, offset - current_start));
   }
+}
+
+XPathToken
+XPathTokenizer::next_token()
+{
+  auto token = raw_next_token();
+  if (! (token.precedes_node_test() ||
+         token.precedes_expression() ||
+         token.is_operator())) {
+    // See http://www.w3.org/TR/xpath/#exprlex
+    _prefer_recognition_of_operator_names = true;
+  } else {
+    _prefer_recognition_of_operator_names = false;
+  }
+  return token;
 }
 
 std::ostream&

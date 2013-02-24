@@ -34,6 +34,45 @@ XPathToken::is(XPathTokenType type) const
 }
 
 bool
+XPathToken::precedes_node_test() const
+{
+  switch (_type) {
+  case XPathTokenType::AtSign:
+  case XPathTokenType::DoubleColon:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool
+XPathToken::precedes_expression() const
+{
+  switch (_type) {
+  case XPathTokenType::LeftParen:
+  case XPathTokenType::LeftBracket:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool
+XPathToken::is_operator() const
+{
+  // To add: Pipe, RelOps, Multiply, NamedOperators
+  switch (_type) {
+  case XPathTokenType::Slash:
+  case XPathTokenType::DoubleSlash:
+  case XPathTokenType::PlusSign:
+  case XPathTokenType::MinusSign:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool
 XPathToken::operator==(const XPathToken &other) const
 {
   if (! other.is(_type)) {

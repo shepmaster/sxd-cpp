@@ -184,6 +184,51 @@ TEST_F(XPathTokenizerTest, tokenizes_minus_sign)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::MinusSign)));
 }
 
+TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_and)
+{
+  XPathTokenizer tokenizer("1andz2");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(1),
+                                                 XPathToken("and"),
+                                                 XPathToken("z2")));
+}
+
+TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_or)
+{
+  XPathTokenizer tokenizer("2oror");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(2),
+                                                 XPathToken("or"),
+                                                 XPathToken("or")));
+}
+
+TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_mod)
+{
+  XPathTokenizer tokenizer("3moddiv");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(3),
+                                                 XPathToken("mod"),
+                                                 XPathToken("div")));
+}
+
+TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_div)
+{
+  XPathTokenizer tokenizer("1divz2");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(1),
+                                                 XPathToken("div"),
+                                                 XPathToken("z2")));
+}
+
+TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_multiply)
+{
+  XPathTokenizer tokenizer("1*2");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(1),
+                                                 XPathToken("*"),
+                                                 XPathToken(2)));
+}
+
 int
 main(int argc, char **argv)
 {

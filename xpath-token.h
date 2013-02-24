@@ -31,6 +31,10 @@ public:
   double number() const;
   bool is(XPathTokenType type) const;
 
+  bool precedes_node_test() const;
+  bool precedes_expression() const;
+  bool is_operator() const;
+
   bool operator==(const XPathToken &other) const;
 
 private:
