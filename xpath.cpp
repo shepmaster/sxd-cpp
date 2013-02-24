@@ -1,10 +1,6 @@
 #include "xpath.h"
 #include "xpath-core-function-library.h"
 
-XPath::XPath()
-{
-}
-
 XPath::XPath(std::unique_ptr<XPathExpression> expression) :
   _expression(std::move(expression))
 {

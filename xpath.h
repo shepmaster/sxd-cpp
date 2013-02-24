@@ -9,7 +9,6 @@
 
 class XPath : public NodeSelector {
 public:
-  XPath();
   XPath(std::unique_ptr<XPathExpression> expression);
 
   Nodeset select_nodes(Node *node) const;
