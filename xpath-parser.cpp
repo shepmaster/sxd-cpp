@@ -14,6 +14,7 @@
 #include "expression-function.h"
 #include "expression-path.h"
 #include "expression-math.h"
+#include "expression-negation.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
@@ -207,23 +208,38 @@ parse_path_expression(XPathTokenSource &_source)
 }
 
 std::unique_ptr<XPathExpression>
+parse_unary_expression(XPathTokenSource &source)
+{
+  auto expr = parse_primary_expression(source);
+  if (expr) return expr;
+
+  if (source.next_token_is(XPathTokenType::MinusSign)) {
+    consume(source, XPathTokenType::MinusSign);
+    expr = parse_primary_expression(source);
+    return make_unique<ExpressionNegation>(move(expr));
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
 parse_multiplicative_expression(XPathTokenSource &source)
 {
-  auto left = parse_primary_expression(source);
+  auto left = parse_unary_expression(source);
   if (!left) return nullptr;
 
   while (source.has_more_tokens()) {
     if (source.next_token_is(XPathTokenType::Multiply)) {
       consume(source, XPathTokenType::Multiply);
-      auto right = parse_primary_expression(source);
+      auto right = parse_unary_expression(source);
       left = ExpressionMath::Multiplication(move(left), move(right));
     } else if (source.next_token_is(XPathTokenType::Divide)) {
       consume(source, XPathTokenType::Divide);
-      auto right = parse_primary_expression(source);
+      auto right = parse_unary_expression(source);
       left = ExpressionMath::Division(move(left), move(right));
     } else if (source.next_token_is(XPathTokenType::Remainder)) {
       consume(source, XPathTokenType::Remainder);
-      auto right = parse_primary_expression(source);
+      auto right = parse_unary_expression(source);
       left = ExpressionMath::Remainder(move(left), move(right));
     } else {
       break;
