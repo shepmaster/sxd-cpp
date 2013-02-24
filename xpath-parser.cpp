@@ -184,10 +184,12 @@ XPathParser::parse() {
 
   expr = parse_primary_expression(_source);
   if (expr) {
-    if (_source.next_token_is(XPathTokenType::PlusSign)) {
-      consume(_source, XPathTokenType::PlusSign);
-      auto expr2 = parse_primary_expression(_source);
-      return make_unique<ExpressionAddition>(move(expr), move(expr2));
+    if (_source.has_more_tokens()) {
+      if (_source.next_token_is(XPathTokenType::PlusSign)) {
+        consume(_source, XPathTokenType::PlusSign);
+        auto expr2 = parse();
+        return make_unique<ExpressionAddition>(move(expr), move(expr2));
+      }
     }
     return expr;
   }
