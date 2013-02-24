@@ -8,6 +8,7 @@ enum class XPathTokenType {
   String,
   Number,
   CurrentNode,
+  ParentNode,
   PlusSign,
   MinusSign,
   And,

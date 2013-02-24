@@ -116,7 +116,7 @@ XPathTokenizer::raw_next_token()
     // Ugly. Should we use START / FOLLOW constructs?
     if ('.' == _xpath[_start + 1]) {
       _start += 2;
-      return XPathToken("..");
+      return XPathToken(XPathTokenType::ParentNode);
     } else {
       _start += 1;
       return XPathToken(XPathTokenType::CurrentNode);

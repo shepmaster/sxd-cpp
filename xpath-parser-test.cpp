@@ -208,6 +208,18 @@ TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
   ASSERT_THAT(evaluate_on(expr, text).nodeset(), ElementsAre(text));
 }
 
+TEST_F(XPathParserTest, double_dot_abbreviation_selects_parent)
+{
+  tokens.add(XPathToken(XPathTokenType::ParentNode));
+
+  auto expr = parser->parse();
+
+  auto one = add_child(top_node, "one");
+  auto text = add_text_node(one, "text");
+
+  ASSERT_THAT(evaluate_on(expr, text).nodeset(), ElementsAre(one));
+}
+
 TEST_F(XPathParserTest, parses_node_node_test)
 {
   tokens.add({

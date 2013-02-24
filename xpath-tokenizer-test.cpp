@@ -118,7 +118,7 @@ TEST_F(XPathTokenizerTest, tokenizes_double_dot)
 {
   XPathTokenizer tokenizer("..");
 
-  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken("..")));
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathTokenType::ParentNode));
 }
 
 TEST_F(XPathTokenizerTest, tokenizes_integral_number)
