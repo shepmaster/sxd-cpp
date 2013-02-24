@@ -52,6 +52,7 @@ set(
   expression-path.cpp
   expression-math.cpp
   expression-negation.cpp
+  expression-or.cpp
   xpath-evaluation-context.cpp
   xpath-value.cpp
   xpath-function-library.cpp
@@ -91,6 +92,7 @@ set(test_programs
   expression-function
   expression-math
   expression-negation
+  expression-or
   xpath-evaluation-context
   xpath-function-library
   function-last
