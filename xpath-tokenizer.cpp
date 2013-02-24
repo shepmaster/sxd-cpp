@@ -119,7 +119,7 @@ XPathTokenizer::raw_next_token()
       return XPathToken("..");
     } else {
       _start += 1;
-      return XPathToken(".");
+      return XPathToken(XPathTokenType::CurrentNode);
     }
   } else if (is_number_char(c)) {
     auto offset = _start;

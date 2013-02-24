@@ -111,7 +111,7 @@ TEST_F(XPathTokenizerTest, tokenizes_single_dot)
 {
   XPathTokenizer tokenizer(".");
 
-  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(".")));
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathTokenType::CurrentNode));
 }
 
 TEST_F(XPathTokenizerTest, tokenizes_double_dot)

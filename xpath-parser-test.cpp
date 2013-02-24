@@ -198,7 +198,7 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 
 TEST_F(XPathParserTest, single_dot_abbreviation_selects_itself)
 {
-  tokens.add(XPathToken("."));
+  tokens.add(XPathToken(XPathTokenType::CurrentNode));
 
   auto expr = parser->parse();
 
