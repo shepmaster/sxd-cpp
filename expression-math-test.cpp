@@ -78,6 +78,17 @@ TEST_F(ExpressionMathTest, multiplies_arguments)
   ASSERT_DOUBLE_EQ(-6.51, result.number());
 }
 
+TEST_F(ExpressionMathTest, divides_arguments)
+{
+  auto expression = ExpressionMath::Division(left, right);
+
+  EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(-0.5));
+  EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(2.0));
+
+  auto result = expression->evaluate(*context);
+  ASSERT_DOUBLE_EQ(-0.25, result.number());
+}
+
 int
 main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
