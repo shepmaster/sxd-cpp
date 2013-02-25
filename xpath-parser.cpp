@@ -32,7 +32,7 @@ consume(XPathTokenSource &source, XPathTokenType type) {
 
 std::unique_ptr<XPathAxis>
 parse_axis(XPathTokenSource &source) {
-  if (source.next_token_is(XPathTokenType::AxisName)) {
+  if (source.next_token_is(XPathTokenType::Axis)) {
     auto token = source.next_token();
     auto name = token.string();
     consume(source, XPathTokenType::DoubleColon);
@@ -57,7 +57,7 @@ parse_axis(XPathTokenSource &source) {
 
 std::unique_ptr<XPathNodeTest>
 parse_node_test(XPathTokenSource &source) {
-  if (source.next_token_is(XPathTokenType::FunctionName)) {
+  if (source.next_token_is(XPathTokenType::Function)) {
     auto token = source.next_token();
     auto name = token.string();
 
@@ -126,7 +126,7 @@ parse_primary_expression(XPathTokenSource &source);
 std::unique_ptr<XPathExpression>
 parse_function_call(XPathTokenSource &source)
 {
-  if (source.next_token_is(XPathTokenType::FunctionName)) {
+  if (source.next_token_is(XPathTokenType::Function)) {
     std::vector<std::shared_ptr<XPathExpression>> arguments;
 
     auto token = source.next_token();

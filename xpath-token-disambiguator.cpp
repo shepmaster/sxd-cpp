@@ -30,9 +30,9 @@ XPathTokenDisambiguator::next_token()
     auto next = _token_source.next_token();
     _buffer.push_back(next);
     if (next.is(XPathTokenType::LeftParen)) {
-      return XPathToken(XPathTokenType::FunctionName, token.string());
+      return XPathToken(XPathTokenType::Function, token.string());
     } else if (next.is(XPathTokenType::DoubleColon)) {
-      return XPathToken(XPathTokenType::AxisName, token.string());
+      return XPathToken(XPathTokenType::Axis, token.string());
     }
   }
 

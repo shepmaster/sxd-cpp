@@ -90,8 +90,8 @@ XPathToken::operator==(const XPathToken &other) const
 
   switch(_type) {
   case XPathTokenType::String:
-  case XPathTokenType::FunctionName:
-  case XPathTokenType::AxisName:
+  case XPathTokenType::Function:
+  case XPathTokenType::Axis:
     return _string == other._string;
   case XPathTokenType::Number:
     return _number == other._number;
@@ -106,10 +106,10 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
   switch (a) {
   case XPathTokenType::String:
     return strm << "String";
-  case XPathTokenType::FunctionName:
-    return strm << "FunctionName";
-  case XPathTokenType::AxisName:
-    return strm << "AxisName";
+  case XPathTokenType::Function:
+    return strm << "Function";
+  case XPathTokenType::Axis:
+    return strm << "Axis";
   case XPathTokenType::Number:
     return strm << "Number";
   case XPathTokenType::CurrentNode:
@@ -157,8 +157,8 @@ std::ostream& operator<<(std::ostream &strm, const XPathToken &a) {
   strm << "XPathToken(" << a._type;
 
   if (a.is(XPathTokenType::String) ||
-      a.is(XPathTokenType::FunctionName) ||
-      a.is(XPathTokenType::AxisName)) {
+      a.is(XPathTokenType::Function) ||
+      a.is(XPathTokenType::Axis)) {
     strm << ", '" << a.string() << "'";
   } else if (a.is(XPathTokenType::Number)) {
     strm << ", " << a.number();

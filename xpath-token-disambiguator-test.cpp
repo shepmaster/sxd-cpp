@@ -23,7 +23,7 @@ TEST_F(XPathTokenDisambiguatorTest, name_followed_by_left_paren_becomes_function
   XPathTokenDisambiguator disambig(raw_tokenizer);
 
   ASSERT_THAT(all_tokens(disambig),
-              ElementsAre(XPathToken(XPathTokenType::FunctionName, "test"),
+              ElementsAre(XPathToken(XPathTokenType::Function, "test"),
                           XPathToken(XPathTokenType::LeftParen)));
 }
 
@@ -37,7 +37,7 @@ TEST_F(XPathTokenDisambiguatorTest, name_followed_by_double_colon_becomes_axis_n
   XPathTokenDisambiguator disambig(raw_tokenizer);
 
   ASSERT_THAT(all_tokens(disambig),
-              ElementsAre(XPathToken(XPathTokenType::AxisName, "test"),
+              ElementsAre(XPathToken(XPathTokenType::Axis, "test"),
                           XPathToken(XPathTokenType::DoubleColon)));
 }
 
