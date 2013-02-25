@@ -10,11 +10,13 @@
 using testing::ElementsAre;
 
 class XPathTokenDeabbreviatorTest : public ::testing::Test {
+protected:
+  RawTokenProvider raw_tokenizer;
 };
 
 TEST_F(XPathTokenDeabbreviatorTest, converts_at_sign_to_attribute_axis)
 {
-  XPathTokenizer raw_tokenizer("@");
+  raw_tokenizer.add(XPathTokenType::AtSign);
 
   XPathTokenDeabbreviator deabbrv(raw_tokenizer);
 
@@ -24,7 +26,7 @@ TEST_F(XPathTokenDeabbreviatorTest, converts_at_sign_to_attribute_axis)
 
 TEST_F(XPathTokenDeabbreviatorTest, converts_double_slash_to_descendant_or_self)
 {
-  XPathTokenizer raw_tokenizer("//");
+  raw_tokenizer.add(XPathTokenType::DoubleSlash);
 
   XPathTokenDeabbreviator deabbrv(raw_tokenizer);
 
@@ -39,7 +41,7 @@ TEST_F(XPathTokenDeabbreviatorTest, converts_double_slash_to_descendant_or_self)
 
 TEST_F(XPathTokenDeabbreviatorTest, converts_current_node_to_self_node)
 {
-  XPathTokenizer raw_tokenizer(".");
+  raw_tokenizer.add(XPathTokenType::CurrentNode);
 
   XPathTokenDeabbreviator deabbrv(raw_tokenizer);
 
@@ -52,7 +54,7 @@ TEST_F(XPathTokenDeabbreviatorTest, converts_current_node_to_self_node)
 
 TEST_F(XPathTokenDeabbreviatorTest, converts_parent_node_to_parent_node)
 {
-  XPathTokenizer raw_tokenizer("..");
+  raw_tokenizer.add(XPathTokenType::ParentNode);
 
   XPathTokenDeabbreviator deabbrv(raw_tokenizer);
 
