@@ -158,7 +158,8 @@ std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &_source)
 {
   if (! (_source.next_token_is(XPathTokenType::String) ||
-         _source.next_token_is(XPathTokenType::FunctionName))) {
+         _source.next_token_is(XPathTokenType::FunctionName) ||
+         _source.next_token_is(XPathTokenType::AxisName))) {
     return nullptr;
   }
 

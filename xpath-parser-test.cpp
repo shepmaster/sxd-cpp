@@ -102,7 +102,7 @@ TEST_F(XPathParserTest, parses_two_strings_as_grandchild)
 TEST_F(XPathParserTest, parses_self_axis)
 {
   tokens.add({
-      XPathToken("self"),
+      XPathToken(XPathTokenType::AxisName, "self"),
       XPathToken(XPathTokenType::DoubleColon),
       XPathToken("top-node")
   });
@@ -115,7 +115,7 @@ TEST_F(XPathParserTest, parses_self_axis)
 TEST_F(XPathParserTest, parses_parent_axis)
 {
   tokens.add({
-      XPathToken("parent"),
+      XPathToken(XPathTokenType::AxisName, "parent"),
       XPathToken(XPathTokenType::DoubleColon),
       XPathToken("top-node")
   });
@@ -129,7 +129,7 @@ TEST_F(XPathParserTest, parses_parent_axis)
 TEST_F(XPathParserTest, parses_descendant_axis)
 {
   tokens.add({
-      XPathToken("descendant"),
+      XPathToken(XPathTokenType::AxisName, "descendant"),
       XPathToken(XPathTokenType::DoubleColon),
       XPathToken("two")
   });
@@ -145,7 +145,7 @@ TEST_F(XPathParserTest, parses_descendant_axis)
 TEST_F(XPathParserTest, parses_descendant_or_self_axis)
 {
   tokens.add({
-      XPathToken("descendant-or-self"),
+      XPathToken(XPathTokenType::AxisName, "descendant-or-self"),
       XPathToken(XPathTokenType::DoubleColon),
       XPathToken("*")
   });
@@ -161,7 +161,7 @@ TEST_F(XPathParserTest, parses_descendant_or_self_axis)
 TEST_F(XPathParserTest, parses_attribute_axis)
 {
   tokens.add({
-      XPathToken("attribute"),
+      XPathToken(XPathTokenType::AxisName, "attribute"),
       XPathToken(XPathTokenType::DoubleColon),
       XPathToken("*")
   });
@@ -219,7 +219,7 @@ TEST_F(XPathParserTest, parses_text_node_test)
 TEST_F(XPathParserTest, parses_axis_and_node_test)
 {
   tokens.add({
-      XPathToken("self"),
+      XPathToken(XPathTokenType::AxisName, "self"),
       XPathToken(XPathTokenType::DoubleColon),
       XPathToken(XPathTokenType::FunctionName, "text"),
       XPathToken(XPathTokenType::LeftParen),
@@ -484,7 +484,7 @@ TEST_F(XPathParserTest, repeated_unary_negation)
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({
-      XPathToken("bad-axis"),
+      XPathToken(XPathTokenType::AxisName, "bad-axis"),
       XPathToken(XPathTokenType::DoubleColon),
       XPathToken("*")
   });

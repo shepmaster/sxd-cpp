@@ -31,6 +31,8 @@ XPathTokenDisambiguator::next_token()
     _buffer.push_back(next);
     if (next.is(XPathTokenType::LeftParen)) {
       return XPathToken(XPathTokenType::FunctionName, token.string());
+    } else if (next.is(XPathTokenType::DoubleColon)) {
+      return XPathToken(XPathTokenType::AxisName, token.string());
     }
   }
 

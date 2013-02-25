@@ -7,6 +7,7 @@
 enum class XPathTokenType {
   String,
   FunctionName,
+  AxisName,
   Number,
   CurrentNode,
   ParentNode,

@@ -27,6 +27,20 @@ TEST_F(XPathTokenDisambiguatorTest, name_followed_by_left_paren_becomes_function
                           XPathToken(XPathTokenType::LeftParen)));
 }
 
+TEST_F(XPathTokenDisambiguatorTest, name_followed_by_double_colon_becomes_axis_name)
+{
+  raw_tokenizer.add({
+      XPathToken("test"),
+      XPathTokenType::DoubleColon,
+  });
+
+  XPathTokenDisambiguator disambig(raw_tokenizer);
+
+  ASSERT_THAT(all_tokens(disambig),
+              ElementsAre(XPathToken(XPathTokenType::AxisName, "test"),
+                          XPathToken(XPathTokenType::DoubleColon)));
+}
+
 int
 main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
