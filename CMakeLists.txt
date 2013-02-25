@@ -34,6 +34,7 @@ set(
   xpath-tokenizer.cpp
   xpath-tokenizer-buffer.cpp
   xpath-token-deabbreviator.cpp
+  xpath-token-disambiguator.cpp
   axis-parent.cpp
   axis-child.cpp
   axis-self.cpp
@@ -82,6 +83,7 @@ set(test_programs
   xpath-acceptance
   xpath-tokenizer
   xpath-token-deabbreviator
+  xpath-token-disambiguator
   xpath-parser
   node-test-attribute
   xpath-step
