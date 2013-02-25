@@ -1,7 +1,6 @@
 #include "function-not.h"
 
 #include "xpath-token-deabbreviator.h"
-#include "xpath-tokenizer.h"
 
 #include "gmock/gmock.h"
 #include "xpath-raw-token-source-test.h"
