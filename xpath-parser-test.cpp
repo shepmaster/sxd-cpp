@@ -163,8 +163,8 @@ TEST_F(XPathParserTest, parses_attribute_axis)
   tokens.add({
       XPathToken("attribute"),
       XPathToken(XPathTokenType::DoubleColon),
-      XPathToken("*")}
-  );
+      XPathToken("*")
+  });
 
   auto expr = parser->parse();
 
