@@ -6,7 +6,7 @@ XPathTokenizerBuffer::XPathTokenizerBuffer(XPathRawTokenSource &tokenizer) :
 }
 
 bool
-XPathTokenizerBuffer::has_more_tokens()
+XPathTokenizerBuffer::has_more_tokens() const
 {
   return _token_is_saved || _tokenizer.has_more_tokens();
 }

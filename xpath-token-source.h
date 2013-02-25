@@ -5,7 +5,7 @@
 
 class XPathTokenSource {
 public:
-  virtual bool has_more_tokens() = 0;
+  virtual bool has_more_tokens() const = 0;
 
   /**
    * Returns and consumes the next token.

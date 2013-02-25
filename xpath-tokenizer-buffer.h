@@ -7,7 +7,7 @@
 class XPathTokenizerBuffer : public XPathTokenSource {
 public:
   XPathTokenizerBuffer(XPathRawTokenSource &tokenizer);
-  bool has_more_tokens();
+  bool has_more_tokens() const;
   XPathToken next_token();
   bool next_token_is(XPathTokenType type);
 
