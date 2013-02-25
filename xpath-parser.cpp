@@ -78,14 +78,18 @@ parse_node_test(XPathTokenSource &source) {
 
 std::unique_ptr<XPathNodeTest>
 default_node_test(XPathTokenSource &source, std::unique_ptr<XPathAxis> &axis) {
-  auto token = source.next_token();
+  if (source.next_token_is(XPathTokenType::String)) {
+    auto token = source.next_token();
 
-  switch (axis->principal_node_type()) {
-  case PrincipalNodeType::Attribute:
-    return make_unique<NodeTestAttribute>(token.string());
-  case PrincipalNodeType::Element:
-    return make_unique<NodeTestElement>(token.string());
+    switch (axis->principal_node_type()) {
+    case PrincipalNodeType::Attribute:
+      return make_unique<NodeTestAttribute>(token.string());
+    case PrincipalNodeType::Element:
+      return make_unique<NodeTestElement>(token.string());
+    }
   }
+
+  return nullptr;
 }
 
 std::unique_ptr<XPathExpression>
@@ -155,48 +159,81 @@ parse_primary_expression(XPathTokenSource &source) {
   return nullptr;
 }
 
-std::unique_ptr<XPathExpression>
-parse_path_expression(XPathTokenSource &_source)
+std::unique_ptr<XPathStep>
+parse_step(XPathTokenSource &source)
 {
-  if (! (_source.next_token_is(XPathTokenType::String) ||
-         _source.next_token_is(XPathTokenType::FunctionName) ||
-         _source.next_token_is(XPathTokenType::AxisName))) {
+  auto axis = parse_axis(source);
+
+  auto node_test = parse_node_test(source);
+  if (! node_test) {
+    node_test = default_node_test(source, axis);
+  }
+  if (! node_test) {
     return nullptr;
   }
 
-  std::vector<std::unique_ptr<XPathStep>> steps;
-
-  while(true) {
-    auto axis = parse_axis(_source);
-
-    auto node_test = parse_node_test(_source);
-    if (! node_test) {
-      node_test = default_node_test(_source, axis);
-    }
-
-    std::unique_ptr<XPathExpression> predicate;
-    if (_source.next_token_is(XPathTokenType::LeftBracket)) {
-      consume(_source, XPathTokenType::LeftBracket);
-      predicate = parse_primary_expression(_source);
-      consume(_source, XPathTokenType::RightBracket);
-    }
-
-    steps.push_back(make_unique<XPathStep>(move(axis), move(node_test), move(predicate)));
-
-    if (_source.next_token_is(XPathTokenType::Slash)) {
-      consume(_source, XPathTokenType::Slash);
-    } else {
-      break;
-    }
+  std::unique_ptr<XPathExpression> predicate;
+  if (source.next_token_is(XPathTokenType::LeftBracket)) {
+    consume(source, XPathTokenType::LeftBracket);
+    predicate = parse_primary_expression(source);
+    consume(source, XPathTokenType::RightBracket);
   }
 
-  return make_unique<ExpressionPath>(move(steps));
+  return make_unique<XPathStep>(move(axis), move(node_test), move(predicate));
 }
+
+std::unique_ptr<XPathExpression>
+parse_relative_location_path(XPathTokenSource &source)
+{
+  std::vector<std::unique_ptr<XPathStep>> steps;
+
+  auto step = parse_step(source);
+  if (step) {
+    steps.push_back(move(step));
+    while (source.next_token_is(XPathTokenType::Slash)) {
+      consume(source, XPathTokenType::Slash);
+      auto next = parse_step(source);
+      steps.push_back(move(next));
+    }
+
+    return make_unique<ExpressionPath>(move(steps));
+  }
+
+  // expr = parse_abbreviated_relative_location_path();
+  // if (expr) return expr;
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_location_path(XPathTokenSource &source)
+{
+  auto expr = parse_relative_location_path(source);
+  if (expr) return expr;
+
+  // expr = parse_absolute_location_path(source);
+  // if (expr) return expr;
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_path_expression(XPathTokenSource &source)
+{
+  auto expr = parse_location_path(source);
+  if (expr) return expr;
+
+  expr = parse_primary_expression(source);
+  if (expr) return expr;
+
+  return nullptr;
+}
+
 
 std::unique_ptr<XPathExpression>
 parse_unary_expression(XPathTokenSource &source)
 {
-  auto expr = parse_primary_expression(source);
+  auto expr = parse_path_expression(source);
   if (expr) return expr;
 
   if (source.next_token_is(XPathTokenType::MinusSign)) {
@@ -261,9 +298,6 @@ parse_additive_expression(XPathTokenSource &source)
 std::unique_ptr<XPathExpression>
 XPathParser::parse() {
   std::unique_ptr<XPathExpression> expr;
-
-  expr = parse_path_expression(_source);
-  if (expr) return expr;
 
   expr = parse_additive_expression(_source);
   if (expr) return expr;
