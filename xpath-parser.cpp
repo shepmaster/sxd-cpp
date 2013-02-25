@@ -31,54 +31,55 @@ consume(XPathTokenSource &source, XPathTokenType type) {
 }
 
 std::unique_ptr<XPathAxis>
-parse_axis(XPathTokenSource &source, XPathToken token) {
-  auto name = token.string();
-  std::unique_ptr<XPathAxis> axis;
+parse_axis(XPathTokenSource &source) {
+  if (source.next_token_is(XPathTokenType::AxisName)) {
+    auto token = source.next_token();
+    auto name = token.string();
+    consume(source, XPathTokenType::DoubleColon);
 
-  if (source.next_token_is(XPathTokenType::DoubleColon)) {
     if (name == "self") {
-      axis = make_unique<AxisSelf>();
+      return make_unique<AxisSelf>();
     } else if (name == "parent") {
-      axis = make_unique<AxisParent>();
+      return make_unique<AxisParent>();
     } else if (name == "descendant") {
-      axis = make_unique<AxisDescendant>();
+      return make_unique<AxisDescendant>();
     } else if (name == "descendant-or-self") {
-      axis = make_unique<AxisDescendantOrSelf>();
+      return make_unique<AxisDescendantOrSelf>();
     } else if (name == "attribute") {
-      axis = make_unique<AxisAttribute>();
+      return make_unique<AxisAttribute>();
     } else {
       throw InvalidXPathAxisException(name);
     }
-
-    consume(source, XPathTokenType::DoubleColon);
   }
 
-  return axis;
+  return make_unique<AxisChild>();
 }
 
 std::unique_ptr<XPathNodeTest>
-parse_node_test(XPathTokenSource &source, XPathToken token) {
-  auto name = token.string();
-  std::unique_ptr<XPathNodeTest> node_test;
-
-  if (source.next_token_is(XPathTokenType::LeftParen)) {
-    if (name == "node") {
-      node_test = make_unique<NodeTestNode>();
-    } else if (name == "text") {
-      node_test = make_unique<NodeTestText>();
-    } else {
-      throw InvalidNodeTestException(name);
-    }
+parse_node_test(XPathTokenSource &source) {
+  if (source.next_token_is(XPathTokenType::FunctionName)) {
+    auto token = source.next_token();
+    auto name = token.string();
 
     consume(source, XPathTokenType::LeftParen);
     consume(source, XPathTokenType::RightParen);
+
+    if (name == "node") {
+      return make_unique<NodeTestNode>();
+    } else if (name == "text") {
+      return make_unique<NodeTestText>();
+    } else {
+      throw InvalidNodeTestException(name);
+    }
   }
 
-  return node_test;
+  return nullptr;
 }
 
 std::unique_ptr<XPathNodeTest>
-default_node_test(std::unique_ptr<XPathAxis> &axis, XPathToken token) {
+default_node_test(XPathTokenSource &source, std::unique_ptr<XPathAxis> &axis) {
+  auto token = source.next_token();
+
   switch (axis->principal_node_type()) {
   case PrincipalNodeType::Attribute:
     return make_unique<NodeTestAttribute>(token.string());
@@ -166,20 +167,11 @@ parse_path_expression(XPathTokenSource &_source)
   std::vector<std::unique_ptr<XPathStep>> steps;
 
   while(true) {
-    auto token = _source.next_token();
-    auto name = token.string();
+    auto axis = parse_axis(_source);
 
-    auto axis = parse_axis(_source, token);
-    if (axis) {
-      token = _source.next_token();
-      name = token.string();
-    } else {
-      axis = make_unique<AxisChild>();
-    }
-
-    auto node_test = parse_node_test(_source, token);
+    auto node_test = parse_node_test(_source);
     if (! node_test) {
-      node_test = default_node_test(axis, token);
+      node_test = default_node_test(_source, axis);
     }
 
     std::unique_ptr<XPathExpression> predicate;
