@@ -2,6 +2,7 @@
 
 #include "xpath-tokenizer-buffer.h"
 #include "xpath-token-deabbreviator.h"
+#include "xpath-token-disambiguator.h"
 #include "xpath-parser.h"
 
 #include <memory>
@@ -10,8 +11,9 @@ XPath
 XPathFactory::compile(std::string xpath)
 {
   XPathTokenizer base_tokenizer(xpath);
-  XPathTokenDeabbreviator deabbrev(base_tokenizer);
-  XPathTokenizerBuffer tokenizer(deabbrev);
+  XPathTokenDeabbreviator deabbreviator(base_tokenizer);
+  XPathTokenDisambiguator disambiguator(deabbreviator);
+  XPathTokenizerBuffer tokenizer(disambiguator);
 
   XPathParser parser(tokenizer);
   return XPath(parser.parse());

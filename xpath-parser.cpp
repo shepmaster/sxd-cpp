@@ -121,7 +121,7 @@ parse_primary_expression(XPathTokenSource &source);
 std::unique_ptr<XPathExpression>
 parse_function_call(XPathTokenSource &source)
 {
-  if (source.next_token_is(XPathTokenType::String)) {
+  if (source.next_token_is(XPathTokenType::FunctionName)) {
     std::vector<std::shared_ptr<XPathExpression>> arguments;
 
     auto token = source.next_token();
@@ -157,7 +157,8 @@ parse_primary_expression(XPathTokenSource &source) {
 std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &_source)
 {
-  if (! (_source.next_token_is(XPathTokenType::String))) {
+  if (! (_source.next_token_is(XPathTokenType::String) ||
+         _source.next_token_is(XPathTokenType::FunctionName))) {
     return nullptr;
   }
 

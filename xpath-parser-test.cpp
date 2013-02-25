@@ -187,7 +187,7 @@ TEST_F(XPathParserTest, parses_child_with_same_name_as_an_axis)
 TEST_F(XPathParserTest, parses_node_node_test)
 {
   tokens.add({
-      XPathToken("node"),
+      XPathToken(XPathTokenType::FunctionName, "node"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen)
   });
@@ -203,7 +203,7 @@ TEST_F(XPathParserTest, parses_node_node_test)
 TEST_F(XPathParserTest, parses_text_node_test)
 {
   tokens.add({
-      XPathToken("text"),
+      XPathToken(XPathTokenType::FunctionName, "text"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen)
   });
@@ -221,7 +221,7 @@ TEST_F(XPathParserTest, parses_axis_and_node_test)
   tokens.add({
       XPathToken("self"),
       XPathToken(XPathTokenType::DoubleColon),
-      XPathToken("text"),
+      XPathToken(XPathTokenType::FunctionName, "text"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen)
   });
@@ -294,7 +294,7 @@ TEST_F(XPathParserTest, true_function_predicate_selects_all_nodes)
   tokens.add({
       XPathToken("*"),
       XPathToken(XPathTokenType::LeftBracket),
-      XPathToken("true"),
+      XPathToken(XPathTokenType::FunctionName, "true"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen),
       XPathToken(XPathTokenType::RightBracket)
@@ -313,7 +313,7 @@ TEST_F(XPathParserTest, false_function_predicate_selects_no_nodes)
   tokens.add({
       XPathToken("*"),
       XPathToken(XPathTokenType::LeftBracket),
-      XPathToken("false"),
+      XPathToken(XPathTokenType::FunctionName, "false"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen),
       XPathToken(XPathTokenType::RightBracket)
@@ -332,9 +332,9 @@ TEST_F(XPathParserTest, functions_accept_arguments)
   tokens.add({
       XPathToken("*"),
       XPathToken(XPathTokenType::LeftBracket),
-      XPathToken("not"),
+      XPathToken(XPathTokenType::FunctionName, "not"),
       XPathToken(XPathTokenType::LeftParen),
-      XPathToken("true"),
+      XPathToken(XPathTokenType::FunctionName, "true"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen),
       XPathToken(XPathTokenType::RightParen),
@@ -495,7 +495,7 @@ TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 TEST_F(XPathParserTest, unknown_node_test_is_reported_as_an_error)
 {
   tokens.add({
-      XPathToken("bad-node-test"),
+      XPathToken(XPathTokenType::FunctionName, "bad-node-test"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen)
   });
