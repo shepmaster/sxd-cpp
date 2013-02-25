@@ -6,6 +6,7 @@
 
 enum class XPathTokenType {
   String,
+  FunctionName,
   Number,
   CurrentNode,
   ParentNode,
@@ -33,6 +34,7 @@ public:
   XPathToken(std::string string);
   XPathToken(double number);
   XPathToken(XPathTokenType type);
+  XPathToken(XPathTokenType type, std::string string);
 
   std::string string() const;
   double number() const;
