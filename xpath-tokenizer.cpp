@@ -30,7 +30,8 @@ size_t while_valid_string(std::string xpath, size_t offset)
         '[' == c || ']' == c ||
         '@' == c || '\'' == c ||
         '"' == c || '+' == c ||
-        '-' == c || '=' == c)
+        '-' == c || '=' == c ||
+        '!' == c)
     {
       break;
     }
@@ -145,6 +146,11 @@ XPathTokenizer::raw_next_token()
     if (quote_char == c) {
       return tokenize_literal(quote_char);
     }
+  }
+
+  if ('!' == c && '=' == _xpath[_start + 1]) {
+    _start += 2;
+    return XPathTokenType::NotEqual;
   }
 
   if ('.' == c && ! isdigit(_xpath[_start + 1])) {
