@@ -15,6 +15,7 @@ public:
   unsigned long size() const;
   void next();
   std::shared_ptr<XPathFunction> function_for_name(std::string name) const;
+  bool has_function(std::string name) const;
 
   XPathEvaluationContext new_context_for(Node *node, Nodeset nodes) const;
 

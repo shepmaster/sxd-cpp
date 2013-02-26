@@ -10,6 +10,13 @@ struct InvalidXPathAxisException : virtual std::runtime_error
   {};
 };
 
+struct UnknownXPathFunctionException : virtual std::runtime_error
+{
+  UnknownXPathFunctionException(std::string name) :
+    std::runtime_error(name)
+  {};
+};
+
 struct InvalidNodeTestException : virtual std::runtime_error
 {
   InvalidNodeTestException(std::string name) :

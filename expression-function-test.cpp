@@ -1,6 +1,7 @@
 #include "expression-function.h"
 
 #include "document.h"
+#include "xpath-parsing-exceptions.h"
 
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
@@ -11,6 +12,7 @@
 using std::make_shared;
 
 using testing::DefaultValue;
+using testing::NiceMock;
 using testing::Ref;
 using testing::Return;
 using testing::_;
@@ -21,28 +23,35 @@ protected:
   Node *node = doc.new_element("context-node");
   Nodeset nodes;
   XPathFunctionLibrary functions;
+  std::shared_ptr<MockFunction> function = make_shared<NiceMock<MockFunction>>();
   std::vector<std::shared_ptr<XPathExpression>> arguments;
+  std::shared_ptr<XPathEvaluationContext> context;
 
   void SetUp() {
-    auto function = make_shared<MockFunction>();
     EXPECT_CALL(*function, name()).WillRepeatedly(Return("foo"));
-    EXPECT_CALL(*function, evaluate(_, _));//.WillRepeatedly(Return("foo"));
     functions.add(function);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
+
+    context = make_shared<XPathEvaluationContext>(node, nodes, functions);
   }
 };
 
 TEST_F(ExpressionFunctionTest, evaluates_input_arguments)
 {
-  XPathEvaluationContext context(node, nodes, functions);
-
   auto argument = make_shared<MockExpression>();
-  EXPECT_CALL(*argument, evaluate(Ref(context)));
+  EXPECT_CALL(*argument, evaluate(Ref(*context)));
   arguments.push_back(argument);
 
   ExpressionFunction expression("foo", arguments);
 
-  expression.evaluate(context);
+  expression.evaluate(*context);
+}
+
+TEST_F(ExpressionFunctionTest, unknown_function_is_reported_as_an_error)
+{
+  ExpressionFunction expression("unknown-function", arguments);
+
+  ASSERT_THROW(expression.evaluate(*context), UnknownXPathFunctionException);
 }
 
 int

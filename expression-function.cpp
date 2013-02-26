@@ -1,6 +1,7 @@
 #include "expression-function.h"
 
 #include "xpath-function.h"
+#include "xpath-parsing-exceptions.h"
 
 ExpressionFunction::ExpressionFunction(std::string name,
                                        std::vector<std::shared_ptr<XPathExpression>> arguments) :
@@ -23,8 +24,11 @@ evaluate_arguments(const std::vector<std::shared_ptr<XPathExpression>> &expressi
 XPathValue
 ExpressionFunction::evaluate(const XPathEvaluationContext &context) const
 {
+  if (! context.has_function(_name)) {
+    throw UnknownXPathFunctionException(_name);
+  }
+
   auto fn = context.function_for_name(_name);
-  // TODO: Error when there is no such function
   // TODO: Error when argument count mismatch
   auto arguments = evaluate_arguments(_arguments, context);
   return fn->evaluate(context, arguments);
