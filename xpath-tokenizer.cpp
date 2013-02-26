@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <vector>
+#include <map>
 
 XPathTokenizer::XPathTokenizer(std::string xpath) :
   _xpath(xpath),
@@ -58,6 +59,24 @@ while_valid_number(std::string xpath, size_t offset)
   return offset;
 }
 
+static std::map<char, XPathTokenType> single_char_tokens = {
+  {'/',  XPathTokenType::Slash},
+  {'(',  XPathTokenType::LeftParen},
+  {')',  XPathTokenType::RightParen},
+  {'[',  XPathTokenType::LeftBracket},
+  {']',  XPathTokenType::RightBracket},
+  {'@',  XPathTokenType::AtSign},
+  {'\'', XPathTokenType::Apostrophe},
+  {'"',  XPathTokenType::DoubleQuote},
+  {'+',  XPathTokenType::PlusSign},
+  {'-',  XPathTokenType::MinusSign},
+};
+
+static std::map<char, XPathTokenType> repeated_char_tokens = {
+  {':', XPathTokenType::DoubleColon},
+  {'/', XPathTokenType::DoubleSlash}
+};
+
 struct NamedOperator {
   std::string name;
   XPathTokenType type;
@@ -76,43 +95,19 @@ XPathTokenizer::raw_next_token()
 {
   auto c = _xpath[_start];
 
-  if (':' == c && ':' == _xpath[_start + 1]) {
+  auto repeated_token = repeated_char_tokens.find(c);
+  if (repeated_token != repeated_char_tokens.end() && c == _xpath[_start + 1]) {
     _start += 2;
-    return XPathToken(XPathTokenType::DoubleColon);
-  } else if ('/' == c && '/' == _xpath[_start + 1]) {
-    _start += 2;
-    return XPathToken(XPathTokenType::DoubleSlash);
-  } else if ('/' == c) {
+    return repeated_token->second;
+  }
+
+  auto token = single_char_tokens.find(c);
+  if (token != single_char_tokens.end()) {
     _start += 1;
-    return XPathTokenType::Slash;
-  } else if ('(' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::LeftParen);
-  } else if (')' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::RightParen);
-  } else if ('[' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::LeftBracket);
-  } else if (']' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::RightBracket);
-  } else if ('@' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::AtSign);
-  } else if ('\'' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::Apostrophe);
-  } else if ('"' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::DoubleQuote);
-  } else if ('+' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::PlusSign);
-  } else if ('-' == c) {
-    _start += 1;
-    return XPathToken(XPathTokenType::MinusSign);
-  } else if ('.' == c && ! isdigit(_xpath[_start + 1])) {
+    return token->second;
+  }
+
+  if ('.' == c && ! isdigit(_xpath[_start + 1])) {
     // Ugly. Should we use START / FOLLOW constructs?
     if ('.' == _xpath[_start + 1]) {
       _start += 2;
