@@ -57,7 +57,7 @@ parse_axis(XPathTokenSource &source) {
 
 std::unique_ptr<XPathNodeTest>
 parse_node_test(XPathTokenSource &source) {
-  if (source.next_token_is(XPathTokenType::Function)) {
+  if (source.next_token_is(XPathTokenType::NodeTest)) {
     auto token = source.next_token();
     auto name = token.string();
 

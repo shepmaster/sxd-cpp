@@ -6,6 +6,7 @@
 
 enum class XPathTokenType {
   String,
+  NodeTest,
   Function,
   Axis,
   Number,

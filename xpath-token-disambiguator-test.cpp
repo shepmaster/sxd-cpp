@@ -7,11 +7,35 @@
 #include <iostream>
 
 using testing::ElementsAre;
+using testing::Values;
 
 class XPathTokenDisambiguatorTest : public ::testing::Test {
 protected:
   RawTokenProvider raw_tokenizer;
 };
+
+class NodeTestDisambiguatorTest : public XPathTokenDisambiguatorTest,
+                                  public ::testing::WithParamInterface<std::string>
+{};
+
+TEST_P(NodeTestDisambiguatorTest, disambiguates_node_test_functions)
+{
+  auto name = GetParam();
+  raw_tokenizer.add({
+      XPathToken(name),
+      XPathTokenType::LeftParen,
+  });
+
+  XPathTokenDisambiguator disambig(raw_tokenizer);
+
+  ASSERT_THAT(all_tokens(disambig),
+              ElementsAre(XPathToken(XPathTokenType::NodeTest, name),
+                          XPathToken(XPathTokenType::LeftParen)));
+}
+
+INSTANTIATE_TEST_CASE_P(NodeNames,
+                        NodeTestDisambiguatorTest,
+                        Values("comment", "text", "processing-instruction", "node"));
 
 TEST_F(XPathTokenDisambiguatorTest, name_followed_by_left_paren_becomes_function_name)
 {

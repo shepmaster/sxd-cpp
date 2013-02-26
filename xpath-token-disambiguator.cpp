@@ -1,5 +1,7 @@
 #include "xpath-token-disambiguator.h"
 
+#include <set>
+
 XPathTokenDisambiguator::XPathTokenDisambiguator(XPathRawTokenSource &token_source) :
   _token_source(token_source)
 {}
@@ -21,6 +23,9 @@ XPathTokenDisambiguator::next() {
   }
 }
 
+std::set<std::string> node_test_names =
+  { "comment", "text", "processing-instruction", "node" };
+
 XPathToken
 XPathTokenDisambiguator::next_token()
 {
@@ -30,7 +35,11 @@ XPathTokenDisambiguator::next_token()
     auto next = _token_source.next_token();
     _buffer.push_back(next);
     if (next.is(XPathTokenType::LeftParen)) {
-      return XPathToken(XPathTokenType::Function, token.string());
+      if (node_test_names.find(token.string()) != node_test_names.end()) {
+        return XPathToken(XPathTokenType::NodeTest, token.string());
+      } else {
+        return XPathToken(XPathTokenType::Function, token.string());
+      }
     } else if (next.is(XPathTokenType::DoubleColon)) {
       return XPathToken(XPathTokenType::Axis, token.string());
     }
