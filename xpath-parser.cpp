@@ -15,6 +15,7 @@
 #include "expression-path.h"
 #include "expression-math.h"
 #include "expression-negation.h"
+#include "expression-or.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
@@ -296,10 +297,25 @@ parse_additive_expression(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
+parse_or_expression(XPathTokenSource &source)
+{
+  auto left = parse_additive_expression(source);
+  if (!left) return nullptr;
+
+  while (source.next_token_is(XPathTokenType::Or)) {
+    consume(source, XPathTokenType::Or);
+    auto right = parse_additive_expression(source);
+    left = make_unique<ExpressionOr>(move(left), move(right));
+  }
+
+  return left;
+}
+
+std::unique_ptr<XPathExpression>
 XPathParser::parse() {
   std::unique_ptr<XPathExpression> expr;
 
-  expr = parse_additive_expression(_source);
+  expr = parse_or_expression(_source);
   if (expr) return expr;
 
   return nullptr;

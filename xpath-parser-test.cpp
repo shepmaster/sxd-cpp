@@ -494,6 +494,23 @@ TEST_F(XPathParserTest, top_level_function_call)
   ASSERT_EQ(true, evaluate(expr).boolean());
 }
 
+TEST_F(XPathParserTest, or_of_true_and_false)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::Function, "true"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen),
+      XPathToken(XPathTokenType::Or),
+      XPathToken(XPathTokenType::Function, "false"),
+      XPathToken(XPathTokenType::LeftParen),
+      XPathToken(XPathTokenType::RightParen),
+  });
+
+  auto expr = parser->parse();
+
+  ASSERT_EQ(true, evaluate(expr).boolean());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({
