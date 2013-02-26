@@ -251,42 +251,30 @@ TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)
   ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(second));
 }
 
-TEST_F(XPathParserTest, apostrophe_string_predicate_selects_all_nodes)
+TEST_F(XPathParserTest, apostrophe_string_literal)
 {
   tokens.add({
-      XPathToken("*"),
-      XPathToken(XPathTokenType::LeftBracket),
       XPathToken(XPathTokenType::Apostrophe),
       XPathToken("string"),
       XPathToken(XPathTokenType::Apostrophe),
-      XPathToken(XPathTokenType::RightBracket)
   });
 
   auto expr = parser->parse();
 
-  auto first = add_child(top_node, "first");
-  auto second = add_child(top_node, "second");
-
-  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(first, second));
+  ASSERT_EQ("string", evaluate(expr).string());
 }
 
-TEST_F(XPathParserTest, double_quote_string_predicate_selects_all_nodes)
+TEST_F(XPathParserTest, double_quote_string_literal)
 {
   tokens.add({
-      XPathToken("*"),
-      XPathToken(XPathTokenType::LeftBracket),
       XPathToken(XPathTokenType::DoubleQuote),
       XPathToken("string"),
       XPathToken(XPathTokenType::DoubleQuote),
-      XPathToken(XPathTokenType::RightBracket)
   });
 
   auto expr = parser->parse();
 
-  auto first = add_child(top_node, "first");
-  auto second = add_child(top_node, "second");
-
-  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(first, second));
+  ASSERT_EQ("string", evaluate(expr).string());
 }
 
 TEST_F(XPathParserTest, true_function_predicate_selects_all_nodes)
@@ -330,26 +318,20 @@ TEST_F(XPathParserTest, false_function_predicate_selects_no_nodes)
 TEST_F(XPathParserTest, functions_accept_arguments)
 {
   tokens.add({
-      XPathToken("*"),
-      XPathToken(XPathTokenType::LeftBracket),
       XPathToken(XPathTokenType::Function, "not"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::Function, "true"),
       XPathToken(XPathTokenType::LeftParen),
       XPathToken(XPathTokenType::RightParen),
       XPathToken(XPathTokenType::RightParen),
-      XPathToken(XPathTokenType::RightBracket)
   });
 
   auto expr = parser->parse();
 
-  add_child(top_node, "first");
-  add_child(top_node, "second");
-
-  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre());
+  ASSERT_EQ(false, evaluate(expr).boolean());
 }
 
-TEST_F(XPathParserTest, literal_at_the_top_level)
+TEST_F(XPathParserTest, numeric_literal)
 {
   tokens.add({
       XPathToken(3.2)
@@ -360,7 +342,7 @@ TEST_F(XPathParserTest, literal_at_the_top_level)
   ASSERT_EQ(3.2, evaluate(expr).number());
 }
 
-TEST_F(XPathParserTest, addition_of_two_literals)
+TEST_F(XPathParserTest, addition_of_two_numbers)
 {
   tokens.add({
       XPathToken(1.1),
@@ -373,7 +355,7 @@ TEST_F(XPathParserTest, addition_of_two_literals)
   ASSERT_DOUBLE_EQ(3.3, evaluate(expr).number());
 }
 
-TEST_F(XPathParserTest, addition_of_multiple_literals)
+TEST_F(XPathParserTest, addition_of_multiple_numbers)
 {
   tokens.add({
       XPathToken(1.1),
@@ -388,7 +370,7 @@ TEST_F(XPathParserTest, addition_of_multiple_literals)
   ASSERT_DOUBLE_EQ(6.6, evaluate(expr).number());
 }
 
-TEST_F(XPathParserTest, subtraction_of_two_literals)
+TEST_F(XPathParserTest, subtraction_of_two_numbers)
 {
   tokens.add({
       XPathToken(1.1),
@@ -416,7 +398,7 @@ TEST_F(XPathParserTest, additive_expression_is_left_associative)
   ASSERT_DOUBLE_EQ(-4.4, evaluate(expr).number());
 }
 
-TEST_F(XPathParserTest, multiplication_of_two_literals)
+TEST_F(XPathParserTest, multiplication_of_two_numbers)
 {
   tokens.add({
       XPathToken(1.1),
@@ -429,7 +411,7 @@ TEST_F(XPathParserTest, multiplication_of_two_literals)
   ASSERT_DOUBLE_EQ(2.42, evaluate(expr).number());
 }
 
-TEST_F(XPathParserTest, division_of_two_literals)
+TEST_F(XPathParserTest, division_of_two_numbers)
 {
   tokens.add({
       XPathToken(7.1),
@@ -442,7 +424,7 @@ TEST_F(XPathParserTest, division_of_two_literals)
   ASSERT_DOUBLE_EQ(71, evaluate(expr).number());
 }
 
-TEST_F(XPathParserTest, remainder_of_two_literals)
+TEST_F(XPathParserTest, remainder_of_two_numbers)
 {
   tokens.add({
       XPathToken(7.1),
@@ -494,7 +476,7 @@ TEST_F(XPathParserTest, top_level_function_call)
   ASSERT_EQ(true, evaluate(expr).boolean());
 }
 
-TEST_F(XPathParserTest, or_of_true_and_false)
+TEST_F(XPathParserTest, or_expression)
 {
   tokens.add({
       XPathToken(XPathTokenType::Function, "true"),
@@ -511,7 +493,7 @@ TEST_F(XPathParserTest, or_of_true_and_false)
   ASSERT_EQ(true, evaluate(expr).boolean());
 }
 
-TEST_F(XPathParserTest, and_of_literals)
+TEST_F(XPathParserTest, and_expression)
 {
   tokens.add({
       XPathToken(1.2),
