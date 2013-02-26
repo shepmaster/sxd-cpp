@@ -30,7 +30,7 @@ size_t while_valid_string(std::string xpath, size_t offset)
         '[' == c || ']' == c ||
         '@' == c || '\'' == c ||
         '"' == c || '+' == c ||
-        '-' == c)
+        '-' == c || '=' == c)
     {
       break;
     }
@@ -82,6 +82,7 @@ static std::map<char, XPathTokenType> single_char_tokens = {
   {'@',  XPathTokenType::AtSign},
   {'+',  XPathTokenType::PlusSign},
   {'-',  XPathTokenType::MinusSign},
+  {'=',  XPathTokenType::Equal},
 };
 
 static std::map<char, XPathTokenType> repeated_char_tokens = {

@@ -15,6 +15,7 @@ enum class XPathTokenType {
   ParentNode,
   PlusSign,
   MinusSign,
+  Equal,
   And,
   Or,
   Remainder,
