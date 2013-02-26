@@ -276,6 +276,13 @@ TEST_F(XPathAcceptanceTest, unary_negation)
   ASSERT_DOUBLE_EQ(4.0, xpath.number());
 }
 
+TEST_F(XPathAcceptanceTest, boolean_logic)
+{
+  XPath xpath = compile("true()andfalse()");
+
+  ASSERT_EQ(false, xpath.boolean());
+}
+
 TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)
 {
   ASSERT_THROW(compile("bogus::*"), InvalidXPathAxisException);

@@ -13,6 +13,7 @@ public:
 
   Nodeset select_nodes(Node *node) const;
   double number() const;
+  bool boolean() const;
 
 private:
   std::unique_ptr<XPathExpression> _expression;

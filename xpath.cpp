@@ -27,3 +27,9 @@ XPath::number() const
 {
   return evaluate(nullptr, *_expression).number();
 }
+
+bool
+XPath::boolean() const
+{
+  return evaluate(nullptr, *_expression).boolean();
+}
