@@ -42,14 +42,16 @@ protected:
   }
 };
 
+static bool noop(double left, double right) { return false; }
+
 TEST_F(ExpressionRelationalTest, evaluates_both_arguments)
 {
-  auto expression = ExpressionRelational::LessThan(left, right);
+  ExpressionRelational expression(left, right, noop);
 
   EXPECT_CALL(*left, evaluate(Ref(*context)));
   EXPECT_CALL(*right, evaluate(Ref(*context)));
 
-  expression->evaluate(*context);
+  expression.evaluate(*context);
 }
 
 TEST_F(ExpressionRelationalTest, computes_less_than)
@@ -58,6 +60,16 @@ TEST_F(ExpressionRelationalTest, computes_less_than)
 
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(0.1));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(1.0));
+
+  ASSERT_EQ(true, expression->evaluate(*context).boolean());
+}
+
+TEST_F(ExpressionRelationalTest, computes_less_than_or_equal)
+{
+  auto expression = ExpressionRelational::LessThanOrEqual(left, right);
+
+  EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(0.1));
+  EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(0.1));
 
   ASSERT_EQ(true, expression->evaluate(*context).boolean());
 }

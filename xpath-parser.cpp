@@ -303,6 +303,10 @@ parse_relational_expression(XPathTokenSource &source)
       consume(source, XPathTokenType::LessThan);
       auto right = parse_additive_expression(source);
       left = ExpressionRelational::LessThan(move(left), move(right));
+    } else if (source.next_token_is(XPathTokenType::LessThanOrEqual)) {
+      consume(source, XPathTokenType::LessThanOrEqual);
+      auto right = parse_additive_expression(source);
+      left = ExpressionRelational::LessThanOrEqual(move(left), move(right));
     } else {
       break;
     }
