@@ -19,6 +19,7 @@ enum class XPathTokenType {
   NotEqual,
   LessThan,
   LessThanOrEqual,
+  GreaterThan,
   And,
   Or,
   Remainder,
