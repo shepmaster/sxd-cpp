@@ -156,18 +156,18 @@ TEST_F(XPathTokenizerTest, tokenizes_right_bracket)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::RightBracket)));
 }
 
-TEST_F(XPathTokenizerTest, tokenizes_apostrophe)
+TEST_F(XPathTokenizerTest, tokenizes_apostrophe_literal)
 {
-  XPathTokenizer tokenizer("'");
+  XPathTokenizer tokenizer("'hello!'");
 
-  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::Apostrophe)));
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::Literal, "hello!")));
 }
 
-TEST_F(XPathTokenizerTest, tokenizes_double_quote)
+TEST_F(XPathTokenizerTest, tokenizes_double_quote_literal)
 {
-  XPathTokenizer tokenizer("\"");
+  XPathTokenizer tokenizer("\"1.23\"");
 
-  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::DoubleQuote)));
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::Literal, "1.23")));
 }
 
 TEST_F(XPathTokenizerTest, tokenizes_plus_sign)

@@ -11,6 +11,7 @@ public:
   XPathToken next_token();
 
 private:
+  XPathToken tokenize_literal(char quote_char);
   XPathToken raw_next_token();
 
   std::string _xpath;

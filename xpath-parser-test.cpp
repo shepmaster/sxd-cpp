@@ -251,26 +251,9 @@ TEST_F(XPathParserTest, numeric_predicate_selects_indexed_node)
   ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(second));
 }
 
-TEST_F(XPathParserTest, apostrophe_string_literal)
+TEST_F(XPathParserTest, string_literal)
 {
-  tokens.add({
-      XPathToken(XPathTokenType::Apostrophe),
-      XPathToken("string"),
-      XPathToken(XPathTokenType::Apostrophe),
-  });
-
-  auto expr = parser->parse();
-
-  ASSERT_EQ("string", evaluate(expr).string());
-}
-
-TEST_F(XPathParserTest, double_quote_string_literal)
-{
-  tokens.add({
-      XPathToken(XPathTokenType::DoubleQuote),
-      XPathToken("string"),
-      XPathToken(XPathTokenType::DoubleQuote),
-  });
+  tokens.add(XPathToken(XPathTokenType::Literal, "string"));
 
   auto expr = parser->parse();
 

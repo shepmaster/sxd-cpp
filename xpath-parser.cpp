@@ -96,15 +96,8 @@ default_node_test(XPathTokenSource &source, std::unique_ptr<XPathAxis> &axis) {
 
 std::unique_ptr<XPathExpression>
 parse_string_literal(XPathTokenSource &source) {
-  if (source.next_token_is(XPathTokenType::Apostrophe)) {
-    consume(source, XPathTokenType::Apostrophe);
+  if (source.next_token_is(XPathTokenType::Literal)) {
     auto token = source.next_token();
-    consume(source, XPathTokenType::Apostrophe);
-    return make_unique<ExpressionLiteral>(token.string());
-  } else if (source.next_token_is(XPathTokenType::DoubleQuote)) {
-    consume(source, XPathTokenType::DoubleQuote);
-    auto token = source.next_token();
-    consume(source, XPathTokenType::DoubleQuote);
     return make_unique<ExpressionLiteral>(token.string());
   }
 

@@ -59,6 +59,20 @@ while_valid_number(std::string xpath, size_t offset)
   return offset;
 }
 
+size_t
+while_not_character(std::string xpath, size_t offset, char end_char)
+{
+  for (; offset < xpath.size(); offset++) {
+    auto c = xpath[offset];
+
+    if (c == end_char) {
+      break;
+    }
+  }
+
+  return offset;
+}
+
 static std::map<char, XPathTokenType> single_char_tokens = {
   {'/',  XPathTokenType::Slash},
   {'(',  XPathTokenType::LeftParen},
@@ -66,8 +80,6 @@ static std::map<char, XPathTokenType> single_char_tokens = {
   {'[',  XPathTokenType::LeftBracket},
   {']',  XPathTokenType::RightBracket},
   {'@',  XPathTokenType::AtSign},
-  {'\'', XPathTokenType::Apostrophe},
-  {'"',  XPathTokenType::DoubleQuote},
   {'+',  XPathTokenType::PlusSign},
   {'-',  XPathTokenType::MinusSign},
 };
@@ -76,6 +88,8 @@ static std::map<char, XPathTokenType> repeated_char_tokens = {
   {':', XPathTokenType::DoubleColon},
   {'/', XPathTokenType::DoubleSlash}
 };
+
+auto quote_chars = {'\'', '"'};
 
 struct NamedOperator {
   std::string name;
@@ -89,6 +103,25 @@ static std::vector<NamedOperator> named_operators = {
   {"div", XPathTokenType::Divide},
   {"*",   XPathTokenType::Multiply},
 };
+
+XPathToken
+XPathTokenizer::tokenize_literal(char quote_char)
+{
+  auto offset = _start;
+
+  ++offset; // Skip over the starting quote
+  auto start_of_string = offset;
+
+  offset = while_not_character(_xpath, offset, quote_char);
+  auto end_of_string = offset;
+
+  // TODO: Test quote chars match
+  ++offset; // Skip over ending quote
+
+  _start = offset;
+  auto value = _xpath.substr(start_of_string, end_of_string - start_of_string);
+  return XPathToken(XPathTokenType::Literal, value);
+}
 
 XPathToken
 XPathTokenizer::raw_next_token()
@@ -105,6 +138,12 @@ XPathTokenizer::raw_next_token()
   if (token != single_char_tokens.end()) {
     _start += 1;
     return token->second;
+  }
+
+  for (auto quote_char : quote_chars) {
+    if (quote_char == c) {
+      return tokenize_literal(quote_char);
+    }
   }
 
   if ('.' == c && ! isdigit(_xpath[_start + 1])) {

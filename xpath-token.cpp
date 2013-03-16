@@ -93,6 +93,7 @@ XPathToken::operator==(const XPathToken &other) const
   case XPathTokenType::NodeTest:
   case XPathTokenType::Function:
   case XPathTokenType::Axis:
+  case XPathTokenType::Literal:
     return _string == other._string;
   case XPathTokenType::Number:
     return _number == other._number;
@@ -113,6 +114,8 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "Function";
   case XPathTokenType::Axis:
     return strm << "Axis";
+  case XPathTokenType::Literal:
+    return strm << "Literal";
   case XPathTokenType::Number:
     return strm << "Number";
   case XPathTokenType::CurrentNode:
@@ -133,10 +136,6 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "Divide";
   case XPathTokenType::Multiply:
     return strm << "Multiply";
-  case XPathTokenType::Apostrophe:
-    return strm << "Apostrophe";
-  case XPathTokenType::DoubleQuote:
-    return strm << "DoubleQuote";
   case XPathTokenType::LeftParen:
     return strm << "LeftParen";
   case XPathTokenType::RightParen:
@@ -162,7 +161,8 @@ std::ostream& operator<<(std::ostream &strm, const XPathToken &a) {
   if (a.is(XPathTokenType::String) ||
       a.is(XPathTokenType::NodeTest) ||
       a.is(XPathTokenType::Function) ||
-      a.is(XPathTokenType::Axis)) {
+      a.is(XPathTokenType::Axis) ||
+      a.is(XPathTokenType::Literal)) {
     strm << ", '" << a.string() << "'";
   } else if (a.is(XPathTokenType::Number)) {
     strm << ", " << a.number();
