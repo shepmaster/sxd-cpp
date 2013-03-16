@@ -1,5 +1,7 @@
 #include "xpath-value-string.h"
 
+#include <stdlib.h>
+
 XPathValueString::XPathValueString(std::string value) :
   _value(value)
 {}
@@ -10,7 +12,13 @@ XPathValueString::XPathValueString(const char *value) :
 
 double
 XPathValueString::number() const {
-  return 0;
+  const char *start = _value.c_str();
+  char *end;
+  auto result = strtod(start, &end);
+  if (start == end) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
+  return result;
 }
 
 std::string

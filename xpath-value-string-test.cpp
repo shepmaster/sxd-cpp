@@ -4,6 +4,9 @@
 #include <iostream>
 
 using testing::HasSubstr;
+using testing::NanSensitiveDoubleEq;
+
+static const double NaN = std::numeric_limits<double>::quiet_NaN();
 
 class XPathValueStringTest : public ::testing::Test {
 };
@@ -18,6 +21,36 @@ TEST_F(XPathValueStringTest, knows_the_native_type_is_string)
 {
   XPathValueString value("string");
   ASSERT_TRUE(value.is(XPathValue::Type::String));
+}
+
+TEST_F(XPathValueStringTest, converts_empty_string_to_NaN)
+{
+  XPathValueString value("");
+  ASSERT_THAT(value.number(), NanSensitiveDoubleEq(NaN));
+}
+
+TEST_F(XPathValueStringTest, converts_integral_number)
+{
+  XPathValueString value("4");
+  ASSERT_THAT(value.number(), NanSensitiveDoubleEq(4));
+}
+
+TEST_F(XPathValueStringTest, converts_floating_point_number)
+{
+  XPathValueString value("-3.14");
+  ASSERT_THAT(value.number(), NanSensitiveDoubleEq(-3.14));
+}
+
+TEST_F(XPathValueStringTest, ignores_leading_space_when_converting_to_number)
+{
+  XPathValueString value("  1.2");
+  ASSERT_THAT(value.number(), NanSensitiveDoubleEq(1.2));
+}
+
+TEST_F(XPathValueStringTest, ignores_trailing_space_when_converting_to_number)
+{
+  XPathValueString value("1.2\t");
+  ASSERT_THAT(value.number(), NanSensitiveDoubleEq(1.2));
 }
 
 TEST_F(XPathValueStringTest, converts_empty_string_to_false)
