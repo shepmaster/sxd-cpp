@@ -55,6 +55,7 @@ set(
   expression-or.cpp
   expression-and.cpp
   expression-equal.cpp
+  expression-relational.cpp
   xpath-evaluation-context.cpp
   xpath-value.cpp
   xpath-value-boolean.cpp
@@ -105,6 +106,7 @@ set(test_programs
   expression-or
   expression-and
   expression-equal
+  expression-relational
   xpath-evaluation-context
   xpath-function-library
   function-last

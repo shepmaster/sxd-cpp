@@ -18,6 +18,7 @@
 #include "expression-or.h"
 #include "expression-and.h"
 #include "expression-equal.h"
+#include "expression-relational.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
@@ -292,19 +293,38 @@ parse_additive_expression(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_equality_expression(XPathTokenSource &source)
+parse_relational_expression(XPathTokenSource &source)
 {
   auto left = parse_additive_expression(source);
   if (!left) return nullptr;
 
   while (source.has_more_tokens()) {
+    if (source.next_token_is(XPathTokenType::LessThan)) {
+      consume(source, XPathTokenType::LessThan);
+      auto right = parse_additive_expression(source);
+      left = ExpressionRelational::LessThan(move(left), move(right));
+    } else {
+      break;
+    }
+  }
+
+  return left;
+}
+
+std::unique_ptr<XPathExpression>
+parse_equality_expression(XPathTokenSource &source)
+{
+  auto left = parse_relational_expression(source);
+  if (!left) return nullptr;
+
+  while (source.has_more_tokens()) {
     if (source.next_token_is(XPathTokenType::Equal)) {
       consume(source, XPathTokenType::Equal);
-      auto right = parse_additive_expression(source);
+      auto right = parse_relational_expression(source);
       left = ExpressionEqual::Equal(move(left), move(right));
     } else if (source.next_token_is(XPathTokenType::NotEqual)) {
       consume(source, XPathTokenType::NotEqual);
-      auto right = parse_additive_expression(source);
+      auto right = parse_relational_expression(source);
       left = ExpressionEqual::NotEqual(move(left), move(right));
     } else {
       break;
