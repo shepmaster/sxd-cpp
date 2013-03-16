@@ -4,14 +4,22 @@
 
 #include "gmock/gmock.h"
 #include "xpath-raw-token-source-test.h"
+#include "mock-xpath-raw-token-source.h"
 #include <iostream>
 
+using testing::DefaultValue;
 using testing::ElementsAre;
+using testing::Return;
 using testing::Values;
 
 class XPathTokenDisambiguatorTest : public ::testing::Test {
 protected:
   RawTokenProvider raw_tokenizer;
+  MockRawTokenSource token_source;
+
+  void SetUp() {
+    DefaultValue<XPathToken>::Set(XPathToken(XPathTokenType::LeftParen));
+  }
 };
 
 class NodeTestDisambiguatorTest : public XPathTokenDisambiguatorTest,
@@ -63,6 +71,21 @@ TEST_F(XPathTokenDisambiguatorTest, name_followed_by_double_colon_becomes_axis_n
   ASSERT_THAT(all_tokens(disambig),
               ElementsAre(XPathToken(XPathTokenType::Axis, "test"),
                           XPathToken(XPathTokenType::DoubleColon)));
+}
+
+TEST_F(XPathTokenDisambiguatorTest, does_not_get_token_when_no_more_tokens_in_source)
+{
+  EXPECT_CALL(token_source, has_more_tokens())
+    .WillOnce(Return(true))
+    .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(token_source, next_token())
+    .WillOnce(Return(XPathToken("a-string")));
+
+  XPathTokenDisambiguator disambig(token_source);
+
+  disambig.has_more_tokens();
+  disambig.next_token();
 }
 
 int

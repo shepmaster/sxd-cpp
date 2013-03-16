@@ -32,6 +32,9 @@ XPathTokenDisambiguator::next_token()
   auto token = next();
 
   if (token.is(XPathTokenType::String)) {
+    if (! _token_source.has_more_tokens()) {
+      return token;
+    }
     auto next = _token_source.next_token();
     _buffer.push_back(next);
     if (next.is(XPathTokenType::LeftParen)) {
