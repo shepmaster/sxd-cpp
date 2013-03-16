@@ -349,7 +349,10 @@ XPathParser::parse() {
   std::unique_ptr<XPathExpression> expr;
 
   expr = parse_or_expression(_source);
-  if (expr) return expr;
+  if (_source.has_more_tokens()) {
+    throw ExtraUnparsedTokensException();
+  }
 
+  if (expr) return expr;
   return nullptr;
 }

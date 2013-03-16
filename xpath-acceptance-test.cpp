@@ -290,6 +290,11 @@ TEST_F(XPathAcceptanceTest, equality)
   ASSERT_EQ(false, xpath.boolean());
 }
 
+TEST_F(XPathAcceptanceTest, extra_junk_at_end_throws_exception)
+{
+  ASSERT_THROW(compile("1 2"), ExtraUnparsedTokensException);
+}
+
 TEST_F(XPathAcceptanceTest, invalid_axis_throws_exception)
 {
   ASSERT_THROW(compile("bogus::*"), InvalidXPathAxisException);

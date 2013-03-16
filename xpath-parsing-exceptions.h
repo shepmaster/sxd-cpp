@@ -3,6 +3,13 @@
 
 #include <stdexcept>
 
+struct ExtraUnparsedTokensException : virtual std::runtime_error
+{
+ ExtraUnparsedTokensException() :
+    std::runtime_error("Unparsed XPath tokens remain.")
+  {};
+};
+
 struct InvalidXPathAxisException : virtual std::runtime_error
 {
   InvalidXPathAxisException(std::string axis) :
