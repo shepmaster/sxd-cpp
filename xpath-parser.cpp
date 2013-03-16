@@ -311,6 +311,10 @@ parse_relational_expression(XPathTokenSource &source)
       consume(source, XPathTokenType::GreaterThan);
       auto right = parse_additive_expression(source);
       left = ExpressionRelational::GreaterThan(move(left), move(right));
+    } else if (source.next_token_is(XPathTokenType::GreaterThanOrEqual)) {
+      consume(source, XPathTokenType::GreaterThanOrEqual);
+      auto right = parse_additive_expression(source);
+      left = ExpressionRelational::GreaterThanOrEqual(move(left), move(right));
     } else {
       break;
     }

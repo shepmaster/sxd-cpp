@@ -84,6 +84,16 @@ TEST_F(ExpressionRelationalTest, computes_greater_than)
   ASSERT_EQ(false, expression->evaluate(*context).boolean());
 }
 
+TEST_F(ExpressionRelationalTest, computes_greater_than_or_equal)
+{
+  auto expression = ExpressionRelational::GreaterThan(left, right);
+
+  EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(1.0));
+  EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(0.1));
+
+  ASSERT_EQ(true, expression->evaluate(*context).boolean());
+}
+
 int
 main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
