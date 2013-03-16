@@ -1,5 +1,7 @@
 #include "xpath-tokenizer.h"
 
+#include "xpath-parsing-exceptions.h"
+
 #include <stdlib.h>
 #include <vector>
 #include <map>
@@ -196,6 +198,10 @@ XPathTokenizer::raw_next_token()
 XPathToken
 XPathTokenizer::next_token()
 {
+  if (! has_more_tokens()) {
+    throw NoMoreTokensAvailableException();
+  }
+
   auto token = raw_next_token();
   if (! (token.precedes_node_test() ||
          token.precedes_expression() ||

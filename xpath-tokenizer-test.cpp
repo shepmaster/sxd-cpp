@@ -1,5 +1,7 @@
 #include "xpath-tokenizer.h"
 
+#include "xpath-parsing-exceptions.h"
+
 #include "gmock/gmock.h"
 #include "xpath-raw-token-source-test.h"
 #include <iostream>
@@ -241,6 +243,13 @@ TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_multipl
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(1),
                                                  XPathToken(XPathTokenType::Multiply),
                                                  XPathToken(2)));
+}
+
+TEST_F(XPathTokenizerTest, exception_thrown_when_no_more_tokens_available)
+{
+  XPathTokenizer tokenizer("");
+
+  ASSERT_THROW(tokenizer.next_token(), NoMoreTokensAvailableException);
 }
 
 int

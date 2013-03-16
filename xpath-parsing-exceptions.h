@@ -24,4 +24,11 @@ struct InvalidNodeTestException : virtual std::runtime_error
   {};
 };
 
+struct NoMoreTokensAvailableException : virtual std::runtime_error
+{
+  NoMoreTokensAvailableException() :
+    std::runtime_error("No more tokens are available")
+  {};
+};
+
 #endif
