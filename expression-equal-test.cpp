@@ -44,46 +44,57 @@ protected:
 
 TEST_F(ExpressionEqualTest, evaluates_both_arguments)
 {
-  ExpressionEqual expression(left, right);
+  auto expression = ExpressionEqual::Equal(left, right);
 
   EXPECT_CALL(*left, evaluate(Ref(*context)));
   EXPECT_CALL(*right, evaluate(Ref(*context)));
 
-  expression.evaluate(*context);
+  expression->evaluate(*context);
 }
 
 TEST_F(ExpressionEqualTest, compares_as_boolean_if_one_argument_is_a_boolean)
 {
-  ExpressionEqual expression(left, right);
+  auto expression = ExpressionEqual::Equal(left, right);
 
   EXPECT_CALL(*left_val, is(XPathValue::Type::Boolean)).WillRepeatedly(Return(true));
 
   EXPECT_CALL(*left_val, boolean());
   EXPECT_CALL(*right_val, boolean());
 
-  expression.evaluate(*context);
+  expression->evaluate(*context);
 }
 
 TEST_F(ExpressionEqualTest, compares_as_number_if_one_argument_is_a_number)
 {
-  ExpressionEqual expression(left, right);
+  auto expression = ExpressionEqual::Equal(left, right);
 
   EXPECT_CALL(*right_val, is(XPathValue::Type::Number)).WillRepeatedly(Return(true));
 
   EXPECT_CALL(*left_val, number());
   EXPECT_CALL(*right_val, number());
 
-  expression.evaluate(*context);
+  expression->evaluate(*context);
 }
 
 TEST_F(ExpressionEqualTest, compares_as_string_otherwise)
 {
-  ExpressionEqual expression(left, right);
+  auto expression = ExpressionEqual::Equal(left, right);
 
   EXPECT_CALL(*left_val, string());
   EXPECT_CALL(*right_val, string());
 
-  expression.evaluate(*context);
+  expression->evaluate(*context);
+}
+
+TEST_F(ExpressionEqualTest, not_equal_returns_the_negation)
+{
+  auto expression = ExpressionEqual::NotEqual(left, right);
+
+  EXPECT_CALL(*left_val, string()).WillRepeatedly(Return("yes"));
+  EXPECT_CALL(*right_val, string()).WillRepeatedly(Return("no"));
+
+  auto result = expression->evaluate(*context);
+  ASSERT_EQ(XPathValue(true), result);
 }
 
 int
