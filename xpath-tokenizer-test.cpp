@@ -221,6 +221,13 @@ TEST_F(XPathTokenizerTest, tokenizes_greater_than)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::GreaterThan)));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_greater_than_or_equal)
+{
+  XPathTokenizer tokenizer(">=");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::GreaterThanOrEqual)));
+}
+
 TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_and)
 {
   XPathTokenizer tokenizer("1andz2");

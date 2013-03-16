@@ -20,6 +20,7 @@ enum class XPathTokenType {
   LessThan,
   LessThanOrEqual,
   GreaterThan,
+  GreaterThanOrEqual,
   And,
   Or,
   Remainder,
