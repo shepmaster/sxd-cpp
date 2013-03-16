@@ -17,6 +17,7 @@
 #include "expression-negation.h"
 #include "expression-or.h"
 #include "expression-and.h"
+#include "expression-equal.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
@@ -291,14 +292,29 @@ parse_additive_expression(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_and_expression(XPathTokenSource &source)
+parse_equality_expression(XPathTokenSource &source)
 {
   auto left = parse_additive_expression(source);
   if (!left) return nullptr;
 
+  while (source.next_token_is(XPathTokenType::Equal)) {
+    consume(source, XPathTokenType::Equal);
+    auto right = parse_additive_expression(source);
+    left = make_unique<ExpressionEqual>(move(left), move(right));
+  }
+
+  return left;
+}
+
+std::unique_ptr<XPathExpression>
+parse_and_expression(XPathTokenSource &source)
+{
+  auto left = parse_equality_expression(source);
+  if (!left) return nullptr;
+
   while (source.next_token_is(XPathTokenType::And)) {
     consume(source, XPathTokenType::And);
-    auto right = parse_additive_expression(source);
+    auto right = parse_equality_expression(source);
     left = make_unique<ExpressionAnd>(move(left), move(right));
   }
 

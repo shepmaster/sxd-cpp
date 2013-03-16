@@ -489,6 +489,19 @@ TEST_F(XPathParserTest, and_expression)
   ASSERT_EQ(false, evaluate(expr).boolean());
 }
 
+TEST_F(XPathParserTest, equality_expression)
+{
+  tokens.add({
+      XPathToken(1.2),
+      XPathToken(XPathTokenType::Equal),
+      XPathToken(1.1),
+  });
+
+  auto expr = parser->parse();
+
+  ASSERT_EQ(false, evaluate(expr).boolean());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({
