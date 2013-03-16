@@ -28,6 +28,10 @@ XPathValue::XPathValue(Nodeset value) :
   _impl(make_unique<XPathValueNodeset>(value))
 {}
 
+XPathValue::XPathValue(std::shared_ptr<XPathValueImpl> impl) :
+  _impl(impl)
+{}
+
 double
 XPathValue::number() const
 {

@@ -23,6 +23,7 @@ public:
   XPathValue(const char *value);
   XPathValue(bool value);
   XPathValue(Nodeset value);
+  XPathValue(std::shared_ptr<XPathValueImpl> impl);
 
   double number() const;
   std::string string() const;
@@ -45,6 +46,8 @@ std::ostream &operator<<(std::ostream &, const XPathValue &);
 class XPathValueImpl : public ToStream
 {
 public:
+  virtual ~XPathValueImpl() {};
+
   virtual double number() const = 0;
   virtual std::string string() const = 0;
   virtual bool boolean() const = 0;
