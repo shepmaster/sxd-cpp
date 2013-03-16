@@ -1,85 +1,73 @@
 #include "xpath-value.h"
 
-#include <cmath>
+#include "xpath-value-boolean.h"
+#include "xpath-value-nodeset.h"
+#include "xpath-value-number.h"
+#include "xpath-value-string.h"
+
+#include "make-unique.h"
 #include <iostream>
 
 XPathValue::XPathValue(double value) :
-  _number(value), _type(Type::Number)
+  _impl(make_unique<XPathValueNumber>(value))
 {}
 
 XPathValue::XPathValue(std::string value) :
-  _string(value), _type(Type::String)
+  _impl(make_unique<XPathValueString>(value))
 {}
 
 XPathValue::XPathValue(const char *value) :
-  _string(value), _type(Type::String)
+  _impl(make_unique<XPathValueString>(value))
 {}
 
 XPathValue::XPathValue(bool value) :
-  _boolean(value), _type(Type::Boolean)
+  _impl(make_unique<XPathValueBoolean>(value))
 {}
 
 XPathValue::XPathValue(Nodeset value) :
-  _nodeset(value), _type(Type::Nodeset)
+  _impl(make_unique<XPathValueNodeset>(value))
 {}
 
 double
 XPathValue::number() const
 {
-  return _number;
+  return _impl->number();
 }
 
 std::string
 XPathValue::string() const
 {
-  return _string;
+  return _impl->string();
 }
 
 bool
 XPathValue::boolean() const
 {
-  switch (_type) {
-  case Type::Number:
-    return _number != 0.0 &&
-      ! isnan(_number);
-  case Type::String:
-    return _string.length() > 0;
-  case Type::Boolean:
-    return _boolean;
-  case Type::Nodeset:
-    return _nodeset.size() > 0;
-  }
+  return _impl->boolean();
 }
 
 Nodeset
 XPathValue::nodeset() const
 {
-  return _nodeset;
+  return _impl->nodeset();
 }
 
 bool
 XPathValue::is(Type type) const
 {
-  return type == _type;
+  return _impl->is(type);
 }
 
 bool
 XPathValue::operator==(const XPathValue &other) const
 {
-  if (! other.is(_type)) {
-    return false;
-  }
+  return *_impl == *other._impl;
+}
 
-  switch (_type) {
-  case Type::Number:
-    return _number == other.number();
-  case Type::String:
-    return _string == other.string();
-  case Type::Boolean:
-    return _boolean == other.boolean();
-  case Type::Nodeset:
-    return _nodeset == other.nodeset();
-  }
+std::ostream &
+operator<<(std::ostream &os, const XPathValue &value)
+{
+  return os << *value._impl;
 }
 
 std::ostream&
@@ -95,18 +83,4 @@ operator<<(std::ostream &os, const XPathValue::Type &type)
   case XPathValue::Type::Nodeset:
     return os << "Nodeset";
   }
-}
-
-std::ostream &
-operator<<(std::ostream &os, const XPathValue &value)
-{
-  os << "XPathValue(" << value._type;
-  if (value.is(XPathValue::Type::Number)) {
-    os << ", " << value.number();
-  } else if (value.is(XPathValue::Type::String)) {
-    os << ", '" << value.string() << "'";
-  } else if (value.is(XPathValue::Type::Boolean)) {
-    os << value.boolean();;
-  }
-  return os << ")";
 }

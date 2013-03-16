@@ -56,6 +56,10 @@ set(
   expression-and.cpp
   xpath-evaluation-context.cpp
   xpath-value.cpp
+  xpath-value-boolean.cpp
+  xpath-value-nodeset.cpp
+  xpath-value-number.cpp
+  xpath-value-string.cpp
   xpath-function-library.cpp
   function-last.cpp
   function-not.cpp
@@ -90,6 +94,10 @@ set(test_programs
   node-test-attribute
   xpath-step
   xpath-value
+  xpath-value-boolean
+  xpath-value-nodeset
+  xpath-value-number
+  xpath-value-string
   expression-function
   expression-math
   expression-negation

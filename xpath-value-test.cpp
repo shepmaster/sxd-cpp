@@ -1,115 +1,38 @@
 #include "xpath-value.h"
 
-#include "document.h"
-
 #include "gmock/gmock.h"
 #include <iostream>
 
 class XPathValueTest : public ::testing::Test {
-protected:
-  Document doc;
 };
 
-TEST_F(XPathValueTest, can_be_numeric)
+TEST_F(XPathValueTest, has_number_convenience_method)
 {
   XPathValue value(42.42);
   ASSERT_EQ(42.42, value.number());
+  ASSERT_TRUE(value.is(XPathValue::Type::Number));
 }
 
-TEST_F(XPathValueTest, can_be_a_string)
+TEST_F(XPathValueTest, has_string_convenience_method)
 {
   XPathValue value("string");
   ASSERT_EQ("string", value.string());
+  ASSERT_TRUE(value.is(XPathValue::Type::String));
 }
 
-TEST_F(XPathValueTest, can_be_a_boolean)
+TEST_F(XPathValueTest, has_boolean_convenience_method)
 {
   XPathValue value(true);
   ASSERT_EQ(true, value.boolean());
+  ASSERT_TRUE(value.is(XPathValue::Type::Boolean));
 }
 
-TEST_F(XPathValueTest, can_be_a_nodeset)
+TEST_F(XPathValueTest, has_nodeset_convenience_method)
 {
   Nodeset nodes;
   XPathValue value(nodes);
   ASSERT_EQ(nodes, value.nodeset());
-}
-
-TEST_F(XPathValueTest, knows_the_native_type_is_number)
-{
-  XPathValue value(3.0);
-  ASSERT_TRUE(value.is(XPathValue::Type::Number));
-}
-
-TEST_F(XPathValueTest, knows_the_native_type_is_string)
-{
-  XPathValue value("string");
-  ASSERT_TRUE(value.is(XPathValue::Type::String));
-}
-
-TEST_F(XPathValueTest, knows_the_native_type_is_boolean)
-{
-  XPathValue value(false);
-  ASSERT_TRUE(value.is(XPathValue::Type::Boolean));
-}
-
-TEST_F(XPathValueTest, knows_the_native_type_is_nodeset)
-{
-  Nodeset nodes;
-  XPathValue value(nodes);
   ASSERT_TRUE(value.is(XPathValue::Type::Nodeset));
-}
-
-TEST_F(XPathValueTest, converts_empty_string_to_false)
-{
-  XPathValue value("");
-  ASSERT_EQ(false, value.boolean());
-}
-
-TEST_F(XPathValueTest, converts_non_empty_string_to_true)
-{
-  XPathValue value("string");
-  ASSERT_EQ(true, value.boolean());
-}
-
-TEST_F(XPathValueTest, converts_positive_zero_to_false)
-{
-  XPathValue value(0.0);
-  ASSERT_EQ(false, value.boolean());
-}
-
-TEST_F(XPathValueTest, converts_negative_zero_to_false)
-{
-  XPathValue value(-0.0);
-  ASSERT_EQ(false, value.boolean());
-}
-
-TEST_F(XPathValueTest, converts_nan_to_false)
-{
-  auto NaN = std::numeric_limits<double>::quiet_NaN();
-  XPathValue value(NaN);
-  ASSERT_EQ(false, value.boolean());
-}
-
-TEST_F(XPathValueTest, converts_other_number_to_true)
-{
-  XPathValue value(42.42);
-  ASSERT_EQ(true, value.boolean());
-}
-
-TEST_F(XPathValueTest, converts_empty_nodeset_to_false)
-{
-  Nodeset nodes;
-  XPathValue value(nodes);
-  ASSERT_EQ(false, value.boolean());
-}
-
-TEST_F(XPathValueTest, converts_non_empty_nodeset_to_true)
-{
-  Nodeset nodes;
-  nodes.add(doc.new_element("a-node"));
-  XPathValue value(nodes);
-  ASSERT_EQ(true, value.boolean());
 }
 
 int

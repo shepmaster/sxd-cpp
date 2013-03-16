@@ -6,6 +6,8 @@
 #include <string>
 #include <iosfwd>
 
+class XPathValueImpl;
+
 class XPathValue
 {
 public:
@@ -32,16 +34,23 @@ public:
   bool operator==(const XPathValue &other) const;
 
 private:
-  double _number;
-  std::string _string;
-  bool _boolean;
-  Nodeset _nodeset;
-  Type _type;
+  std::shared_ptr<XPathValueImpl> _impl;
 
   friend std::ostream& operator<<(std::ostream&, const XPathValue&);
 };
 
 std::ostream& operator<<(std::ostream &, const XPathValue::Type &);
 std::ostream &operator<<(std::ostream &, const XPathValue &);
+
+class XPathValueImpl : public ToStream
+{
+public:
+  virtual double number() const = 0;
+  virtual std::string string() const = 0;
+  virtual bool boolean() const = 0;
+  virtual Nodeset nodeset() const = 0;
+  virtual bool is(XPathValue::Type type) const = 0;
+  virtual bool operator==(const XPathValueImpl &other) const = 0;
+};
 
 #endif
