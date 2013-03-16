@@ -139,6 +139,11 @@ XPathTokenizer::raw_next_token()
     return repeated_token->second;
   }
 
+  if ('<' == c && '=' == _xpath[_start + 1]) {
+    _start += 2;
+    return XPathTokenType::LessThanOrEqual;
+  }
+
   auto token = single_char_tokens.find(c);
   if (token != single_char_tokens.end()) {
     _start += 1;
