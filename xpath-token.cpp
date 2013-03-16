@@ -72,6 +72,7 @@ XPathToken::is_operator() const
   case XPathTokenType::MinusSign:
   case XPathTokenType::Equal:
   case XPathTokenType::NotEqual:
+  case XPathTokenType::LessThan:
   case XPathTokenType::And:
   case XPathTokenType::Or:
   case XPathTokenType::Remainder:
@@ -132,6 +133,8 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "Equal";
   case XPathTokenType::NotEqual:
     return strm << "NotEqual";
+  case XPathTokenType::LessThan:
+    return strm << "LessThan";
   case XPathTokenType::And:
     return strm << "And";
   case XPathTokenType::Or:

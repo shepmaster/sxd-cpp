@@ -200,6 +200,13 @@ TEST_F(XPathTokenizerTest, tokenizes_not_equal_sign)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::NotEqual)));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_less_than)
+{
+  XPathTokenizer tokenizer("<");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::LessThan)));
+}
+
 TEST_F(XPathTokenizerTest, special_preceding_token_forces_named_operator_and)
 {
   XPathTokenizer tokenizer("1andz2");
