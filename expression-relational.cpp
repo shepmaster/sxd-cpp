@@ -4,6 +4,7 @@
 
 bool less_than(double left, double right) { return left < right; }
 bool less_than_or_equal(double left, double right) { return left <= right; }
+bool greater_than(double left, double right) { return left > right; }
 
 std::unique_ptr<ExpressionRelational>
 ExpressionRelational::LessThan(SubExpression left, SubExpression right)
@@ -15,6 +16,12 @@ std::unique_ptr<ExpressionRelational>
 ExpressionRelational::LessThanOrEqual(SubExpression left, SubExpression right)
 {
   return make_unique<ExpressionRelational>(left, right, less_than_or_equal);
+}
+
+std::unique_ptr<ExpressionRelational>
+ExpressionRelational::GreaterThan(SubExpression left, SubExpression right)
+{
+  return make_unique<ExpressionRelational>(left, right, greater_than);
 }
 
 ExpressionRelational::ExpressionRelational(SubExpression left,

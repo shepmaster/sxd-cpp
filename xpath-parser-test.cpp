@@ -541,6 +541,19 @@ TEST_F(XPathParserTest, less_than_or_equal_expression)
   ASSERT_EQ(true, evaluate(expr).boolean());
 }
 
+TEST_F(XPathParserTest, greater_than_expression)
+{
+  tokens.add({
+      XPathToken(1.2),
+      XPathToken(XPathTokenType::GreaterThan),
+      XPathToken(1.2),
+  });
+
+  auto expr = parser->parse();
+
+  ASSERT_EQ(false, evaluate(expr).boolean());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({

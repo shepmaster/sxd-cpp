@@ -14,6 +14,9 @@ public:
   static std::unique_ptr<ExpressionRelational>
   LessThanOrEqual(SubExpression left, SubExpression right);
 
+  static std::unique_ptr<ExpressionRelational>
+  GreaterThan(SubExpression left, SubExpression right);
+
   ExpressionRelational(SubExpression left,
                        SubExpression right,
                        BinaryRelationalOp operation);
