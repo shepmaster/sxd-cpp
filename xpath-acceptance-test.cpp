@@ -290,6 +290,13 @@ TEST_F(XPathAcceptanceTest, equality)
   ASSERT_EQ(false, xpath.boolean());
 }
 
+TEST_F(XPathAcceptanceTest, relational)
+{
+  XPath xpath = compile("1.0>=2.1");
+
+  ASSERT_EQ(false, xpath.boolean());
+}
+
 TEST_F(XPathAcceptanceTest, extra_junk_at_end_throws_exception)
 {
   ASSERT_THROW(compile("1 2"), ExtraUnparsedTokensException);
