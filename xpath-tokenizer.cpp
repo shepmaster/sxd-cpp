@@ -127,7 +127,9 @@ XPathTokenizer::tokenize_literal(char quote_char)
   offset = while_not_character(_xpath, offset, quote_char);
   auto end_of_string = offset;
 
-  // TODO: Test quote chars match
+  if (_xpath[offset] != quote_char) {
+    throw MismatchedQuoteCharacterException(quote_char);
+  }
   ++offset; // Skip over ending quote
 
   _start = offset;

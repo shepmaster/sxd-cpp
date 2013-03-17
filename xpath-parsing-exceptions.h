@@ -45,4 +45,11 @@ struct UnableToCreateTokenException : virtual std::runtime_error
   {};
 };
 
+struct MismatchedQuoteCharacterException : virtual std::runtime_error
+{
+  MismatchedQuoteCharacterException(char actual) :
+std::runtime_error(std::string("Unable to find a matching quote character for (") + actual + ")")
+  {};
+};
+
 #endif

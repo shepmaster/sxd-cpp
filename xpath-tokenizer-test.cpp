@@ -303,6 +303,13 @@ TEST_F(XPathTokenizerTest, exception_thrown_when_nothing_was_tokenized)
   ASSERT_THROW(tokenizer.next_token(), UnableToCreateTokenException);
 }
 
+TEST_F(XPathTokenizerTest, exception_thrown_when_quote_characters_mismatched)
+{
+  XPathTokenizer tokenizer("'hello\"");
+
+  ASSERT_THROW(tokenizer.next_token(), MismatchedQuoteCharacterException);
+}
+
 int
 main(int argc, char **argv)
 {
