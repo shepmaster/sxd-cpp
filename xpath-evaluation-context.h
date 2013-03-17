@@ -21,6 +21,8 @@ public:
   virtual std::shared_ptr<XPathFunction>
   function_for_name(std::string name) const = 0;
 
+  virtual bool has_variable(std::string name) const = 0;
+
   virtual XPathValue
   variable_for_name(std::string name) const = 0;
 

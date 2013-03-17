@@ -5,6 +5,7 @@
 
 class MockVariableBindings : public XPathVariableBindings {
 public:
+  MOCK_CONST_METHOD1(has_value, bool(std::string name));
   MOCK_CONST_METHOD1(value_for, XPathValue(std::string name));
 };
 

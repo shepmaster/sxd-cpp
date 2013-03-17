@@ -27,11 +27,21 @@ protected:
 
 TEST_F(ExpressionVariableTest, requests_variable_from_bindings)
 {
+  EXPECT_CALL(context, has_variable(_)).WillRepeatedly(Return(true));
   EXPECT_CALL(context, variable_for_name("foo"));
 
   ExpressionVariable expression("foo");
 
   expression.evaluate(context);
+}
+
+TEST_F(ExpressionVariableTest, unknown_variable_is_reported_as_an_error)
+{
+  EXPECT_CALL(context, has_variable(_)).WillRepeatedly(Return(false));
+
+  ExpressionVariable expression("unknown-variable");
+
+  ASSERT_THROW(expression.evaluate(context), UnknownVariableException);
 }
 
 int

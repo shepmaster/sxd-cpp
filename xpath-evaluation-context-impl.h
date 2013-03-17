@@ -14,9 +14,13 @@ public:
   unsigned long position() const;
   unsigned long size() const;
   void next();
+
   bool has_function(std::string name) const;
+
   std::shared_ptr<XPathFunction>
   function_for_name(std::string name) const;
+
+  bool has_variable(std::string name) const;
 
   XPathValue
   variable_for_name(std::string name) const;

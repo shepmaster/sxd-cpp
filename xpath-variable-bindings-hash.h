@@ -9,6 +9,7 @@ class XPathVariableBindingsHash : public XPathVariableBindings {
 public:
   void set(std::string name, XPathValue value);
 
+  bool has_value(std::string name) const;
   XPathValue value_for(std::string name) const;
 
 private:

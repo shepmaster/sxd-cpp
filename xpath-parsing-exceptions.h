@@ -52,6 +52,13 @@ struct UnknownXPathFunctionException : virtual std::runtime_error
   {};
 };
 
+struct UnknownVariableException : virtual std::runtime_error
+{
+  UnknownVariableException(std::string name) :
+    std::runtime_error(name)
+  {};
+};
+
 struct InvalidNodeTestException : virtual std::runtime_error
 {
   InvalidNodeTestException(std::string name) :

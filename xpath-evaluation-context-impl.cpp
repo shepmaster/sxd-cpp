@@ -38,6 +38,12 @@ XPathEvaluationContextImpl::next()
   _position++;
 }
 
+bool
+XPathEvaluationContextImpl::has_function(std::string name) const
+{
+  return _functions.has_function(name);
+}
+
 std::shared_ptr<XPathFunction>
 XPathEvaluationContextImpl::function_for_name(std::string name) const
 {
@@ -45,9 +51,9 @@ XPathEvaluationContextImpl::function_for_name(std::string name) const
 }
 
 bool
-XPathEvaluationContextImpl::has_function(std::string name) const
+XPathEvaluationContextImpl::has_variable(std::string name) const
 {
-  return _functions.has_function(name);
+  return _variables.has_value(name);
 }
 
 XPathValue

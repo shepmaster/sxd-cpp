@@ -56,14 +56,22 @@ TEST_F(XPathEvaluationContextImplTest, size_is_the_count_of_nodes)
   ASSERT_EQ(1, context.size());
 }
 
-TEST_F(XPathEvaluationContextImplTest, delegates_to_the_variable_bindings)
+TEST_F(XPathEvaluationContextImplTest, delegates_existence_to_the_variable_bindings)
 {
-
   EXPECT_CALL(variables, value_for("foo"));
 
   XPathEvaluationContextImpl context(node, nodes, functions, variables);
 
   context.variable_for_name("foo");
+}
+
+TEST_F(XPathEvaluationContextImplTest, delegates_getter_to_the_variable_bindings)
+{
+  EXPECT_CALL(variables, has_value("foo"));
+
+  XPathEvaluationContextImpl context(node, nodes, functions, variables);
+
+  context.has_variable("foo");
 }
 
 int

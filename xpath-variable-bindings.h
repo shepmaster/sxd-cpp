@@ -6,6 +6,8 @@
 class XPathVariableBindings {
 public:
   virtual ~XPathVariableBindings() {}
+
+  virtual bool has_value(std::string name) const = 0;
   virtual XPathValue value_for(std::string name) const = 0;
 };
 
