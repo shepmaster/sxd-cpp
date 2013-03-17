@@ -24,6 +24,8 @@
 
 using std::move;
 
+using ParseFn = std::unique_ptr<XPathExpression>(*)(XPathTokenSource &source);
+
 XPathParser::XPathParser(XPathTokenSource &source) :
   _source(source)
 {
@@ -141,19 +143,25 @@ parse_function_call(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_primary_expression(XPathTokenSource &source) {
-  std::unique_ptr<XPathExpression> expr;
-
-  expr = parse_string_literal(source);
-  if (expr) return expr;
-
-  expr = parse_numeric_literal(source);
-  if (expr) return expr;
-
-  expr = parse_function_call(source);
-  if (expr) return expr;
+parse_children_in_order(std::vector<ParseFn> child_parses, XPathTokenSource &source)
+{
+  for (auto child_parse : child_parses) {
+    auto expr = child_parse(source);
+    if (expr) return expr;
+  }
 
   return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_primary_expression(XPathTokenSource &source) {
+  std::vector<ParseFn> child_parses = {
+    parse_string_literal,
+    parse_numeric_literal,
+    parse_function_call
+  };
+
+  return parse_children_in_order(child_parses, source);
 }
 
 std::unique_ptr<XPathStep>
@@ -217,15 +225,13 @@ parse_location_path(XPathTokenSource &source)
 std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &source)
 {
-  auto expr = parse_location_path(source);
-  if (expr) return expr;
+  std::vector<ParseFn> child_parses = {
+    parse_location_path,
+    parse_primary_expression
+  };
 
-  expr = parse_primary_expression(source);
-  if (expr) return expr;
-
-  return nullptr;
+  return parse_children_in_order(child_parses, source);
 }
-
 
 std::unique_ptr<XPathExpression>
 parse_unary_expression(XPathTokenSource &source)
@@ -253,8 +259,6 @@ struct BinaryRule {
   XPathTokenType type;
   BinaryExpressionBuilder<T> builder;
 };
-
-using ParseFn = std::unique_ptr<XPathExpression>(*)(XPathTokenSource &source);
 
 template<class T>
 class LeftAssociativeBinaryParser {
