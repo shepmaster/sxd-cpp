@@ -297,6 +297,14 @@ TEST_F(XPathAcceptanceTest, relational)
   ASSERT_EQ(false, xpath.boolean());
 }
 
+TEST_F(XPathAcceptanceTest, variables)
+{
+  XPath xpath = compile("$variable");
+
+  xpath.bind_variable("variable", 5.2);
+  ASSERT_DOUBLE_EQ(5.2, xpath.number());
+}
+
 TEST_F(XPathAcceptanceTest, extra_junk_at_end_throws_exception)
 {
   ASSERT_THROW(compile("1 2"), ExtraUnparsedTokensException);
