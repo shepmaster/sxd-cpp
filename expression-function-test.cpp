@@ -1,6 +1,5 @@
 #include "expression-function.h"
 
-#include "document.h"
 #include "xpath-parsing-exceptions.h"
 
 #include "gmock/gmock.h"
@@ -19,8 +18,6 @@ using testing::_;
 
 class ExpressionFunctionTest : public ::testing::Test {
 protected:
-  Document doc;
-  Node *node = doc.new_element("context-node");
   Nodeset nodes;
   XPathFunctionLibrary functions;
   std::shared_ptr<MockFunction> function = make_shared<NiceMock<MockFunction>>();
@@ -32,7 +29,7 @@ protected:
     functions.add(function);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
 
-    context = make_shared<XPathEvaluationContext>(node, nodes, functions);
+    context = make_shared<XPathEvaluationContext>(nullptr, nodes, functions);
   }
 };
 

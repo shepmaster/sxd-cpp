@@ -1,7 +1,5 @@
 #include "expression-math.h"
 
-#include "document.h"
-
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
 
@@ -22,14 +20,12 @@ protected:
   shared_ptr<MockExpression> left = make_shared<NiceMock<MockExpression>>();
   shared_ptr<MockExpression> right = make_shared<NiceMock<MockExpression>>();
 
-  Document doc;
-  Node *node = doc.new_element("context-node");
   Nodeset nodes;
   XPathFunctionLibrary functions;
   shared_ptr<XPathEvaluationContext> context;
 
   void SetUp() {
-    context = make_shared<XPathEvaluationContext>(node, nodes, functions);
+    context = make_shared<XPathEvaluationContext>(nullptr, nodes, functions);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 };
