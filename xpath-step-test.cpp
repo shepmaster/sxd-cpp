@@ -6,6 +6,7 @@
 #include "mock-xpath-axis.h"
 #include "mock-xpath-node-test.h"
 #include "mock-xpath-expression.h"
+#include "mock-xpath-evaluation-context.h"
 
 #include <iostream>
 
@@ -18,6 +19,7 @@ using testing::Invoke;
 using testing::Return;
 using testing::Unused;
 using testing::_;
+using testing::NiceMock;
 
 class XPathStepTest : public ::testing::Test {
 protected:
@@ -29,9 +31,13 @@ protected:
   shared_ptr<MockExpression> predicate = make_shared<MockExpression>();
 
   Nodeset nodes;
-  XPathFunctionLibrary functions;
+
+  NiceMock<MockEvaluationContext> context;
+  shared_ptr<NiceMock<MockEvaluationContext>> sub_context =
+    make_shared<NiceMock<MockEvaluationContext>>();
 
   void SetUp() {
+    EXPECT_CALL(context, node()).WillRepeatedly(Return(top_element));
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 };
@@ -42,7 +48,6 @@ TEST_F(XPathStepTest, axis_is_passed_the_node)
 
   XPathStep step(axis, node_test, nullptr);
 
-  XPathEvaluationContext context(top_element, nodes, functions);
   step.select_nodes(context, nodes);
 }
 
@@ -55,22 +60,23 @@ add_context_node(Node *node, Unused, Nodeset &set)
 TEST_F(XPathStepTest, predicate_is_evaluated)
 {
   EXPECT_CALL(*axis, select_nodes(_, _, _)).WillOnce(Invoke(add_context_node));
+  EXPECT_CALL(context, new_context_for(_, _)).WillOnce(Return(sub_context));
   EXPECT_CALL(*predicate, evaluate(_));
 
   XPathStep step(axis, node_test, predicate);
 
-  XPathEvaluationContext context(top_element, nodes, functions);
   step.select_nodes(context, nodes);
 }
 
 TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
 {
   EXPECT_CALL(*axis, select_nodes(_, _, _)).WillOnce(Invoke(add_context_node));
+  EXPECT_CALL(context, new_context_for(_, _)).WillOnce(Return(sub_context));
+  EXPECT_CALL(*sub_context, position()).WillOnce(Return(1));
   EXPECT_CALL(*predicate, evaluate(_)).WillOnce(Return(XPathValue(1.0)));
 
   XPathStep step(axis, node_test, predicate);
 
-  XPathEvaluationContext context(top_element, nodes, functions);
   step.select_nodes(context, nodes);
 
   ASSERT_THAT(nodes, ElementsAre(top_element));
@@ -79,11 +85,11 @@ TEST_F(XPathStepTest, predicate_with_number_one_selects_first_node)
 TEST_F(XPathStepTest, predicate_with_string_selects_all_nodes)
 {
   EXPECT_CALL(*axis, select_nodes(_, _, _)).WillOnce(Invoke(add_context_node));
+  EXPECT_CALL(context, new_context_for(_, _)).WillOnce(Return(sub_context));
   EXPECT_CALL(*predicate, evaluate(_)).WillOnce(Return(XPathValue("string")));
 
   XPathStep step(axis, node_test, predicate);
 
-  XPathEvaluationContext context(top_element, nodes, functions);
   step.select_nodes(context, nodes);
 
   ASSERT_THAT(nodes, ElementsAre(top_element));

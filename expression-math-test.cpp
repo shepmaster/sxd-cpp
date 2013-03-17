@@ -2,7 +2,7 @@
 
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
-#include "expression-test-support.h"
+#include "mock-xpath-evaluation-context.h"
 
 #include <iostream>
 
@@ -21,8 +21,7 @@ protected:
   shared_ptr<MockExpression> left = make_shared<NiceMock<MockExpression>>();
   shared_ptr<MockExpression> right = make_shared<NiceMock<MockExpression>>();
 
-  ExpressionTestSupport support;
-  XPathEvaluationContext context = support.context();
+  NiceMock<MockEvaluationContext> context;
 
   void SetUp() {
     DefaultValue<XPathValue>::Set(XPathValue(0.0));

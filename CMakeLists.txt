@@ -56,7 +56,7 @@ set(
   expression-and.cpp
   expression-equal.cpp
   expression-relational.cpp
-  xpath-evaluation-context.cpp
+  xpath-evaluation-context-impl.cpp
   xpath-value.cpp
   xpath-value-boolean.cpp
   xpath-value-nodeset.cpp
@@ -107,7 +107,7 @@ set(test_programs
   expression-and
   expression-equal
   expression-relational
-  xpath-evaluation-context
+  xpath-evaluation-context-impl
   xpath-function-library
   function-last
   function-not

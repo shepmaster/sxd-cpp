@@ -11,7 +11,7 @@ XPathStep::XPathStep(std::shared_ptr<XPathAxis> axis,
 }
 
 bool
-include(XPathValue value, XPathEvaluationContext context)
+include(XPathValue value, XPathEvaluationContext &context)
 {
   if (value.is(XPathValue::Type::Number)) {
     return context.position() == value.number();
@@ -33,13 +33,13 @@ XPathStep::select_nodes(const XPathEvaluationContext &context,
     // FIXME: The context node should be the child we are looping on
     auto sub_context = context.new_context_for(context.node(), selected);
     for (auto node : selected) {
-      auto value = _predicate->evaluate(sub_context);
+      auto value = _predicate->evaluate(*sub_context);
 
-      if (include(value, sub_context)) {
+      if (include(value, *sub_context)) {
         result.add(node);
       }
 
-      sub_context.next();
+      sub_context->next();
     }
   }
 }

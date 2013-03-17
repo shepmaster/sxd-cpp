@@ -2,6 +2,7 @@
 
 #include "document.h"
 #include "xpath-core-function-library.h"
+#include "xpath-evaluation-context-impl.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
@@ -67,7 +68,7 @@ protected:
     Nodeset empty_nodeset;
     XPathFunctionLibrary functions;
     XPathCoreFunctionLibrary::register_functions(functions);
-    XPathEvaluationContext context(node, empty_nodeset, functions);
+    XPathEvaluationContextImpl context(node, empty_nodeset, functions);
     return expr->evaluate(context);
   }
 };

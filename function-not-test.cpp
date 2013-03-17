@@ -1,24 +1,22 @@
 #include "function-not.h"
 
-#include "document.h"
-
 #include "gmock/gmock.h"
+#include "mock-xpath-evaluation-context.h"
+
 #include <iostream>
+
+using testing::NiceMock;
 
 class FunctionNotTest : public ::testing::Test {
 protected:
-  Document doc;
-  Node *node = doc.new_element("context-node");
-  Nodeset nodes;
-  XPathFunctionLibrary functions;
+  NiceMock<MockEvaluationContext> context;
+
   std::vector<XPathValue> arguments;
   FunctionNot function;
 };
 
 TEST_F(FunctionNotTest, inverts_input_boolean)
 {
-  XPathEvaluationContext context(node, nodes, functions);
-
   arguments.push_back(XPathValue(false));
 
   auto result = function.evaluate(context, arguments);

@@ -5,7 +5,7 @@
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
 #include "mock-xpath-function.h"
-#include "expression-test-support.h"
+#include "mock-xpath-evaluation-context.h"
 
 #include <iostream>
 
@@ -22,18 +22,18 @@ protected:
   std::shared_ptr<MockFunction> function = make_shared<NiceMock<MockFunction>>();
   std::vector<std::shared_ptr<XPathExpression>> arguments;
 
-  ExpressionTestSupport support;
-  XPathEvaluationContext context = support.context();
+  NiceMock<MockEvaluationContext> context;
 
   void SetUp() {
-    EXPECT_CALL(*function, name()).WillRepeatedly(Return("foo"));
-    support.functions.add(function);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 };
 
 TEST_F(ExpressionFunctionTest, evaluates_input_arguments)
 {
+  EXPECT_CALL(context, has_function("foo")).WillRepeatedly(Return(true));
+  EXPECT_CALL(context, function_for_name("foo")).WillRepeatedly(Return(function));
+
   auto argument = make_shared<MockExpression>();
   EXPECT_CALL(*argument, evaluate(Ref(context)));
   arguments.push_back(argument);

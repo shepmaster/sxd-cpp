@@ -9,21 +9,19 @@ class XPathFunction;
 class XPathEvaluationContext
 {
 public:
-  XPathEvaluationContext(Node *node, Nodeset nodes, const XPathFunctionLibrary &functions);
-  Node *node() const;
-  unsigned long position() const;
-  unsigned long size() const;
-  void next();
-  std::shared_ptr<XPathFunction> function_for_name(std::string name) const;
-  bool has_function(std::string name) const;
+  virtual ~XPathEvaluationContext() {};
+  virtual Node *node() const = 0;
+  virtual unsigned long position() const = 0;
+  virtual unsigned long size() const = 0;
+  virtual void next() = 0;
 
-  XPathEvaluationContext new_context_for(Node *node, Nodeset nodes) const;
+  virtual bool has_function(std::string name) const = 0;
 
-private:
-  Node *_node;
-  Nodeset _nodes;
-  unsigned long _position;
-  const XPathFunctionLibrary &_functions;
+  virtual std::shared_ptr<XPathFunction>
+  function_for_name(std::string name) const = 0;
+
+  virtual std::shared_ptr<XPathEvaluationContext>
+  new_context_for(Node *node, Nodeset nodes) const = 0;
 };
 
 #endif
