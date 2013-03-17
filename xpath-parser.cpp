@@ -224,7 +224,12 @@ parse_relative_location_path(XPathTokenSource &source)
     steps.push_back(move(step));
     while (source.next_token_is(XPathTokenType::Slash)) {
       consume(source, XPathTokenType::Slash);
+
       auto next = parse_step(source);
+      if (! next) {
+        throw TrailingSlashException();
+      }
+
       steps.push_back(move(next));
     }
 

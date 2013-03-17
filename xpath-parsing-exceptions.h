@@ -31,6 +31,13 @@ struct EmptyPredicateException : virtual std::runtime_error
   {};
 };
 
+struct TrailingSlashException : virtual std::runtime_error
+{
+ TrailingSlashException() :
+    std::runtime_error("Path expressions must not end with a slash.")
+  {};
+};
+
 struct InvalidXPathAxisException : virtual std::runtime_error
 {
   InvalidXPathAxisException(std::string axis) :
