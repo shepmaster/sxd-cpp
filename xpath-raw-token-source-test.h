@@ -2,6 +2,7 @@
 #define XPATH_RAW_TOKEN_SOURCE_TEST_H
 
 #include "xpath-raw-token-source.h"
+#include "xpath-parsing-exceptions.h"
 
 std::vector<XPathToken>
 all_tokens(XPathRawTokenSource &tokenizer)
@@ -19,6 +20,9 @@ struct RawTokenProvider : public XPathRawTokenSource {
   }
 
   XPathToken next_token() {
+    if (! has_more_tokens()) {
+      throw NoMoreTokensAvailableException();
+    }
     return tokens[index++];
   }
 

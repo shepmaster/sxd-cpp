@@ -34,7 +34,10 @@ XPathParser::XPathParser(XPathTokenSource &source) :
 
 void
 consume(XPathTokenSource &source, XPathTokenType type) {
-  source.next_token();
+  auto token = source.next_token();
+  if (! token.is(type)) {
+    throw UnexpectedTokenException();
+  }
 }
 
 std::unique_ptr<XPathAxis>
@@ -141,13 +144,16 @@ std::unique_ptr<XPathExpression>
 parse_function_call(XPathTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::Function)) {
+    auto token = source.next_token();
+
     std::vector<std::shared_ptr<XPathExpression>> arguments;
 
-    auto token = source.next_token();
     consume(source, XPathTokenType::LeftParen);
     while (! source.next_token_is(XPathTokenType::RightParen)) {
       // TODO: this should be the top-level expression
-      arguments.push_back(parse_primary_expression(source));
+      auto arg = parse_primary_expression(source);
+      if (! arg) break;
+      arguments.push_back(move(arg));
     }
     consume(source, XPathTokenType::RightParen);
 

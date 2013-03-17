@@ -34,8 +34,6 @@ grouping parens (resets axis order!)
 # Bugs
 Error for bad variable
 Evaluating steps when there is no context node
-XPath parser should check consumed token
-Parser with unclosed lparen (and bracket, etc?)
 XPaths like @@@ will probably go crazy
 Comments are not output at all
 parser: nothing after a + (or -, *, ...)

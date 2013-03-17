@@ -10,6 +10,13 @@ struct ExtraUnparsedTokensException : virtual std::runtime_error
   {};
 };
 
+struct UnexpectedTokenException : virtual std::runtime_error
+{
+ UnexpectedTokenException() :
+    std::runtime_error("Encountered an unexpected token.")
+  {};
+};
+
 struct InvalidXPathAxisException : virtual std::runtime_error
 {
   InvalidXPathAxisException(std::string axis) :

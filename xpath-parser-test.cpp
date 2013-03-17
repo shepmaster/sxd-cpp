@@ -604,6 +604,16 @@ TEST_F(XPathParserTest, unknown_node_test_is_reported_as_an_error)
   ASSERT_THROW(parser->parse(), InvalidNodeTestException);
 }
 
+TEST_F(XPathParserTest, unexpected_token_is_reported_as_an_error)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::Function, "does-not-matter"),
+      XPathToken(XPathTokenType::RightParen)
+  });
+
+  ASSERT_THROW(parser->parse(), UnexpectedTokenException);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
