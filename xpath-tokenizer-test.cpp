@@ -49,6 +49,15 @@ TEST_F(XPathTokenizerTest, tokenizes_great_grandchild_selector)
                                                  XPathToken("world")));
 }
 
+TEST_F(XPathTokenizerTest, ignores_whitespace_around_tokens)
+{
+  XPathTokenizer tokenizer(" @\t@\n@\r");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::AtSign),
+                                                 XPathToken(XPathTokenType::AtSign),
+                                                 XPathToken(XPathTokenType::AtSign)));
+}
+
 TEST_F(XPathTokenizerTest, tokenizes_axis_separator)
 {
   XPathTokenizer tokenizer("::");

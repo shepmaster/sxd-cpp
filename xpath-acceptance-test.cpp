@@ -257,42 +257,42 @@ TEST_F(XPathAcceptanceTest, predicate_functions_can_accept_one_argument)
 
 TEST_F(XPathAcceptanceTest, additive_math_operations)
 {
-  XPath xpath = compile("1-2+3");
+  XPath xpath = compile("1 - 2 + 3");
 
   ASSERT_DOUBLE_EQ(2.0, xpath.number());
 }
 
 TEST_F(XPathAcceptanceTest, multiplicitive_math_operations)
 {
-  XPath xpath = compile("5mod2div3*2");
+  XPath xpath = compile("5 mod 2 div 3 * 2");
 
   ASSERT_DOUBLE_EQ(2/3.0, xpath.number());
 }
 
 TEST_F(XPathAcceptanceTest, unary_negation)
 {
-  XPath xpath = compile("2--2");
+  XPath xpath = compile("2 - -2");
 
   ASSERT_DOUBLE_EQ(4.0, xpath.number());
 }
 
 TEST_F(XPathAcceptanceTest, boolean_logic)
 {
-  XPath xpath = compile("true()andfalse()");
+  XPath xpath = compile("true() and false()");
 
   ASSERT_EQ(false, xpath.boolean());
 }
 
 TEST_F(XPathAcceptanceTest, equality)
 {
-  XPath xpath = compile("1.3!='1.3'");
+  XPath xpath = compile("1.3 != '1.3'");
 
   ASSERT_EQ(false, xpath.boolean());
 }
 
 TEST_F(XPathAcceptanceTest, relational)
 {
-  XPath xpath = compile("1.0>=2.1");
+  XPath xpath = compile("1.0 >= 2.1");
 
   ASSERT_EQ(false, xpath.boolean());
 }

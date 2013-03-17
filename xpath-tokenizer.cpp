@@ -209,14 +209,41 @@ XPathTokenizer::raw_next_token()
   }
 }
 
+static bool
+is_xml_space(char c)
+{
+  return
+    c == ' '  ||
+    c == '\t' ||
+    c == '\n' ||
+    c == '\r';
+}
+
+void
+XPathTokenizer::consume_whitespace()
+{
+  for (; _start < _xpath.size(); _start++) {
+    auto c = _xpath[_start];
+
+    if (! is_xml_space(c)) {
+      break;
+    }
+  }
+}
+
 XPathToken
 XPathTokenizer::next_token()
 {
+  consume_whitespace();
+
   if (! has_more_tokens()) {
     throw NoMoreTokensAvailableException();
   }
 
   auto token = raw_next_token();
+
+  consume_whitespace();
+
   if (! (token.precedes_node_test() ||
          token.precedes_expression() ||
          token.is_operator())) {

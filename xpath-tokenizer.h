@@ -12,6 +12,7 @@ public:
 
 private:
   XPathToken tokenize_literal(char quote_char);
+  void consume_whitespace();
   XPathToken raw_next_token();
 
   std::string _xpath;
