@@ -64,7 +64,7 @@ XPathToken::precedes_expression() const
 bool
 XPathToken::is_operator() const
 {
-  // To add: Pipe, RelOps
+  // To add: Pipe
   switch (_type) {
   case XPathTokenType::Slash:
   case XPathTokenType::DoubleSlash:
