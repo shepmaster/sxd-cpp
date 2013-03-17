@@ -77,6 +77,15 @@ while_not_character(std::string xpath, size_t offset, char end_char)
   return offset;
 }
 
+static std::map<std::string, XPathTokenType> two_char_tokens = {
+  {"<=", XPathTokenType::LessThanOrEqual},
+  {">=", XPathTokenType::GreaterThanOrEqual},
+  {"!=", XPathTokenType::NotEqual},
+  {"::", XPathTokenType::DoubleColon},
+  {"//", XPathTokenType::DoubleSlash},
+  {"..", XPathTokenType::ParentNode},
+};
+
 static std::map<char, XPathTokenType> single_char_tokens = {
   {'/',  XPathTokenType::Slash},
   {'(',  XPathTokenType::LeftParen},
@@ -90,11 +99,6 @@ static std::map<char, XPathTokenType> single_char_tokens = {
   {'=',  XPathTokenType::Equal},
   {'<',  XPathTokenType::LessThan},
   {'>',  XPathTokenType::GreaterThan},
-};
-
-static std::map<char, XPathTokenType> repeated_char_tokens = {
-  {':', XPathTokenType::DoubleColon},
-  {'/', XPathTokenType::DoubleSlash}
 };
 
 auto quote_chars = {'\'', '"'};
@@ -134,22 +138,13 @@ XPathTokenizer::tokenize_literal(char quote_char)
 XPathToken
 XPathTokenizer::raw_next_token()
 {
+  auto first_two = _xpath.substr(_start, 2);
   auto c = _xpath[_start];
 
-  auto repeated_token = repeated_char_tokens.find(c);
-  if (repeated_token != repeated_char_tokens.end() && c == _xpath[_start + 1]) {
+  auto double_char_token = two_char_tokens.find(first_two);
+  if (double_char_token != two_char_tokens.end()) {
     _start += 2;
-    return repeated_token->second;
-  }
-
-  if ('<' == c && '=' == _xpath[_start + 1]) {
-    _start += 2;
-    return XPathTokenType::LessThanOrEqual;
-  }
-
-  if ('>' == c && '=' == _xpath[_start + 1]) {
-    _start += 2;
-    return XPathTokenType::GreaterThanOrEqual;
+    return double_char_token->second;
   }
 
   auto token = single_char_tokens.find(c);
@@ -164,21 +159,13 @@ XPathTokenizer::raw_next_token()
     }
   }
 
-  if ('!' == c && '=' == _xpath[_start + 1]) {
-    _start += 2;
-    return XPathTokenType::NotEqual;
-  }
-
   if ('.' == c && ! isdigit(_xpath[_start + 1])) {
     // Ugly. Should we use START / FOLLOW constructs?
-    if ('.' == _xpath[_start + 1]) {
-      _start += 2;
-      return XPathToken(XPathTokenType::ParentNode);
-    } else {
-      _start += 1;
-      return XPathToken(XPathTokenType::CurrentNode);
-    }
-  } else if (is_number_char(c)) {
+    _start += 1;
+    return XPathToken(XPathTokenType::CurrentNode);
+  }
+
+  if (is_number_char(c)) {
     auto offset = _start;
     auto current_start = _start;
 
