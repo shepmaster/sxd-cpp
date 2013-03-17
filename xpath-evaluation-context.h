@@ -5,6 +5,7 @@ class XPathFunction;
 
 #include "nodeset.h"
 #include "xpath-function-library.h"
+#include "xpath-variable-bindings.h"
 
 class XPathEvaluationContext
 {
@@ -19,6 +20,9 @@ public:
 
   virtual std::shared_ptr<XPathFunction>
   function_for_name(std::string name) const = 0;
+
+  virtual XPathValue
+  variable_for_name(std::string name) const = 0;
 
   virtual std::shared_ptr<XPathEvaluationContext>
   new_context_for(Node *node, Nodeset nodes) const = 0;

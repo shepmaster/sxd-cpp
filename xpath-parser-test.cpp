@@ -26,6 +26,8 @@ struct StubTokens : public XPathTokenSource {
   RawTokenProvider raw_tokens;
 };
 
+#include "xpath-variable-bindings-hash.h"
+
 class XPathParserTest : public ::testing::Test {
 protected:
   Document doc;
@@ -35,6 +37,7 @@ protected:
   std::unique_ptr<XPathParser> parser;
 
   XPathFunctionLibrary functions;
+  XPathVariableBindingsHash variables;
 
   void SetUp() {
     XPathCoreFunctionLibrary::register_functions(functions);
@@ -66,9 +69,7 @@ protected:
   XPathValue
   evaluate_on(const std::unique_ptr<XPathExpression> &expr, Node *node) {
     Nodeset empty_nodeset;
-    XPathFunctionLibrary functions;
-    XPathCoreFunctionLibrary::register_functions(functions);
-    XPathEvaluationContextImpl context(node, empty_nodeset, functions);
+    XPathEvaluationContextImpl context(node, empty_nodeset, functions, variables);
     return expr->evaluate(context);
   }
 };
@@ -566,6 +567,19 @@ TEST_F(XPathParserTest, greater_than_or_equal_expression)
   auto expr = parser->parse();
 
   ASSERT_EQ(true, evaluate(expr).boolean());
+}
+
+TEST_F(XPathParserTest, variable_reference)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::DollarSign),
+      XPathToken("variable-name"),
+  });
+
+  variables.set("variable-name", 12.3);
+  auto expr = parser->parse();
+
+  ASSERT_DOUBLE_EQ(12.3, evaluate(expr).number());
 }
 
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)

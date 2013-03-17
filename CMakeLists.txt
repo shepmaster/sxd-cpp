@@ -48,6 +48,7 @@ set(
   node-test-text.cpp
   xpath-step.cpp
   expression-literal.cpp
+  expression-variable.cpp
   expression-function.cpp
   expression-path.cpp
   expression-math.cpp
@@ -63,6 +64,7 @@ set(
   xpath-value-number.cpp
   xpath-value-string.cpp
   xpath-function-library.cpp
+  xpath-variable-bindings-hash.cpp
   function-last.cpp
   function-not.cpp
   function-true.cpp
@@ -100,6 +102,7 @@ set(test_programs
   xpath-value-nodeset
   xpath-value-number
   xpath-value-string
+  expression-variable
   expression-function
   expression-math
   expression-negation

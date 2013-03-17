@@ -11,6 +11,7 @@
 #include "node-test-attribute.h"
 #include "node-test-text.h"
 #include "expression-literal.h"
+#include "expression-variable.h"
 #include "expression-function.h"
 #include "expression-path.h"
 #include "expression-math.h"
@@ -99,6 +100,20 @@ default_node_test(XPathTokenSource &source, std::unique_ptr<XPathAxis> &axis) {
 }
 
 std::unique_ptr<XPathExpression>
+parse_variable_reference(XPathTokenSource &source)
+{
+  if (source.next_token_is(XPathTokenType::DollarSign)) {
+    consume(source, XPathTokenType::DollarSign);
+    auto token = source.next_token();
+    // TODO: check is a string
+
+    return make_unique<ExpressionVariable>(token.string());
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
 parse_string_literal(XPathTokenSource &source) {
   if (source.next_token_is(XPathTokenType::Literal)) {
     auto token = source.next_token();
@@ -156,6 +171,7 @@ parse_children_in_order(std::vector<ParseFn> child_parses, XPathTokenSource &sou
 std::unique_ptr<XPathExpression>
 parse_primary_expression(XPathTokenSource &source) {
   std::vector<ParseFn> child_parses = {
+    parse_variable_reference,
     parse_string_literal,
     parse_numeric_literal,
     parse_function_call
