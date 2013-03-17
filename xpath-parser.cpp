@@ -242,138 +242,127 @@ parse_unary_expression(XPathTokenSource &source)
   return nullptr;
 }
 
+using SubExpression = std::shared_ptr<XPathExpression>;
+
+template<class T>
+using BinaryExpressionBuilder =
+  std::unique_ptr<T>(*)(SubExpression left, SubExpression right);
+
+template<class T>
+struct BinaryRule {
+  XPathTokenType type;
+  BinaryExpressionBuilder<T> builder;
+};
+
+using ParseFn = std::unique_ptr<XPathExpression>(*)(XPathTokenSource &source);
+
+template<class T>
+class LeftAssociativeBinaryParser {
+public:
+  LeftAssociativeBinaryParser(ParseFn child, std::vector<BinaryRule<T>> rules) :
+    child_parse(child), rules(rules)
+  {}
+
+  std::unique_ptr<XPathExpression>
+  parse(XPathTokenSource &source) {
+    auto left = child_parse(source);
+    if (! left) return nullptr;
+
+    while (source.has_more_tokens()) {
+      bool found = false;
+
+      for (auto rule : rules) {
+        if (source.next_token_is(rule.type)) {
+          consume(source, rule.type);
+          auto right = child_parse(source);
+          left = rule.builder(move(left), move(right));
+          found = true;
+          break;
+        }
+      }
+
+      if (! found) break;
+    }
+
+    return left;
+  }
+
+private:
+  ParseFn child_parse;
+  std::vector<BinaryRule<T>> rules;
+};
+
 std::unique_ptr<XPathExpression>
 parse_multiplicative_expression(XPathTokenSource &source)
 {
-  auto left = parse_unary_expression(source);
-  if (!left) return nullptr;
+  std::vector<BinaryRule<ExpressionMath>> rules = {
+    { XPathTokenType::Multiply,  ExpressionMath::Multiplication },
+    { XPathTokenType::Divide,    ExpressionMath::Division },
+    { XPathTokenType::Remainder, ExpressionMath::Remainder }
+  };
 
-  while (source.has_more_tokens()) {
-    if (source.next_token_is(XPathTokenType::Multiply)) {
-      consume(source, XPathTokenType::Multiply);
-      auto right = parse_unary_expression(source);
-      left = ExpressionMath::Multiplication(move(left), move(right));
-    } else if (source.next_token_is(XPathTokenType::Divide)) {
-      consume(source, XPathTokenType::Divide);
-      auto right = parse_unary_expression(source);
-      left = ExpressionMath::Division(move(left), move(right));
-    } else if (source.next_token_is(XPathTokenType::Remainder)) {
-      consume(source, XPathTokenType::Remainder);
-      auto right = parse_unary_expression(source);
-      left = ExpressionMath::Remainder(move(left), move(right));
-    } else {
-      break;
-    }
-  }
-
-  return left;
+  LeftAssociativeBinaryParser<ExpressionMath> parser(parse_unary_expression, rules);
+  return parser.parse(source);
 }
 
 std::unique_ptr<XPathExpression>
 parse_additive_expression(XPathTokenSource &source)
 {
-  auto left = parse_multiplicative_expression(source);
-  if (!left) return nullptr;
+  std::vector<BinaryRule<ExpressionMath>> rules = {
+    { XPathTokenType::PlusSign,  ExpressionMath::Addition },
+    { XPathTokenType::MinusSign, ExpressionMath::Subtraction}
+  };
 
-  while (source.has_more_tokens()) {
-    if (source.next_token_is(XPathTokenType::PlusSign)) {
-      consume(source, XPathTokenType::PlusSign);
-      auto right = parse_multiplicative_expression(source);
-      left = ExpressionMath::Addition(move(left), move(right));
-    } else if (source.next_token_is(XPathTokenType::MinusSign)) {
-      consume(source, XPathTokenType::MinusSign);
-      auto right = parse_multiplicative_expression(source);
-      left = ExpressionMath::Subtraction(move(left), move(right));
-    } else {
-      break;
-    }
-  }
-
-  return left;
+  LeftAssociativeBinaryParser<ExpressionMath> parser(parse_multiplicative_expression, rules);
+  return parser.parse(source);
 }
 
 std::unique_ptr<XPathExpression>
 parse_relational_expression(XPathTokenSource &source)
 {
-  auto left = parse_additive_expression(source);
-  if (!left) return nullptr;
+  std::vector<BinaryRule<ExpressionRelational>> rules = {
+    { XPathTokenType::LessThan,           ExpressionRelational::LessThan },
+    { XPathTokenType::LessThanOrEqual,    ExpressionRelational::LessThanOrEqual },
+    { XPathTokenType::GreaterThan,        ExpressionRelational::GreaterThan },
+    { XPathTokenType::GreaterThanOrEqual, ExpressionRelational::GreaterThanOrEqual },
+  };
 
-  while (source.has_more_tokens()) {
-    if (source.next_token_is(XPathTokenType::LessThan)) {
-      consume(source, XPathTokenType::LessThan);
-      auto right = parse_additive_expression(source);
-      left = ExpressionRelational::LessThan(move(left), move(right));
-    } else if (source.next_token_is(XPathTokenType::LessThanOrEqual)) {
-      consume(source, XPathTokenType::LessThanOrEqual);
-      auto right = parse_additive_expression(source);
-      left = ExpressionRelational::LessThanOrEqual(move(left), move(right));
-    } else if (source.next_token_is(XPathTokenType::GreaterThan)) {
-      consume(source, XPathTokenType::GreaterThan);
-      auto right = parse_additive_expression(source);
-      left = ExpressionRelational::GreaterThan(move(left), move(right));
-    } else if (source.next_token_is(XPathTokenType::GreaterThanOrEqual)) {
-      consume(source, XPathTokenType::GreaterThanOrEqual);
-      auto right = parse_additive_expression(source);
-      left = ExpressionRelational::GreaterThanOrEqual(move(left), move(right));
-    } else {
-      break;
-    }
-  }
-
-  return left;
+  LeftAssociativeBinaryParser<ExpressionRelational> parser(parse_additive_expression, rules);
+  return parser.parse(source);
 }
 
 std::unique_ptr<XPathExpression>
 parse_equality_expression(XPathTokenSource &source)
 {
-  auto left = parse_relational_expression(source);
-  if (!left) return nullptr;
+  std::vector<BinaryRule<ExpressionEqual>> rules = {
+    { XPathTokenType::Equal,    ExpressionEqual::Equal },
+    { XPathTokenType::NotEqual, ExpressionEqual::NotEqual },
+  };
 
-  while (source.has_more_tokens()) {
-    if (source.next_token_is(XPathTokenType::Equal)) {
-      consume(source, XPathTokenType::Equal);
-      auto right = parse_relational_expression(source);
-      left = ExpressionEqual::Equal(move(left), move(right));
-    } else if (source.next_token_is(XPathTokenType::NotEqual)) {
-      consume(source, XPathTokenType::NotEqual);
-      auto right = parse_relational_expression(source);
-      left = ExpressionEqual::NotEqual(move(left), move(right));
-    } else {
-      break;
-    }
-  }
-
-  return left;
+  LeftAssociativeBinaryParser<ExpressionEqual> parser(parse_relational_expression, rules);
+  return parser.parse(source);
 }
 
 std::unique_ptr<XPathExpression>
 parse_and_expression(XPathTokenSource &source)
 {
-  auto left = parse_equality_expression(source);
-  if (!left) return nullptr;
+  std::vector<BinaryRule<ExpressionAnd>> rules = {
+    { XPathTokenType::And, ExpressionAnd::And }
+  };
 
-  while (source.next_token_is(XPathTokenType::And)) {
-    consume(source, XPathTokenType::And);
-    auto right = parse_equality_expression(source);
-    left = make_unique<ExpressionAnd>(move(left), move(right));
-  }
-
-  return left;
+  LeftAssociativeBinaryParser<ExpressionAnd> parser(parse_equality_expression, rules);
+  return parser.parse(source);
 }
 
 std::unique_ptr<XPathExpression>
 parse_or_expression(XPathTokenSource &source)
 {
-  auto left = parse_and_expression(source);
-  if (!left) return nullptr;
+  std::vector<BinaryRule<ExpressionOr>> rules = {
+    { XPathTokenType::Or, ExpressionOr::Or }
+  };
 
-  while (source.next_token_is(XPathTokenType::Or)) {
-    consume(source, XPathTokenType::Or);
-    auto right = parse_and_expression(source);
-    left = make_unique<ExpressionOr>(move(left), move(right));
-  }
-
-  return left;
+  LeftAssociativeBinaryParser<ExpressionOr> parser(parse_and_expression, rules);
+  return parser.parse(source);
 }
 
 std::unique_ptr<XPathExpression>
