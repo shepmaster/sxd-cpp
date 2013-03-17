@@ -3,6 +3,7 @@
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
 #include "mock-xpath-value-impl.h"
+#include "expression-test-support.h"
 
 #include <iostream>
 
@@ -23,12 +24,10 @@ protected:
   shared_ptr<MockValueImpl> left_val = make_shared<NiceMock<MockValueImpl>>();
   shared_ptr<MockValueImpl> right_val = make_shared<NiceMock<MockValueImpl>>();
 
-  Nodeset nodes;
-  XPathFunctionLibrary functions;
-  shared_ptr<XPathEvaluationContext> context;
+  ExpressionTestSupport support;
+  XPathEvaluationContext context = support.context();
 
   void SetUp() {
-    context = make_shared<XPathEvaluationContext>(nullptr, nodes, functions);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
 
     setup_sub_expression(left, left_val);
@@ -46,10 +45,10 @@ TEST_F(ExpressionEqualTest, evaluates_both_arguments)
 {
   auto expression = ExpressionEqual::Equal(left, right);
 
-  EXPECT_CALL(*left, evaluate(Ref(*context)));
-  EXPECT_CALL(*right, evaluate(Ref(*context)));
+  EXPECT_CALL(*left, evaluate(Ref(context)));
+  EXPECT_CALL(*right, evaluate(Ref(context)));
 
-  expression->evaluate(*context);
+  expression->evaluate(context);
 }
 
 TEST_F(ExpressionEqualTest, compares_as_boolean_if_one_argument_is_a_boolean)
@@ -61,7 +60,7 @@ TEST_F(ExpressionEqualTest, compares_as_boolean_if_one_argument_is_a_boolean)
   EXPECT_CALL(*left_val, boolean());
   EXPECT_CALL(*right_val, boolean());
 
-  expression->evaluate(*context);
+  expression->evaluate(context);
 }
 
 TEST_F(ExpressionEqualTest, compares_as_number_if_one_argument_is_a_number)
@@ -73,7 +72,7 @@ TEST_F(ExpressionEqualTest, compares_as_number_if_one_argument_is_a_number)
   EXPECT_CALL(*left_val, number());
   EXPECT_CALL(*right_val, number());
 
-  expression->evaluate(*context);
+  expression->evaluate(context);
 }
 
 TEST_F(ExpressionEqualTest, compares_as_string_otherwise)
@@ -83,7 +82,7 @@ TEST_F(ExpressionEqualTest, compares_as_string_otherwise)
   EXPECT_CALL(*left_val, string());
   EXPECT_CALL(*right_val, string());
 
-  expression->evaluate(*context);
+  expression->evaluate(context);
 }
 
 TEST_F(ExpressionEqualTest, not_equal_returns_the_negation)
@@ -93,7 +92,7 @@ TEST_F(ExpressionEqualTest, not_equal_returns_the_negation)
   EXPECT_CALL(*left_val, string()).WillRepeatedly(Return("yes"));
   EXPECT_CALL(*right_val, string()).WillRepeatedly(Return("no"));
 
-  auto result = expression->evaluate(*context);
+  auto result = expression->evaluate(context);
   ASSERT_EQ(XPathValue(true), result);
 }
 

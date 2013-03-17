@@ -2,6 +2,7 @@
 
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
+#include "expression-test-support.h"
 
 #include <iostream>
 
@@ -19,12 +20,10 @@ protected:
   shared_ptr<MockExpression> left  = make_shared<NiceMock<MockExpression>>();
   shared_ptr<MockExpression> right = make_shared<NiceMock<MockExpression>>();
 
-  Nodeset nodes;
-  XPathFunctionLibrary functions;
-  shared_ptr<XPathEvaluationContext> context;
+  ExpressionTestSupport support;
+  XPathEvaluationContext context = support.context();
 
   void SetUp() {
-    context = make_shared<XPathEvaluationContext>(nullptr, nodes, functions);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 };
@@ -33,29 +32,29 @@ TEST_F(ExpressionAndTest, evaluates_left_argument)
 {
   ExpressionAnd expression(left, right);
 
-  EXPECT_CALL(*left, evaluate(Ref(*context)));
+  EXPECT_CALL(*left, evaluate(Ref(context)));
 
-  expression.evaluate(*context);
+  expression.evaluate(context);
 }
 
 TEST_F(ExpressionAndTest, evaluates_right_argument_when_left_is_true)
 {
   ExpressionAnd expression(left, right);
 
-  EXPECT_CALL(*left,  evaluate(Ref(*context))).WillRepeatedly(Return(true));
-  EXPECT_CALL(*right, evaluate(Ref(*context)));
+  EXPECT_CALL(*left,  evaluate(Ref(context))).WillRepeatedly(Return(true));
+  EXPECT_CALL(*right, evaluate(Ref(context)));
 
-  expression.evaluate(*context);
+  expression.evaluate(context);
 }
 
 TEST_F(ExpressionAndTest, short_circuits_when_left_argument_is_false)
 {
   ExpressionAnd expression(left, right);
 
-  EXPECT_CALL(*left,  evaluate(Ref(*context))).WillRepeatedly(Return(false));
+  EXPECT_CALL(*left,  evaluate(Ref(context))).WillRepeatedly(Return(false));
   EXPECT_CALL(*right, evaluate(_)).Times(0);
 
-  expression.evaluate(*context);
+  expression.evaluate(context);
 }
 
 struct LogicPair {
@@ -80,7 +79,7 @@ TEST_P(ExpressionAndLogicTest, has_and_truth_table)
   EXPECT_CALL(*left,  evaluate(_)).WillRepeatedly(Return(params.left));
   EXPECT_CALL(*left,  evaluate(_)).WillRepeatedly(Return(params.right));
 
-  auto result = expression.evaluate(*context);
+  auto result = expression.evaluate(context);
 
   ASSERT_EQ(params.left && params.right, result.boolean());
 }

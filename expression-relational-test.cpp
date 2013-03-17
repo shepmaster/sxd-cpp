@@ -3,6 +3,7 @@
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
 #include "mock-xpath-value-impl.h"
+#include "expression-test-support.h"
 
 #include <iostream>
 
@@ -15,33 +16,13 @@ using testing::Ref;
 using testing::Return;
 using testing::_;
 
-#include "make-unique.h"
-
-class ExpressionTestSupport {
-public:
-  Node *node;
-  Nodeset nodes;
-  XPathFunctionLibrary functions;
-
-  XPathEvaluationContext &context() {
-    if (! _context) {
-      _context = make_unique<XPathEvaluationContext>(node, nodes, functions);
-    }
-
-    return *_context;
-  }
-
-private:
-  std::unique_ptr<XPathEvaluationContext> _context;
-};
-
 class ExpressionRelationalTest : public ::testing::Test {
 protected:
   shared_ptr<MockExpression> left  = make_shared<NiceMock<MockExpression>>();
   shared_ptr<MockExpression> right = make_shared<NiceMock<MockExpression>>();
 
-  ExpressionTestSupport expr;
-  XPathEvaluationContext context = expr.context();
+  ExpressionTestSupport support;
+  XPathEvaluationContext context = support.context();
 
   void SetUp() {
     DefaultValue<XPathValue>::Set(XPathValue(0.0));

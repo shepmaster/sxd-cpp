@@ -2,6 +2,7 @@
 
 #include "gmock/gmock.h"
 #include "mock-xpath-expression.h"
+#include "expression-test-support.h"
 
 #include <iostream>
 
@@ -20,12 +21,10 @@ protected:
   shared_ptr<MockExpression> left = make_shared<NiceMock<MockExpression>>();
   shared_ptr<MockExpression> right = make_shared<NiceMock<MockExpression>>();
 
-  Nodeset nodes;
-  XPathFunctionLibrary functions;
-  shared_ptr<XPathEvaluationContext> context;
+  ExpressionTestSupport support;
+  XPathEvaluationContext context = support.context();
 
   void SetUp() {
-    context = make_shared<XPathEvaluationContext>(nullptr, nodes, functions);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
 };
@@ -36,10 +35,10 @@ TEST_F(ExpressionMathTest, evaluates_both_arguments)
 {
   ExpressionMath expression(left, right, math_no_op);
 
-  EXPECT_CALL(*left, evaluate(Ref(*context)));
-  EXPECT_CALL(*right, evaluate(Ref(*context)));
+  EXPECT_CALL(*left, evaluate(Ref(context)));
+  EXPECT_CALL(*right, evaluate(Ref(context)));
 
-  expression.evaluate(*context);
+  expression.evaluate(context);
 }
 
 TEST_F(ExpressionMathTest, adds_arguments)
@@ -49,7 +48,7 @@ TEST_F(ExpressionMathTest, adds_arguments)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(-2.0));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(3.0));
 
-  auto result = expression->evaluate(*context);
+  auto result = expression->evaluate(context);
   ASSERT_DOUBLE_EQ(1.0, result.number());
 }
 
@@ -60,7 +59,7 @@ TEST_F(ExpressionMathTest, subtracts_arguments)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(-2.0));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(3.0));
 
-  auto result = expression->evaluate(*context);
+  auto result = expression->evaluate(context);
   ASSERT_DOUBLE_EQ(-5.0, result.number());
 }
 
@@ -71,7 +70,7 @@ TEST_F(ExpressionMathTest, multiplies_arguments)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(-2.1));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(3.1));
 
-  auto result = expression->evaluate(*context);
+  auto result = expression->evaluate(context);
   ASSERT_DOUBLE_EQ(-6.51, result.number());
 }
 
@@ -82,7 +81,7 @@ TEST_F(ExpressionMathTest, divides_arguments)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(-0.5));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(2.0));
 
-  auto result = expression->evaluate(*context);
+  auto result = expression->evaluate(context);
   ASSERT_DOUBLE_EQ(-0.25, result.number());
 }
 
@@ -93,7 +92,7 @@ TEST_F(ExpressionMathTest, calculates_remainder_of_division_of_arguments)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(1.5));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(0.4));
 
-  auto result = expression->evaluate(*context);
+  auto result = expression->evaluate(context);
   ASSERT_DOUBLE_EQ(0.3, result.number());
 }
 
@@ -121,7 +120,7 @@ TEST_P(ExpressionMathRemainderTest, remainder_truncates)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(params.left));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(params.right));
 
-  auto result = expression->evaluate(*context);
+  auto result = expression->evaluate(context);
   ASSERT_DOUBLE_EQ(params.result, result.number());
 }
 
