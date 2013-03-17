@@ -20,7 +20,7 @@ struct UnexpectedTokenException : virtual std::runtime_error
 struct RightHandSideExpressionMissingException : virtual std::runtime_error
 {
  RightHandSideExpressionMissingException() :
-    std::runtime_error("The right-hand side of a binary operation is missing.")
+    std::runtime_error("The right-hand side of an operator is missing.")
   {};
 };
 

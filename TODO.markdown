@@ -34,10 +34,7 @@ grouping parens (resets axis order!)
 # Bugs
 Error for bad variable
 Evaluating steps when there is no context node
-XPaths like @@@ will probably go crazy
 Comments are not output at all
-parser: nothing after a + (or -, *, ...)
--> check all returns of parse_...
 
 # Ideas
 

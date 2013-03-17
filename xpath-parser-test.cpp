@@ -624,6 +624,15 @@ TEST_F(XPathParserTest, binary_operator_without_right_hand_side_is_reported_as_a
   ASSERT_THROW(parser->parse(), RightHandSideExpressionMissingException);
 }
 
+TEST_F(XPathParserTest, unary_operator_without_right_hand_side_is_reported_as_an_error)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::MinusSign),
+  });
+
+  ASSERT_THROW(parser->parse(), RightHandSideExpressionMissingException);
+}
+
 TEST_F(XPathParserTest, empty_predicate_is_reported_as_an_error)
 {
   tokens.add({

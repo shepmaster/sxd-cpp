@@ -273,7 +273,12 @@ parse_unary_expression(XPathTokenSource &source)
 
   if (source.next_token_is(XPathTokenType::MinusSign)) {
     consume(source, XPathTokenType::MinusSign);
+
     expr = parse_unary_expression(source);
+    if (! expr) {
+      throw RightHandSideExpressionMissingException();
+    }
+
     return make_unique<ExpressionNegation>(move(expr));
   }
 
