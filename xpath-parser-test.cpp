@@ -614,6 +614,16 @@ TEST_F(XPathParserTest, unexpected_token_is_reported_as_an_error)
   ASSERT_THROW(parser->parse(), UnexpectedTokenException);
 }
 
+TEST_F(XPathParserTest, binary_operator_without_right_hand_side_is_reported_as_an_error)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::Literal, "left"),
+      XPathToken(XPathTokenType::And)
+  });
+
+  ASSERT_THROW(parser->parse(), RightHandSideExpressionMissingException);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

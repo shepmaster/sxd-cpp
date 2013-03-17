@@ -17,6 +17,13 @@ struct UnexpectedTokenException : virtual std::runtime_error
   {};
 };
 
+struct RightHandSideExpressionMissingException : virtual std::runtime_error
+{
+ RightHandSideExpressionMissingException() :
+    std::runtime_error("The right-hand side of a binary operation is missing.")
+  {};
+};
+
 struct InvalidXPathAxisException : virtual std::runtime_error
 {
   InvalidXPathAxisException(std::string axis) :

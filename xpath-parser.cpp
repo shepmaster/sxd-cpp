@@ -300,8 +300,14 @@ public:
       for (auto rule : rules) {
         if (source.next_token_is(rule.type)) {
           consume(source, rule.type);
+
           auto right = child_parse(source);
+          if (! right) {
+            throw RightHandSideExpressionMissingException();
+          }
+
           left = rule.builder(move(left), move(right));
+
           found = true;
           break;
         }
