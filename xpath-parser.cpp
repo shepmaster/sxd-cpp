@@ -371,9 +371,8 @@ parse_or_expression(XPathTokenSource &source)
 
 std::unique_ptr<XPathExpression>
 XPathParser::parse() {
-  std::unique_ptr<XPathExpression> expr;
+  auto expr = parse_or_expression(_source);
 
-  expr = parse_or_expression(_source);
   if (_source.has_more_tokens()) {
     throw ExtraUnparsedTokensException();
   }
