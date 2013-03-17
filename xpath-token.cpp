@@ -128,6 +128,8 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "CurrentNode";
   case XPathTokenType::ParentNode:
     return strm << "ParentNode";
+  case XPathTokenType::DollarSign:
+    return strm << "DollarSign";
   case XPathTokenType::PlusSign:
     return strm << "PlusSign";
   case XPathTokenType::MinusSign:

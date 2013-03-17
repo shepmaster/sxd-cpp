@@ -172,6 +172,13 @@ TEST_F(XPathTokenizerTest, tokenizes_double_quote_literal)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::Literal, "1.23")));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_dollar_sign)
+{
+  XPathTokenizer tokenizer("$");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::DollarSign)));
+}
+
 TEST_F(XPathTokenizerTest, tokenizes_plus_sign)
 {
   XPathTokenizer tokenizer("+");

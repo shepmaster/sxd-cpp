@@ -13,6 +13,7 @@ enum class XPathTokenType {
   Number,
   CurrentNode,
   ParentNode,
+  DollarSign,
   PlusSign,
   MinusSign,
   Equal,
