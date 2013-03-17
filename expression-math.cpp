@@ -9,42 +9,37 @@ double multiply(double left, double right) { return left * right; }
 double divide(double left, double right) { return left / right; }
 
 std::unique_ptr<ExpressionMath>
-ExpressionMath::Addition(std::shared_ptr<XPathExpression> left,
-                         std::shared_ptr<XPathExpression> right)
+ExpressionMath::Addition(SubExpression left, SubExpression right)
 {
   return make_unique<ExpressionMath>(left, right, add);
 }
 
 std::unique_ptr<ExpressionMath>
-ExpressionMath::Subtraction(std::shared_ptr<XPathExpression> left,
-                            std::shared_ptr<XPathExpression> right)
+ExpressionMath::Subtraction(SubExpression left, SubExpression right)
 {
   return make_unique<ExpressionMath>(left, right, subtract);
 }
 
 std::unique_ptr<ExpressionMath>
-ExpressionMath::Multiplication(std::shared_ptr<XPathExpression> left,
-                               std::shared_ptr<XPathExpression> right)
+ExpressionMath::Multiplication(SubExpression left, SubExpression right)
 {
   return make_unique<ExpressionMath>(left, right, multiply);
 }
 
 std::unique_ptr<ExpressionMath>
-ExpressionMath::Division(std::shared_ptr<XPathExpression> left,
-                         std::shared_ptr<XPathExpression> right)
+ExpressionMath::Division(SubExpression left, SubExpression right)
 {
   return make_unique<ExpressionMath>(left, right, divide);
 }
 
 std::unique_ptr<ExpressionMath>
-ExpressionMath::Remainder(std::shared_ptr<XPathExpression> left,
-                          std::shared_ptr<XPathExpression> right)
+ExpressionMath::Remainder(SubExpression left, SubExpression right)
 {
   return make_unique<ExpressionMath>(left, right, fmod);
 }
 
-ExpressionMath::ExpressionMath(std::shared_ptr<XPathExpression> left,
-                               std::shared_ptr<XPathExpression> right,
+ExpressionMath::ExpressionMath(SubExpression left,
+                               SubExpression right,
                                BinaryMathOp operation) :
   _left(left), _right(right), _operation(operation)
 {}

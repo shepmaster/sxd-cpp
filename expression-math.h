@@ -6,36 +6,32 @@
 class ExpressionMath : public XPathExpression {
 public:
   typedef double (*BinaryMathOp)(double left, double right);
+  typedef std::shared_ptr<XPathExpression> SubExpression;
 
   static std::unique_ptr<ExpressionMath>
-  Addition(std::shared_ptr<XPathExpression> left,
-           std::shared_ptr<XPathExpression> right);
+  Addition(SubExpression left, SubExpression right);
 
   static std::unique_ptr<ExpressionMath>
-  Subtraction(std::shared_ptr<XPathExpression> left,
-              std::shared_ptr<XPathExpression> right);
+  Subtraction(SubExpression left, SubExpression right);
 
   static std::unique_ptr<ExpressionMath>
-  Multiplication(std::shared_ptr<XPathExpression> left,
-                 std::shared_ptr<XPathExpression> right);
+  Multiplication(SubExpression left, SubExpression right);
 
   static std::unique_ptr<ExpressionMath>
-  Division(std::shared_ptr<XPathExpression> left,
-           std::shared_ptr<XPathExpression> right);
+  Division(SubExpression left, SubExpression right);
 
   static std::unique_ptr<ExpressionMath>
-  Remainder(std::shared_ptr<XPathExpression> left,
-            std::shared_ptr<XPathExpression> right);
+  Remainder(SubExpression left, SubExpression right);
 
-  ExpressionMath(std::shared_ptr<XPathExpression> left,
-                 std::shared_ptr<XPathExpression> right,
+  ExpressionMath(SubExpression left,
+                 SubExpression right,
                  BinaryMathOp operation);
 
   XPathValue evaluate(const XPathEvaluationContext &context) const;
 
 private:
-  std::shared_ptr<XPathExpression> _left;
-  std::shared_ptr<XPathExpression> _right;
+  SubExpression _left;
+  SubExpression _right;
   BinaryMathOp _operation;
 };
 
