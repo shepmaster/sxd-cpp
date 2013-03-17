@@ -1,7 +1,13 @@
 #include "expression-or.h"
 
-ExpressionOr::ExpressionOr(std::shared_ptr<XPathExpression> left,
-                           std::shared_ptr<XPathExpression> right) :
+#include "make-unique.h"
+
+std::unique_ptr<ExpressionOr>
+ExpressionOr::Or(SubExpression left, SubExpression right) {
+  return make_unique<ExpressionOr>(left, right);
+}
+
+ExpressionOr::ExpressionOr(SubExpression left, SubExpression right) :
   _left(left), _right(right)
 {}
 

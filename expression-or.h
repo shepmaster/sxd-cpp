@@ -5,14 +5,18 @@
 
 class ExpressionOr : public XPathExpression {
 public:
-  ExpressionOr(std::shared_ptr<XPathExpression> left,
-               std::shared_ptr<XPathExpression> right);
+  typedef std::shared_ptr<XPathExpression> SubExpression;
+
+  static std::unique_ptr<ExpressionOr>
+  Or(SubExpression left, SubExpression right);
+
+  ExpressionOr(SubExpression left, SubExpression right);
 
   XPathValue evaluate(const XPathEvaluationContext &context) const;
 
 private:
-  std::shared_ptr<XPathExpression> _left;
-  std::shared_ptr<XPathExpression> _right;
+  SubExpression _left;
+  SubExpression _right;
 };
 
 #endif
