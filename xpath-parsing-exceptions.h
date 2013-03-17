@@ -24,6 +24,13 @@ struct RightHandSideExpressionMissingException : virtual std::runtime_error
   {};
 };
 
+struct EmptyPredicateException : virtual std::runtime_error
+{
+ EmptyPredicateException() :
+    std::runtime_error("Predicate expressions must not be empty.")
+  {};
+};
+
 struct InvalidXPathAxisException : virtual std::runtime_error
 {
   InvalidXPathAxisException(std::string axis) :

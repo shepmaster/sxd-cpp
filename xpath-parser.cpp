@@ -202,7 +202,12 @@ parse_step(XPathTokenSource &source)
   std::unique_ptr<XPathExpression> predicate;
   if (source.next_token_is(XPathTokenType::LeftBracket)) {
     consume(source, XPathTokenType::LeftBracket);
+
     predicate = parse_primary_expression(source);
+    if (! predicate) {
+      throw EmptyPredicateException();
+    }
+
     consume(source, XPathTokenType::RightBracket);
   }
 
