@@ -15,30 +15,36 @@ using testing::Ref;
 using testing::Return;
 using testing::_;
 
+#include "make-unique.h"
+
+class ExpressionTestSupport {
+public:
+  Node *node;
+  Nodeset nodes;
+  XPathFunctionLibrary functions;
+
+  XPathEvaluationContext &context() {
+    if (! _context) {
+      _context = make_unique<XPathEvaluationContext>(node, nodes, functions);
+    }
+
+    return *_context;
+  }
+
+private:
+  std::unique_ptr<XPathEvaluationContext> _context;
+};
+
 class ExpressionRelationalTest : public ::testing::Test {
 protected:
   shared_ptr<MockExpression> left  = make_shared<NiceMock<MockExpression>>();
   shared_ptr<MockExpression> right = make_shared<NiceMock<MockExpression>>();
 
-  shared_ptr<MockValueImpl> left_val = make_shared<NiceMock<MockValueImpl>>();
-  shared_ptr<MockValueImpl> right_val = make_shared<NiceMock<MockValueImpl>>();
-
-  Nodeset nodes;
-  XPathFunctionLibrary functions;
-  shared_ptr<XPathEvaluationContext> context;
+  ExpressionTestSupport expr;
+  XPathEvaluationContext context = expr.context();
 
   void SetUp() {
-    context = make_shared<XPathEvaluationContext>(nullptr, nodes, functions);
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
-
-    setup_sub_expression(left, left_val);
-    setup_sub_expression(right, right_val);
-  }
-
-  void setup_sub_expression(shared_ptr<MockExpression> &expr,
-                            shared_ptr<MockValueImpl> &value) {
-    EXPECT_CALL(*expr, evaluate(_)).WillRepeatedly(Return(XPathValue(value)));
-    EXPECT_CALL(*value, is(_)).WillRepeatedly(Return(false));
   }
 };
 
@@ -48,10 +54,10 @@ TEST_F(ExpressionRelationalTest, evaluates_both_arguments)
 {
   ExpressionRelational expression(left, right, noop);
 
-  EXPECT_CALL(*left, evaluate(Ref(*context)));
-  EXPECT_CALL(*right, evaluate(Ref(*context)));
+  EXPECT_CALL(*left, evaluate(Ref(context)));
+  EXPECT_CALL(*right, evaluate(Ref(context)));
 
-  expression.evaluate(*context);
+  expression.evaluate(context);
 }
 
 TEST_F(ExpressionRelationalTest, computes_less_than)
@@ -61,7 +67,7 @@ TEST_F(ExpressionRelationalTest, computes_less_than)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(0.1));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(1.0));
 
-  ASSERT_EQ(true, expression->evaluate(*context).boolean());
+  ASSERT_EQ(true, expression->evaluate(context).boolean());
 }
 
 TEST_F(ExpressionRelationalTest, computes_less_than_or_equal)
@@ -71,7 +77,7 @@ TEST_F(ExpressionRelationalTest, computes_less_than_or_equal)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(0.1));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(0.1));
 
-  ASSERT_EQ(true, expression->evaluate(*context).boolean());
+  ASSERT_EQ(true, expression->evaluate(context).boolean());
 }
 
 TEST_F(ExpressionRelationalTest, computes_greater_than)
@@ -81,7 +87,7 @@ TEST_F(ExpressionRelationalTest, computes_greater_than)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(0.1));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(0.1));
 
-  ASSERT_EQ(false, expression->evaluate(*context).boolean());
+  ASSERT_EQ(false, expression->evaluate(context).boolean());
 }
 
 TEST_F(ExpressionRelationalTest, computes_greater_than_or_equal)
@@ -91,7 +97,7 @@ TEST_F(ExpressionRelationalTest, computes_greater_than_or_equal)
   EXPECT_CALL(*left, evaluate(_)).WillRepeatedly(Return(1.0));
   EXPECT_CALL(*right, evaluate(_)).WillRepeatedly(Return(0.1));
 
-  ASSERT_EQ(true, expression->evaluate(*context).boolean());
+  ASSERT_EQ(true, expression->evaluate(context).boolean());
 }
 
 int
