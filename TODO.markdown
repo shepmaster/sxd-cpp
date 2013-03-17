@@ -35,8 +35,6 @@ grouping parens (resets axis order!)
 Error for bad variable
 Evaluating steps when there is no context node
 Tokenizer doesn't handle mismatched single / double quote
-Tokenizer doesn't handle ! not followed by =
-XPath with trailing :
 XPath parser should check consumed token
 Parser with unclosed lparen (and bracket, etc?)
 XPaths like @@@ will probably go crazy

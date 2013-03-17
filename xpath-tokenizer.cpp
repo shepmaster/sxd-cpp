@@ -227,7 +227,12 @@ XPathTokenizer::next_token()
     throw NoMoreTokensAvailableException();
   }
 
+  auto old_start = _start;
   auto token = raw_next_token();
+
+  if (old_start == _start) {
+    throw UnableToCreateTokenException();
+  }
 
   consume_whitespace();
 

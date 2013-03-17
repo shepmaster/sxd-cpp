@@ -38,4 +38,11 @@ struct NoMoreTokensAvailableException : virtual std::runtime_error
   {};
 };
 
+struct UnableToCreateTokenException : virtual std::runtime_error
+{
+  UnableToCreateTokenException() :
+    std::runtime_error("Unable to tokenize further")
+  {};
+};
+
 #endif

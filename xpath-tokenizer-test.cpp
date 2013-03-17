@@ -296,6 +296,13 @@ TEST_F(XPathTokenizerTest, exception_thrown_when_no_more_tokens_available)
   ASSERT_THROW(tokenizer.next_token(), NoMoreTokensAvailableException);
 }
 
+TEST_F(XPathTokenizerTest, exception_thrown_when_nothing_was_tokenized)
+{
+  XPathTokenizer tokenizer("!");
+
+  ASSERT_THROW(tokenizer.next_token(), UnableToCreateTokenException);
+}
+
 int
 main(int argc, char **argv)
 {
