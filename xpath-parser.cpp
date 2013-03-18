@@ -32,12 +32,13 @@ XPathParser::XPathParser(XPathTokenSource &source) :
 {
 }
 
-void
+XPathToken
 consume(XPathTokenSource &source, XPathTokenType type) {
   auto token = source.next_token();
   if (! token.is(type)) {
     throw UnexpectedTokenException();
   }
+  return token;
 }
 
 std::unique_ptr<XPathAxis>
@@ -107,8 +108,7 @@ parse_variable_reference(XPathTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::DollarSign)) {
     consume(source, XPathTokenType::DollarSign);
-    auto token = source.next_token();
-    // TODO: check is a string
+    auto token = consume(source, XPathTokenType::String);
 
     return make_unique<ExpressionVariable>(token.string());
   }
