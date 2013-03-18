@@ -32,8 +32,7 @@ filter expr
 grouping parens (resets axis order!)
 
 # Bugs
-Error for bad variable
-Evaluating steps when there is no context node
+Evaluating steps when there is no context node (both xpath-step && expression-path?)
 Comments are not output at all
 
 # Ideas
