@@ -186,6 +186,26 @@ parse_primary_expression(XPathTokenSource &source) {
   return parse_children_in_order(child_parses, source);
 }
 
+std::unique_ptr<XPathExpression>
+parse_predicate(XPathTokenSource &source)
+{
+  if (source.next_token_is(XPathTokenType::LeftBracket)) {
+    consume(source, XPathTokenType::LeftBracket);
+
+    // TODO: This should be the top-level expression
+    auto predicate = parse_primary_expression(source);
+    if (! predicate) {
+      throw EmptyPredicateException();
+    }
+
+    consume(source, XPathTokenType::RightBracket);
+
+    return predicate;
+  }
+
+  return nullptr;
+}
+
 std::unique_ptr<XPathStep>
 parse_step(XPathTokenSource &source)
 {
@@ -199,17 +219,7 @@ parse_step(XPathTokenSource &source)
     return nullptr;
   }
 
-  std::unique_ptr<XPathExpression> predicate;
-  if (source.next_token_is(XPathTokenType::LeftBracket)) {
-    consume(source, XPathTokenType::LeftBracket);
-
-    predicate = parse_primary_expression(source);
-    if (! predicate) {
-      throw EmptyPredicateException();
-    }
-
-    consume(source, XPathTokenType::RightBracket);
-  }
+  auto predicate = parse_predicate(source);
 
   return make_unique<XPathStep>(move(axis), move(node_test), move(predicate));
 }
