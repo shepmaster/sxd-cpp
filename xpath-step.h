@@ -13,8 +13,7 @@
 class XPathStep {
 public:
   XPathStep(std::shared_ptr<XPathAxis> axis,
-            std::shared_ptr<XPathNodeTest> node_test,
-            std::shared_ptr<XPathExpression> predicate);
+            std::shared_ptr<XPathNodeTest> node_test);
 
   void select_nodes(const XPathEvaluationContext &context,
                     Nodeset &step_result);
@@ -22,7 +21,6 @@ public:
 private:
   std::shared_ptr<XPathAxis> _axis;
   std::shared_ptr<XPathNodeTest> _node_test;
-  std::shared_ptr<XPathExpression> _predicate;
 
   friend std::ostream &operator<<(std::ostream &, const XPathStep &);
 };

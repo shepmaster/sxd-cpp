@@ -219,19 +219,20 @@ parse_step(XPathTokenSource &source)
     return nullptr;
   }
 
-  auto predicate = parse_predicate(source);
-
-  return make_unique<XPathStep>(move(axis), move(node_test), move(predicate));
+  return make_unique<XPathStep>(move(axis), move(node_test));
 }
 
 std::unique_ptr<XPathExpression>
 parse_relative_location_path(XPathTokenSource &source)
 {
   std::vector<std::unique_ptr<XPathStep>> steps;
+  std::vector<std::unique_ptr<XPathExpression>> predicates;
 
   auto step = parse_step(source);
   if (step) {
     steps.push_back(move(step));
+    predicates.push_back(parse_predicate(source));
+
     while (source.next_token_is(XPathTokenType::Slash)) {
       consume(source, XPathTokenType::Slash);
 
@@ -241,9 +242,10 @@ parse_relative_location_path(XPathTokenSource &source)
       }
 
       steps.push_back(move(next));
+      predicates.push_back(parse_predicate(source));
     }
 
-    return make_unique<ExpressionPath>(move(steps));
+    return make_unique<ExpressionPath>(move(steps), move(predicates));
   }
 
   // expr = parse_abbreviated_relative_location_path();
