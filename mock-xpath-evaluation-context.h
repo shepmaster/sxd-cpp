@@ -14,7 +14,7 @@ public:
   MOCK_CONST_METHOD1(has_variable, bool(std::string name));
   MOCK_CONST_METHOD1(variable_for_name, XPathValue(std::string name));
   MOCK_CONST_METHOD2(new_context_for,
-                       std::shared_ptr<XPathEvaluationContext>(Node *node, Nodeset nodes));
+                       std::shared_ptr<XPathEvaluationContext>(Node *node, unsigned long size));
 };
 
 #endif

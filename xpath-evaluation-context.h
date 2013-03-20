@@ -3,7 +3,6 @@
 
 class XPathFunction;
 
-#include "nodeset.h"
 #include "xpath-function-library.h"
 #include "xpath-variable-bindings.h"
 
@@ -27,7 +26,7 @@ public:
   variable_for_name(std::string name) const = 0;
 
   virtual std::shared_ptr<XPathEvaluationContext>
-  new_context_for(Node *node, Nodeset nodes) const = 0;
+  new_context_for(Node *node, unsigned long size) const = 0;
 };
 
 #endif

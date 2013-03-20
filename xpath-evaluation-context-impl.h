@@ -7,7 +7,7 @@ class XPathEvaluationContextImpl : public XPathEvaluationContext
 {
 public:
   XPathEvaluationContextImpl(Node *node,
-                             Nodeset nodes,
+                             unsigned long size,
                              const XPathFunctionLibrary &functions,
                              const XPathVariableBindings &variables);
   Node *node() const;
@@ -26,11 +26,11 @@ public:
   variable_for_name(std::string name) const;
 
   std::shared_ptr<XPathEvaluationContext>
-  new_context_for(Node *node, Nodeset nodes) const;
+  new_context_for(Node *node, unsigned long size) const;
 
 private:
   Node *_node;
-  Nodeset _nodes;
+  unsigned long _size;
   unsigned long _position;
   const XPathFunctionLibrary &_functions;
   const XPathVariableBindings &_variables;

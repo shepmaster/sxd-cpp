@@ -16,7 +16,7 @@ ExpressionPath::evaluate(const XPathEvaluationContext &context) const {
 
     for (auto i = 0; i < result.count(); i++) {
       auto *current_node = result[i];
-      auto sub_context = context.new_context_for(current_node, step_result);
+      auto sub_context = context.new_context_for(current_node, step_result.size());
       auto selected = step->evaluate(*sub_context);
       // TODO: What if it is not a nodeset?
       step_result.add_nodeset(selected.nodeset());

@@ -13,10 +13,9 @@ XPath::XPath(std::unique_ptr<XPathExpression> expression) :
 static XPathValue
 evaluate(Node *node, XPathExpression &expr, const XPathVariableBindings &variables)
 {
-  Nodeset empty_nodeset;
   XPathFunctionLibrary functions;
   XPathCoreFunctionLibrary::register_functions(functions);
-  XPathEvaluationContextImpl context(node, empty_nodeset, functions, variables);
+  XPathEvaluationContextImpl context(node, 1, functions, variables);
   return expr.evaluate(context);
 }
 

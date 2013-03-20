@@ -68,8 +68,7 @@ protected:
 
   XPathValue
   evaluate_on(const std::unique_ptr<XPathExpression> &expr, Node *node) {
-    Nodeset empty_nodeset;
-    XPathEvaluationContextImpl context(node, empty_nodeset, functions, variables);
+    XPathEvaluationContextImpl context(node, 1, functions, variables);
     return expr->evaluate(context);
   }
 };
