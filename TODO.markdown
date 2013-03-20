@@ -29,6 +29,8 @@ more functions
 
 filter expr
 
+rest of path expr
+
 grouping parens (resets axis order!)
 
 # Bugs
