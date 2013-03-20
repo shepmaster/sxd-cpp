@@ -15,7 +15,7 @@ Nodeset::add(Node *node)
 }
 
 void
-Nodeset::add_nodeset(Nodeset &to_add)
+Nodeset::add_nodeset(const Nodeset &to_add)
 {
   nodes.insert(nodes.end(), to_add.nodes.begin(), to_add.nodes.end());
 }

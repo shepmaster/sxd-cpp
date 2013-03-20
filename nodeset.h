@@ -12,7 +12,7 @@ public:
   unsigned int count() const;
 
   void add(Node *node);
-  void add_nodeset(Nodeset &to_add);
+  void add_nodeset(const Nodeset &to_add);
 
   Node *operator[](unsigned int i) const;
 
