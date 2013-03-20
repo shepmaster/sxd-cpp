@@ -300,6 +300,26 @@ TEST_F(XPathParserTest, false_function_predicate_selects_no_nodes)
   ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre());
 }
 
+TEST_F(XPathParserTest, multiple_predicates)
+{
+  tokens.add({
+      XPathToken("*"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken(2.0),
+      XPathToken(XPathTokenType::RightBracket),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken(1.0),
+      XPathToken(XPathTokenType::RightBracket)
+  });
+
+  auto expr = parser->parse();
+
+  add_child(top_node, "first");
+  auto second = add_child(top_node, "second");
+
+  ASSERT_THAT(evaluate_on(expr, top_node).nodeset(), ElementsAre(second));
+}
+
 TEST_F(XPathParserTest, functions_accept_arguments)
 {
   tokens.add({

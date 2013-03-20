@@ -189,7 +189,7 @@ parse_primary_expression(XPathTokenSource &source) {
 }
 
 std::unique_ptr<XPathExpression>
-parse_predicate(XPathTokenSource &source)
+parse_predicate_expression(XPathTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::LeftBracket)) {
     consume(source, XPathTokenType::LeftBracket);
@@ -228,8 +228,7 @@ std::unique_ptr<XPathExpression>
 parse_predicates(XPathTokenSource &source,
                  std::unique_ptr<XPathExpression> node_selecting_expr)
 {
-  auto predicate_expression = parse_predicate(source);
-  if (predicate_expression) {
+  while (auto predicate_expression = parse_predicate_expression(source)) {
     node_selecting_expr = make_unique<ExpressionPredicate>(move(node_selecting_expr),
                                                            move(predicate_expression));
   }
