@@ -50,6 +50,7 @@ set(
   expression-variable.cpp
   expression-function.cpp
   expression-step.cpp
+  expression-predicate.cpp
   expression-path.cpp
   expression-math.cpp
   expression-negation.cpp
@@ -104,6 +105,7 @@ set(test_programs
   expression-variable
   expression-function
   expression-step
+  expression-predicate
   expression-math
   expression-negation
   expression-or

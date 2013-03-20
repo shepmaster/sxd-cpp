@@ -14,6 +14,7 @@
 #include "expression-variable.h"
 #include "expression-function.h"
 #include "expression-step.h"
+#include "expression-predicate.h"
 #include "expression-path.h"
 #include "expression-math.h"
 #include "expression-negation.h"
@@ -224,15 +225,27 @@ parse_step(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
+parse_predicates(XPathTokenSource &source,
+                 std::unique_ptr<XPathExpression> node_selecting_expr)
+{
+  auto predicate_expression = parse_predicate(source);
+  if (predicate_expression) {
+    node_selecting_expr = make_unique<ExpressionPredicate>(move(node_selecting_expr),
+                                                           move(predicate_expression));
+  }
+
+  return node_selecting_expr;
+}
+
+std::unique_ptr<XPathExpression>
 parse_relative_location_path(XPathTokenSource &source)
 {
   std::vector<std::unique_ptr<XPathExpression>> steps;
-  std::vector<std::unique_ptr<XPathExpression>> predicates;
 
   auto step = parse_step(source);
   if (step) {
+    step = parse_predicates(source, move(step));
     steps.push_back(move(step));
-    predicates.push_back(parse_predicate(source));
 
     while (source.next_token_is(XPathTokenType::Slash)) {
       consume(source, XPathTokenType::Slash);
@@ -242,11 +255,11 @@ parse_relative_location_path(XPathTokenSource &source)
         throw TrailingSlashException();
       }
 
+      next = parse_predicates(source, move(next));
       steps.push_back(move(next));
-      predicates.push_back(parse_predicate(source));
     }
 
-    return make_unique<ExpressionPath>(move(steps), move(predicates));
+    return make_unique<ExpressionPath>(move(steps));
   }
 
   // expr = parse_abbreviated_relative_location_path();
