@@ -37,6 +37,14 @@ Comments are not output at all
 
 # Ideas
 
+Move consume to the stream with peek. This becomes the parser adapter stream
+
+Add a visitor to the expression hierarchy.
+- Could make the parser tests more focused
+- Assert that a specific expression is found
+- Could be used for printing the expression back to XPath
+- Could be eventually used for optimization?
+
 No need for 'has_function' - just return null?
 
 objectize the axes - have them know axis name and just do a hashtable
