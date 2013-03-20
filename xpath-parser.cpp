@@ -261,9 +261,6 @@ parse_relative_location_path(XPathTokenSource &source)
     return make_unique<ExpressionPath>(move(steps));
   }
 
-  // expr = parse_abbreviated_relative_location_path();
-  // if (expr) return expr;
-
   return nullptr;
 }
 
