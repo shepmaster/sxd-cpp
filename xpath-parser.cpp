@@ -13,6 +13,7 @@
 #include "expression-literal.h"
 #include "expression-variable.h"
 #include "expression-function.h"
+#include "expression-step.h"
 #include "expression-path.h"
 #include "expression-math.h"
 #include "expression-negation.h"
@@ -206,7 +207,7 @@ parse_predicate(XPathTokenSource &source)
   return nullptr;
 }
 
-std::unique_ptr<XPathStep>
+std::unique_ptr<XPathExpression>
 parse_step(XPathTokenSource &source)
 {
   auto axis = parse_axis(source);
@@ -219,13 +220,13 @@ parse_step(XPathTokenSource &source)
     return nullptr;
   }
 
-  return make_unique<XPathStep>(move(axis), move(node_test));
+  return make_unique<ExpressionStep>(move(axis), move(node_test));
 }
 
 std::unique_ptr<XPathExpression>
 parse_relative_location_path(XPathTokenSource &source)
 {
-  std::vector<std::unique_ptr<XPathStep>> steps;
+  std::vector<std::unique_ptr<XPathExpression>> steps;
   std::vector<std::unique_ptr<XPathExpression>> predicates;
 
   auto step = parse_step(source);

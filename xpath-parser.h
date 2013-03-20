@@ -1,10 +1,9 @@
 #ifndef XPATH_PARSER_H
 #define XPATH_PARSER_H
 
-#include "xpath-step.h"
 #include "xpath-token-source.h"
+#include "xpath-expression.h"
 
-#include <functional>
 #include <vector>
 
 class XPathParser {

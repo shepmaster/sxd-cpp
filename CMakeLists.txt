@@ -46,10 +46,10 @@ set(
   node-test-element.cpp
   node-test-attribute.cpp
   node-test-text.cpp
-  xpath-step.cpp
   expression-literal.cpp
   expression-variable.cpp
   expression-function.cpp
+  expression-step.cpp
   expression-path.cpp
   expression-math.cpp
   expression-negation.cpp
@@ -96,7 +96,6 @@ set(test_programs
   xpath-token-disambiguator
   xpath-parser
   node-test-attribute
-  xpath-step
   xpath-value
   xpath-value-boolean
   xpath-value-nodeset
@@ -104,6 +103,7 @@ set(test_programs
   xpath-value-string
   expression-variable
   expression-function
+  expression-step
   expression-math
   expression-negation
   expression-or
