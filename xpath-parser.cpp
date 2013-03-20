@@ -228,9 +228,9 @@ std::unique_ptr<XPathExpression>
 parse_predicates(XPathTokenSource &source,
                  std::unique_ptr<XPathExpression> node_selecting_expr)
 {
-  while (auto predicate_expression = parse_predicate_expression(source)) {
+  while (auto predicate_expr = parse_predicate_expression(source)) {
     node_selecting_expr = make_unique<ExpressionPredicate>(move(node_selecting_expr),
-                                                           move(predicate_expression));
+                                                           move(predicate_expr));
   }
 
   return node_selecting_expr;
@@ -280,11 +280,22 @@ parse_location_path(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
+parse_filter_expression(XPathTokenSource &source)
+{
+  auto expr = parse_primary_expression(source);
+  if (expr) {
+    return parse_predicates(source, move(expr));
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &source)
 {
   std::vector<ParseFn> child_parses = {
     parse_location_path,
-    parse_primary_expression
+    parse_filter_expression
   };
 
   return parse_children_in_order(child_parses, source);

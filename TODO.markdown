@@ -27,8 +27,6 @@ nodeset equality and relational
 
 more functions
 
-filter expr
-
 rest of path expr
 
 grouping parens (resets axis order!)

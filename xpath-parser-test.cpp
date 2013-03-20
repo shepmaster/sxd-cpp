@@ -602,6 +602,26 @@ TEST_F(XPathParserTest, variable_reference)
   ASSERT_DOUBLE_EQ(12.3, evaluate(expr).number());
 }
 
+TEST_F(XPathParserTest, filter_expression)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::DollarSign),
+      XPathToken("variable"),
+      XPathToken(XPathTokenType::LeftBracket),
+      XPathToken(0),
+      XPathToken(XPathTokenType::RightBracket),
+  });
+
+  Nodeset value;
+  value.add(add_child(top_node, "first-node"));
+  value.add(add_child(top_node, "second-node"));
+  variables.set("variable", value);
+
+  auto expr = parser->parse();
+
+  ASSERT_THAT(evaluate(expr).nodeset(), ElementsAre());
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({
