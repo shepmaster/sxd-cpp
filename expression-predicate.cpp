@@ -25,17 +25,16 @@ ExpressionPredicate::evaluate(const XPathEvaluationContext &context) const
   Nodeset nodes = value.nodeset();
   // TODO: What if not a nodeset?
 
-  // TODO: The context node should be the child we are looping on
-  auto sub_context = context.new_context_for(nullptr, nodes.size()); // nullptr is right out
+  auto sub_context = context.new_context_for(nodes.size());
 
   for (auto *current_node : nodes) {
+    sub_context->next(current_node);
+
     auto value = _predicate->evaluate(*sub_context);
 
     if (include(value, *sub_context)) {
       selected.add(current_node);
     }
-
-    sub_context->next();
   }
 
   return selected;

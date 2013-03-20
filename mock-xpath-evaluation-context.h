@@ -8,13 +8,13 @@ public:
   MOCK_CONST_METHOD0(node, Node *());
   MOCK_CONST_METHOD0(position, unsigned long());
   MOCK_CONST_METHOD0(size, unsigned long());
-  MOCK_METHOD0(next, void());
+  MOCK_METHOD1(next, void(Node *context_node));
   MOCK_CONST_METHOD1(has_function, bool(std::string name));
   MOCK_CONST_METHOD1(function_for_name, std::shared_ptr<XPathFunction>(std::string name));
   MOCK_CONST_METHOD1(has_variable, bool(std::string name));
   MOCK_CONST_METHOD1(variable_for_name, XPathValue(std::string name));
-  MOCK_CONST_METHOD2(new_context_for,
-                       std::shared_ptr<XPathEvaluationContext>(Node *node, unsigned long size));
+  MOCK_CONST_METHOD1(new_context_for,
+                       std::shared_ptr<XPathEvaluationContext>(unsigned long size));
 };
 
 #endif

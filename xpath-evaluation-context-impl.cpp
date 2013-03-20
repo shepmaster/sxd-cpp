@@ -2,13 +2,11 @@
 
 using std::make_shared;
 
-XPathEvaluationContextImpl::XPathEvaluationContextImpl(Node *node,
-                                                       unsigned long size,
+XPathEvaluationContextImpl::XPathEvaluationContextImpl(unsigned long size,
                                                        const XPathFunctionLibrary &functions,
                                                        const XPathVariableBindings &variables) :
-  _node(node),
   _size(size),
-  _position(1),
+  _position(0),
   _functions(functions),
   _variables(variables)
 {
@@ -33,8 +31,9 @@ XPathEvaluationContextImpl::size() const
 }
 
 void
-XPathEvaluationContextImpl::next()
+XPathEvaluationContextImpl::next(Node *context_node)
 {
+  _node = context_node;
   _position++;
 }
 
@@ -63,7 +62,7 @@ XPathEvaluationContextImpl::variable_for_name(std::string name) const
 }
 
 std::shared_ptr<XPathEvaluationContext>
-XPathEvaluationContextImpl::new_context_for(Node *node, unsigned long size) const
+XPathEvaluationContextImpl::new_context_for(unsigned long size) const
 {
-  return make_shared<XPathEvaluationContextImpl>(node, size, _functions, _variables);
+  return make_shared<XPathEvaluationContextImpl>(size, _functions, _variables);
 }

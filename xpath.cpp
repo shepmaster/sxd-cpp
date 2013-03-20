@@ -15,7 +15,8 @@ evaluate(Node *node, XPathExpression &expr, const XPathVariableBindings &variabl
 {
   XPathFunctionLibrary functions;
   XPathCoreFunctionLibrary::register_functions(functions);
-  XPathEvaluationContextImpl context(node, 1, functions, variables);
+  XPathEvaluationContextImpl context(1, functions, variables);
+  context.next(node);
   return expr.evaluate(context);
 }
 

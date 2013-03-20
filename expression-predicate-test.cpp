@@ -31,7 +31,7 @@ protected:
     make_shared<NiceMock<MockEvaluationContext>>();
 
   void SetUp() {
-    EXPECT_CALL(context, new_context_for(_, _)).WillRepeatedly(Return(sub_context));
+    EXPECT_CALL(context, new_context_for(_)).WillRepeatedly(Return(sub_context));
 
     DefaultValue<XPathValue>::Set(XPathValue(0.0));
   }
