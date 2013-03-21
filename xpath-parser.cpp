@@ -15,6 +15,7 @@
 #include "expression-function.h"
 #include "expression-step.h"
 #include "expression-predicate.h"
+#include "expression-root-node.h"
 #include "expression-path.h"
 #include "expression-math.h"
 #include "expression-negation.h"
@@ -325,8 +326,13 @@ parse_location_path(XPathTokenSource &source)
   auto expr = parse_relative_location_path(source);
   if (expr) return expr;
 
-  // expr = parse_absolute_location_path(source);
-  // if (expr) return expr;
+  if (source.next_token_is(XPathTokenType::Slash)) {
+    consume(source, XPathTokenType::Slash);
+
+    expr = parse_relative_location_path(source);
+    // TODO: Handle case where there is no relative path
+    return make_unique<ExpressionRootNode>(move(expr));
+  }
 
   return nullptr;
 }

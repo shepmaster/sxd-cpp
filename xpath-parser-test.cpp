@@ -42,6 +42,7 @@ protected:
   void SetUp() {
     XPathCoreFunctionLibrary::register_functions(functions);
     top_node = doc.new_element("top-node");
+    doc.root()->append_child(top_node);
     parser = make_unique<XPathParser>(tokens);
   }
 
@@ -645,6 +646,21 @@ TEST_F(XPathParserTest, union_expression)
   auto expr = parser->parse();
 
   ASSERT_THAT(evaluate(expr).nodeset(), ElementsAre(node1, node2));
+}
+
+TEST_F(XPathParserTest, absolute_path_expression)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::Slash),
+      XPathToken("*"),
+  });
+
+  auto node1 = add_child(top_node, "first-node");
+  auto node2 = add_child(node1, "second-node");
+
+  auto expr = parser->parse();
+
+  ASSERT_THAT(evaluate_on(expr, node2).nodeset(), ElementsAre(top_node));
 }
 
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
