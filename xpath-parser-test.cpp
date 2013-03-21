@@ -652,6 +652,20 @@ TEST_F(XPathParserTest, absolute_path_expression)
 {
   tokens.add({
       XPathToken(XPathTokenType::Slash),
+  });
+
+  auto node1 = add_child(top_node, "first-node");
+  auto node2 = add_child(node1, "second-node");
+
+  auto expr = parser->parse();
+
+  ASSERT_THAT(evaluate_on(expr, node2).nodeset(), ElementsAre(doc.root()));
+}
+
+TEST_F(XPathParserTest, absolute_path_with_child_expression)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::Slash),
       XPathToken("*"),
   });
 

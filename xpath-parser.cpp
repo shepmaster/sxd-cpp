@@ -330,7 +330,6 @@ parse_location_path(XPathTokenSource &source)
     consume(source, XPathTokenType::Slash);
 
     expr = parse_relative_location_path(source);
-    // TODO: Handle case where there is no relative path
     return make_unique<ExpressionRootNode>(move(expr));
   }
 
