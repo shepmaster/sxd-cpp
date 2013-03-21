@@ -54,6 +54,7 @@ set(
   expression-path.cpp
   expression-math.cpp
   expression-negation.cpp
+  expression-union.cpp
   expression-or.cpp
   expression-and.cpp
   expression-equal.cpp
@@ -108,6 +109,7 @@ set(test_programs
   expression-predicate
   expression-math
   expression-negation
+  expression-union
   expression-or
   expression-and
   expression-equal

@@ -622,6 +622,31 @@ TEST_F(XPathParserTest, filter_expression)
   ASSERT_THAT(evaluate(expr).nodeset(), ElementsAre());
 }
 
+TEST_F(XPathParserTest, union_expression)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::DollarSign),
+      XPathToken("variable1"),
+      XPathToken(XPathTokenType::Pipe),
+      XPathToken(XPathTokenType::DollarSign),
+      XPathToken("variable2"),
+  });
+
+  Nodeset value1;
+  auto node1 = add_child(top_node, "first-node");
+  value1.add(node1);
+  variables.set("variable1", value1);
+
+  Nodeset value2;
+  auto node2 = add_child(top_node, "second-node");
+  value2.add(node2);
+  variables.set("variable2", value2);
+
+  auto expr = parser->parse();
+
+  ASSERT_THAT(evaluate(expr).nodeset(), ElementsAre(node1, node2));
+}
+
 TEST_F(XPathParserTest, unknown_axis_is_reported_as_an_error)
 {
   tokens.add({

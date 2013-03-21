@@ -27,7 +27,11 @@ nodeset equality and relational
 
 more functions
 
-rest of path expr
+nodeset should perform set, union (and ordering?)
+
+abs path
+
+path expr (filter + relative path)
 
 grouping parens (resets axis order!)
 

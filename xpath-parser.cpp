@@ -18,6 +18,7 @@
 #include "expression-path.h"
 #include "expression-math.h"
 #include "expression-negation.h"
+#include "expression-union.h"
 #include "expression-or.h"
 #include "expression-and.h"
 #include "expression-equal.h"
@@ -353,9 +354,20 @@ parse_path_expression(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
+parse_union_expression(XPathTokenSource &source)
+{
+  std::vector<BinaryRule<ExpressionUnion>> rules = {
+    { XPathTokenType::Pipe, ExpressionUnion::Union }
+  };
+
+  LeftAssociativeBinaryParser<ExpressionUnion> parser(parse_path_expression, rules);
+  return parser.parse(source);
+}
+
+std::unique_ptr<XPathExpression>
 parse_unary_expression(XPathTokenSource &source)
 {
-  auto expr = parse_path_expression(source);
+  auto expr = parse_union_expression(source);
   if (expr) return expr;
 
   if (source.next_token_is(XPathTokenType::MinusSign)) {
