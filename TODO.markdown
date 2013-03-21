@@ -52,6 +52,9 @@ Add a visitor to the expression hierarchy.
 - Could be used for printing the expression back to XPath
 - Could be eventually used for optimization?
 
+Generate random valid expression trees for performance testing?
+- Somehow need to leverage the structure in the parser...
+
 No need for 'has_function' - just return null?
 
 objectize the axes - have them know axis name and just do a hashtable
