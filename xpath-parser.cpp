@@ -27,11 +27,76 @@
 
 using std::move;
 
-using ParseFn = std::unique_ptr<XPathExpression>(*)(XPathTokenSource &source);
-
 XPathParser::XPathParser(XPathTokenSource &source) :
   _source(source)
 {
+}
+
+using ParseFn = std::unique_ptr<XPathExpression>(*)(XPathTokenSource &source);
+
+using SubExpression = std::shared_ptr<XPathExpression>;
+
+template<class T>
+using BinaryExpressionBuilder =
+  std::unique_ptr<T>(*)(SubExpression left, SubExpression right);
+
+template<class T>
+struct BinaryRule {
+  XPathTokenType type;
+  BinaryExpressionBuilder<T> builder;
+};
+
+template<class T>
+class LeftAssociativeBinaryParser {
+public:
+  LeftAssociativeBinaryParser(ParseFn child, std::vector<BinaryRule<T>> rules) :
+    child_parse(child), rules(rules)
+  {}
+
+  std::unique_ptr<XPathExpression>
+  parse(XPathTokenSource &source) {
+    auto left = child_parse(source);
+    if (! left) return nullptr;
+
+    while (source.has_more_tokens()) {
+      bool found = false;
+
+      for (auto rule : rules) {
+        if (source.next_token_is(rule.type)) {
+          consume(source, rule.type);
+
+          auto right = child_parse(source);
+          if (! right) {
+            throw RightHandSideExpressionMissingException();
+          }
+
+          left = rule.builder(move(left), move(right));
+
+          found = true;
+          break;
+        }
+      }
+
+      if (! found) break;
+    }
+
+    return left;
+  }
+
+private:
+  ParseFn child_parse;
+  std::vector<BinaryRule<T>> rules;
+};
+
+std::unique_ptr<XPathExpression>
+parse_children_in_order(std::vector<ParseFn> child_parses, XPathTokenSource &source)
+{
+  for (auto child_parse : child_parses) {
+    auto expr = child_parse(source);
+    if (expr) return expr;
+  }
+
+  return nullptr;
 }
 
 XPathToken
@@ -160,17 +225,6 @@ parse_function_call(XPathTokenSource &source)
     consume(source, XPathTokenType::RightParen);
 
     return make_unique<ExpressionFunction>(token.string(), std::move(arguments));
-  }
-
-  return nullptr;
-}
-
-std::unique_ptr<XPathExpression>
-parse_children_in_order(std::vector<ParseFn> child_parses, XPathTokenSource &source)
-{
-  for (auto child_parse : child_parses) {
-    auto expr = child_parse(source);
-    if (expr) return expr;
   }
 
   return nullptr;
@@ -317,60 +371,6 @@ parse_unary_expression(XPathTokenSource &source)
 
   return nullptr;
 }
-
-using SubExpression = std::shared_ptr<XPathExpression>;
-
-template<class T>
-using BinaryExpressionBuilder =
-  std::unique_ptr<T>(*)(SubExpression left, SubExpression right);
-
-template<class T>
-struct BinaryRule {
-  XPathTokenType type;
-  BinaryExpressionBuilder<T> builder;
-};
-
-template<class T>
-class LeftAssociativeBinaryParser {
-public:
-  LeftAssociativeBinaryParser(ParseFn child, std::vector<BinaryRule<T>> rules) :
-    child_parse(child), rules(rules)
-  {}
-
-  std::unique_ptr<XPathExpression>
-  parse(XPathTokenSource &source) {
-    auto left = child_parse(source);
-    if (! left) return nullptr;
-
-    while (source.has_more_tokens()) {
-      bool found = false;
-
-      for (auto rule : rules) {
-        if (source.next_token_is(rule.type)) {
-          consume(source, rule.type);
-
-          auto right = child_parse(source);
-          if (! right) {
-            throw RightHandSideExpressionMissingException();
-          }
-
-          left = rule.builder(move(left), move(right));
-
-          found = true;
-          break;
-        }
-      }
-
-      if (! found) break;
-    }
-
-    return left;
-  }
-
-private:
-  ParseFn child_parse;
-  std::vector<BinaryRule<T>> rules;
-};
 
 std::unique_ptr<XPathExpression>
 parse_multiplicative_expression(XPathTokenSource &source)
