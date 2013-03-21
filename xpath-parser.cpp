@@ -321,19 +321,27 @@ parse_relative_location_path(XPathTokenSource &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_location_path(XPathTokenSource &source)
+parse_absolute_location_path(XPathTokenSource &source)
 {
-  auto expr = parse_relative_location_path(source);
-  if (expr) return expr;
-
   if (source.next_token_is(XPathTokenType::Slash)) {
     consume(source, XPathTokenType::Slash);
 
-    expr = parse_relative_location_path(source);
+    auto expr = parse_relative_location_path(source);
     return make_unique<ExpressionRootNode>(move(expr));
   }
 
   return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_location_path(XPathTokenSource &source)
+{
+  std::vector<ParseFn> child_parses = {
+    parse_relative_location_path,
+    parse_absolute_location_path
+  };
+
+  return parse_children_in_order(child_parses, source);
 }
 
 std::unique_ptr<XPathExpression>
