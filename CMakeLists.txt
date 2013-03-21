@@ -24,6 +24,7 @@ set(
   nmtoken.cpp
   node.cpp
   text-node.cpp
+  root-node.cpp
   nodeset.cpp
   tokenizer.cpp
   comment.cpp

@@ -6,9 +6,11 @@
 
 #include <string.h>
 
-Document::Document() :
-  root_(nullptr)
+Document::Document()
 {
+  auto saved_element = make_unique<RootNode>(this);
+  root_ = saved_element.get();
+  _nodes.insert(std::move(saved_element));
 }
 
 Element *
@@ -572,7 +574,7 @@ Document::parse(const char *input, GError **error)
   if (! expect_token(LT, tokenizer, error)) goto error;
   element = parse_element(doc, tokenizer, error);
   if (*error) goto error;
-  doc->root_ = element;
+  doc->root_->append_child(element);
 
   token = tokenizer_next(tokenizer);
   if (! expect_token(END, tokenizer, error)) goto error;
@@ -587,7 +589,7 @@ Document::parse(const char *input, GError **error)
   goto cleanup;
 }
 
-Element *
+RootNode *
 Document::root()
 {
   return root_;

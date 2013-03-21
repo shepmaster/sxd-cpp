@@ -6,6 +6,7 @@
 #include "node.h"
 #include "element.h"
 #include "text-node.h"
+#include "root-node.h"
 #include "comment.h"
 
 #include <set>
@@ -20,10 +21,10 @@ public:
   TextNode *new_text_node(const std::string text);
   Comment *new_comment(const std::string text);
 
-  Element *root();
+  RootNode *root();
 
 private:
-  Element *root_;
+  RootNode *root_;
   std::set<std::unique_ptr<Node>> _nodes;
 };
 

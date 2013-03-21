@@ -4,6 +4,9 @@
 
 ## QNames
 
+## Root node
+Barely exists!
+
 ## Namespaces
 
 ## XPath

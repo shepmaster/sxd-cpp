@@ -63,7 +63,7 @@ protected:
   }
 
   Element *get_top_element() {
-    return doc->root();
+    return dynamic_cast<Element *>(doc->root()->first_child());
   }
 };
 

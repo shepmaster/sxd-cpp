@@ -50,7 +50,7 @@ main(int argc, char *argv[])
 
   {
     FileOutput stdout_output(stdout);
-    Element *root = doc->root();
+    auto root = doc->root();
     root->output(stdout_output);
   }
 
@@ -58,4 +58,3 @@ main(int argc, char *argv[])
 
   return EXIT_SUCCESS;
 }
-

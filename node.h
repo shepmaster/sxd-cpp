@@ -15,7 +15,8 @@ typedef enum {
   NODE_TYPE_ELEMENT,
   NODE_TYPE_ATTRIBUTE,
   NODE_TYPE_TEXT_NODE,
-  NODE_TYPE_COMMENT
+  NODE_TYPE_COMMENT,
+  NODE_TYPE_ROOT_NODE
 } node_type_t;
 
 class NodeSelector {
