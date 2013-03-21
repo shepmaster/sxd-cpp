@@ -34,7 +34,8 @@ size_t while_valid_string(std::string xpath, size_t offset)
         '"' == c || '+' == c ||
         '-' == c || '=' == c ||
         '!' == c || '<' == c ||
-        '>' == c || '$' == c)
+        '>' == c || '$' == c ||
+        '|' == c)
     {
       break;
     }
@@ -96,6 +97,7 @@ static std::map<char, XPathTokenType> single_char_tokens = {
   {'$',  XPathTokenType::DollarSign},
   {'+',  XPathTokenType::PlusSign},
   {'-',  XPathTokenType::MinusSign},
+  {'|',  XPathTokenType::Pipe},
   {'=',  XPathTokenType::Equal},
   {'<',  XPathTokenType::LessThan},
   {'>',  XPathTokenType::GreaterThan},

@@ -202,6 +202,13 @@ TEST_F(XPathTokenizerTest, tokenizes_minus_sign)
   ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::MinusSign)));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_pipe)
+{
+  XPathTokenizer tokenizer("|");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(XPathTokenType::Pipe)));
+}
+
 TEST_F(XPathTokenizerTest, tokenizes_equal_sign)
 {
   XPathTokenizer tokenizer("=");

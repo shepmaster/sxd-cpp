@@ -64,12 +64,12 @@ XPathToken::precedes_expression() const
 bool
 XPathToken::is_operator() const
 {
-  // To add: Pipe
   switch (_type) {
   case XPathTokenType::Slash:
   case XPathTokenType::DoubleSlash:
   case XPathTokenType::PlusSign:
   case XPathTokenType::MinusSign:
+  case XPathTokenType::Pipe:
   case XPathTokenType::Equal:
   case XPathTokenType::NotEqual:
   case XPathTokenType::LessThan:
@@ -134,6 +134,8 @@ operator<<(std::ostream &strm, const XPathTokenType &a)
     return strm << "PlusSign";
   case XPathTokenType::MinusSign:
     return strm << "MinusSign";
+  case XPathTokenType::Pipe:
+    return strm << "Pipe";
   case XPathTokenType::Equal:
     return strm << "Equal";
   case XPathTokenType::NotEqual:
