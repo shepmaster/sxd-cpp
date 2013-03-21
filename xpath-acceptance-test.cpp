@@ -150,6 +150,34 @@ TEST_F(XPathAcceptanceTest, two_double_dots_selects_grandparent)
   ASSERT_THAT(selected_nodes, ElementsAre(one));
 }
 
+TEST_F(XPathAcceptanceTest, absolute_path_returns_to_the_root)
+{
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
+  Element *three = add_child(two, "three");
+
+  doc.root()->append_child(one);
+
+  XPath xpath = compile("/*");
+  Nodeset selected_nodes = three->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(one));
+}
+
+TEST_F(XPathAcceptanceTest, absolute_double_slash_starts_from_the_root)
+{
+  Element *one = doc.new_element("one");
+  Element *two = add_child(one, "two");
+  Element *three = add_child(two, "three");
+
+  doc.root()->append_child(one);
+
+  XPath xpath = compile("//*");
+  Nodeset selected_nodes = three->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(one, two, three));
+}
+
 TEST_F(XPathAcceptanceTest, selector_with_same_name_as_an_axis_selects_element)
 {
   Element *one = doc.new_element("one");
