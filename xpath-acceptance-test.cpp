@@ -276,6 +276,18 @@ TEST_F(XPathAcceptanceTest, unary_negation)
   ASSERT_DOUBLE_EQ(4.0, xpath.number());
 }
 
+TEST_F(XPathAcceptanceTest, union_of_selections)
+{
+  Element *parent = doc.new_element("parent");
+  Element *first = add_child(parent, "first");
+  Element *second = add_child(parent, "second");
+
+  XPath xpath = compile("first|second");
+  Nodeset selected_nodes = parent->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre(first, second));
+}
+
 TEST_F(XPathAcceptanceTest, boolean_logic)
 {
   XPath xpath = compile("true() and false()");

@@ -35,6 +35,8 @@ path expr (filter + relative path)
 
 grouping parens (resets axis order!)
 
+tokenizer should not include space as part of a string/qname
+
 # Bugs
 Evaluating steps when there is no context node (both xpath-step && expression-path?)
 Comments are not output at all
