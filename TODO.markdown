@@ -32,8 +32,6 @@ more functions
 
 nodeset should perform set, union (and ordering?)
 
-path expr (filter + relative path)
-
 grouping parens (resets axis order!)
 
 tokenizer should not include space as part of a string/qname

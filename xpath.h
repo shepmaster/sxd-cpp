@@ -17,6 +17,7 @@ public:
 
   double number() const;
   bool boolean() const;
+  Nodeset nodeset() const;
 
 private:
   std::unique_ptr<XPathExpression> _expression;

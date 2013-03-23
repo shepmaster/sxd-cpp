@@ -316,6 +316,20 @@ TEST_F(XPathAcceptanceTest, union_of_selections)
   ASSERT_THAT(selected_nodes, ElementsAre(first, second));
 }
 
+TEST_F(XPathAcceptanceTest, location_paths_apply_to_variables)
+{
+  Element *parent = doc.new_element("parent");
+  Element *child = add_child(parent, "child");
+
+  XPath xpath = compile("$variable/child");
+
+  Nodeset variable_value;
+  variable_value.add(parent);
+  xpath.bind_variable("variable", variable_value);
+
+  ASSERT_THAT(xpath.nodeset(), ElementsAre(child));
+}
+
 TEST_F(XPathAcceptanceTest, boolean_logic)
 {
   XPath xpath = compile("true() and false()");

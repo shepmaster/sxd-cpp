@@ -43,3 +43,9 @@ XPath::boolean() const
 {
   return evaluate(nullptr, *_expression, *_variables).boolean();
 }
+
+Nodeset
+XPath::nodeset() const
+{
+  return evaluate(nullptr, *_expression, *_variables).nodeset();
+}
