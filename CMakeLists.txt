@@ -71,6 +71,7 @@ set(
   xpath-function-library.cpp
   xpath-variable-bindings-hash.cpp
   function-last.cpp
+  function-position.cpp
   function-not.cpp
   function-true.cpp
   function-false.cpp
@@ -120,6 +121,7 @@ set(test_programs
   xpath-evaluation-context-impl
   xpath-function-library
   function-last
+  function-position
   function-not
   xpath-core-function-library
 )

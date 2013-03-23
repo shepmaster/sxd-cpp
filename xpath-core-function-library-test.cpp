@@ -23,6 +23,7 @@ TEST_P(XPathCoreFunctionLibraryTest, function_exists)
 
 std::string functions[] = {
   "last",
+  "position",
   "not",
   "true",
   "false",
