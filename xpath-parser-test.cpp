@@ -623,6 +623,27 @@ TEST_F(XPathParserTest, filter_expression)
   ASSERT_THAT(evaluate(expr).nodeset(), ElementsAre());
 }
 
+TEST_F(XPathParserTest, filter_expression_and_relative_path)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::DollarSign),
+      XPathToken("variable"),
+      XPathToken(XPathTokenType::Slash),
+      XPathToken("child"),
+  });
+
+  auto parent = add_child(top_node, "parent");
+  auto child = add_child(parent, "child");
+
+  Nodeset variable_value;
+  variable_value.add(parent);
+  variables.set("variable", variable_value);
+
+  auto expr = parser->parse();
+
+  ASSERT_THAT(evaluate(expr).nodeset(), ElementsAre(child));
+}
+
 TEST_F(XPathParserTest, union_expression)
 {
   tokens.add({
@@ -739,10 +760,21 @@ TEST_F(XPathParserTest, empty_predicate_is_reported_as_an_error)
   ASSERT_THROW(parser->parse(), EmptyPredicateException);
 }
 
-TEST_F(XPathParserTest, trailing_slash_is_reported_as_an_error)
+TEST_F(XPathParserTest, relative_path_with_trailing_slash_is_reported_as_an_error)
 {
   tokens.add({
       XPathToken("*"),
+      XPathToken(XPathTokenType::Slash),
+  });
+
+  ASSERT_THROW(parser->parse(), TrailingSlashException);
+}
+
+TEST_F(XPathParserTest, filter_expression_with_trailing_slash_is_reported_as_an_error)
+{
+  tokens.add({
+      XPathToken(XPathTokenType::DollarSign),
+      XPathToken("variable"),
       XPathToken(XPathTokenType::Slash),
   });
 

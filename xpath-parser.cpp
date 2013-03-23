@@ -370,12 +370,26 @@ parse_filter_expression(XPathTokenSource &source)
 std::unique_ptr<XPathExpression>
 parse_path_expression(XPathTokenSource &source)
 {
-  std::vector<ParseFn> child_parses = {
-    parse_location_path,
-    parse_filter_expression
-  };
+  auto expr = parse_location_path(source);
+  if (expr) return expr;
 
-  return parse_children_in_order(child_parses, source);
+  auto filter = parse_filter_expression(source);
+  if (filter) {
+    if (source.next_token_is(XPathTokenType::Slash)) {
+      consume(source, XPathTokenType::Slash);
+
+      filter = parse_relative_location_path_raw(source, move(filter));
+      if (! filter) {
+        throw TrailingSlashException();
+      }
+
+      return filter;
+    }
+
+    return filter;
+  }
+
+  return nullptr;
 }
 
 std::unique_ptr<XPathExpression>
