@@ -3,7 +3,11 @@
 #include "gmock/gmock.h"
 #include <iostream>
 
-class XPathCoreFunctionLibraryTest : public ::testing::Test {
+using testing::ValuesIn;
+
+class XPathCoreFunctionLibraryTest : public ::testing::Test,
+                                     public ::testing::WithParamInterface<std::string>
+{
 protected:
   XPathFunctionLibrary library;
 
@@ -12,25 +16,21 @@ protected:
   }
 };
 
-TEST_F(XPathCoreFunctionLibraryTest, last)
+TEST_P(XPathCoreFunctionLibraryTest, function_exists)
 {
-  ASSERT_TRUE(library.has_function("last"));
+  ASSERT_TRUE(library.has_function(GetParam()));
 }
 
-TEST_F(XPathCoreFunctionLibraryTest, not)
-{
-  ASSERT_TRUE(library.has_function("not"));
-}
+std::string functions[] = {
+  "last",
+  "not",
+  "true",
+  "false",
+};
 
-TEST_F(XPathCoreFunctionLibraryTest, true)
-{
-  ASSERT_TRUE(library.has_function("true"));
-}
-
-TEST_F(XPathCoreFunctionLibraryTest, false)
-{
-  ASSERT_TRUE(library.has_function("false"));
-}
+INSTANTIATE_TEST_CASE_P(FunctionExists,
+                        XPathCoreFunctionLibraryTest,
+                        ValuesIn(functions));
 
 int
 main(int argc, char **argv) {
