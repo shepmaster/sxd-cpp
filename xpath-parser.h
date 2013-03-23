@@ -3,7 +3,7 @@
 
 #include "xpath-token-source.h"
 #include "xpath-expression.h"
-#include "xpath-tokenizer-buffer.h"
+#include "xpath-parser-token-source.h"
 
 #include <vector>
 
@@ -13,7 +13,7 @@ public:
   std::unique_ptr<XPathExpression> parse();
 
 private:
-  XPathTokenizerBuffer _source;
+  XPathParserTokenSource _source;
 };
 
 #endif

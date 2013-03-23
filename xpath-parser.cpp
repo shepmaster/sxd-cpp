@@ -31,11 +31,11 @@
 using std::move;
 
 XPathParser::XPathParser(XPathTokenSource &source) :
-  _source(XPathTokenizerBuffer(source))
+  _source(XPathParserTokenSource(source))
 {
 }
 
-using ParseFn = std::unique_ptr<XPathExpression>(*)(XPathTokenizerBuffer &source);
+using ParseFn = std::unique_ptr<XPathExpression>(*)(XPathParserTokenSource &source);
 
 using SubExpression = std::shared_ptr<XPathExpression>;
 
@@ -57,7 +57,7 @@ public:
   {}
 
   std::unique_ptr<XPathExpression>
-  parse(XPathTokenizerBuffer &source) {
+  parse(XPathParserTokenSource &source) {
     auto left = child_parse(source);
     if (! left) return nullptr;
 
@@ -92,7 +92,7 @@ private:
 };
 
 std::unique_ptr<XPathExpression>
-parse_children_in_order(std::vector<ParseFn> child_parses, XPathTokenizerBuffer &source)
+parse_children_in_order(std::vector<ParseFn> child_parses, XPathParserTokenSource &source)
 {
   for (auto child_parse : child_parses) {
     auto expr = child_parse(source);
@@ -103,7 +103,7 @@ parse_children_in_order(std::vector<ParseFn> child_parses, XPathTokenizerBuffer 
 }
 
 std::unique_ptr<XPathAxis>
-parse_axis(XPathTokenizerBuffer &source) {
+parse_axis(XPathParserTokenSource &source) {
   if (source.next_token_is(XPathTokenType::Axis)) {
     auto token = source.next_token();
     auto name = token.string();
@@ -128,7 +128,7 @@ parse_axis(XPathTokenizerBuffer &source) {
 }
 
 std::unique_ptr<XPathNodeTest>
-parse_node_test(XPathTokenizerBuffer &source) {
+parse_node_test(XPathParserTokenSource &source) {
   if (source.next_token_is(XPathTokenType::NodeTest)) {
     auto token = source.next_token();
     auto name = token.string();
@@ -149,7 +149,7 @@ parse_node_test(XPathTokenizerBuffer &source) {
 }
 
 std::unique_ptr<XPathNodeTest>
-default_node_test(XPathTokenizerBuffer &source, std::unique_ptr<XPathAxis> &axis) {
+default_node_test(XPathParserTokenSource &source, std::unique_ptr<XPathAxis> &axis) {
   if (source.next_token_is(XPathTokenType::String)) {
     auto token = source.next_token();
 
@@ -165,7 +165,7 @@ default_node_test(XPathTokenizerBuffer &source, std::unique_ptr<XPathAxis> &axis
 }
 
 std::unique_ptr<XPathExpression>
-parse_variable_reference(XPathTokenizerBuffer &source)
+parse_variable_reference(XPathParserTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::DollarSign)) {
     source.consume(XPathTokenType::DollarSign);
@@ -178,7 +178,7 @@ parse_variable_reference(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_string_literal(XPathTokenizerBuffer &source) {
+parse_string_literal(XPathParserTokenSource &source) {
   if (source.next_token_is(XPathTokenType::Literal)) {
     auto token = source.next_token();
     return make_unique<ExpressionLiteral>(token.string());
@@ -188,7 +188,7 @@ parse_string_literal(XPathTokenizerBuffer &source) {
 }
 
 std::unique_ptr<XPathExpression>
-parse_numeric_literal(XPathTokenizerBuffer &source)
+parse_numeric_literal(XPathParserTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::Number)) {
     auto token = source.next_token();
@@ -199,10 +199,10 @@ parse_numeric_literal(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_primary_expression(XPathTokenizerBuffer &source);
+parse_primary_expression(XPathParserTokenSource &source);
 
 std::unique_ptr<XPathExpression>
-parse_function_call(XPathTokenizerBuffer &source)
+parse_function_call(XPathParserTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::Function)) {
     auto token = source.next_token();
@@ -225,7 +225,7 @@ parse_function_call(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_primary_expression(XPathTokenizerBuffer &source) {
+parse_primary_expression(XPathParserTokenSource &source) {
   std::vector<ParseFn> child_parses = {
     parse_variable_reference,
     parse_string_literal,
@@ -237,7 +237,7 @@ parse_primary_expression(XPathTokenizerBuffer &source) {
 }
 
 std::unique_ptr<XPathExpression>
-parse_predicate_expression(XPathTokenizerBuffer &source)
+parse_predicate_expression(XPathParserTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::LeftBracket)) {
     source.consume(XPathTokenType::LeftBracket);
@@ -257,7 +257,7 @@ parse_predicate_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_step(XPathTokenizerBuffer &source)
+parse_step(XPathParserTokenSource &source)
 {
   auto axis = parse_axis(source);
 
@@ -273,7 +273,7 @@ parse_step(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_predicates(XPathTokenizerBuffer &source,
+parse_predicates(XPathParserTokenSource &source,
                  std::unique_ptr<XPathExpression> node_selecting_expr)
 {
   while (auto predicate_expr = parse_predicate_expression(source)) {
@@ -285,7 +285,7 @@ parse_predicates(XPathTokenizerBuffer &source,
 }
 
 std::unique_ptr<XPathExpression>
-parse_relative_location_path_raw(XPathTokenizerBuffer &source,
+parse_relative_location_path_raw(XPathParserTokenSource &source,
                                  std::unique_ptr<XPathExpression> start_point)
 {
   std::vector<std::unique_ptr<XPathExpression>> steps;
@@ -314,14 +314,14 @@ parse_relative_location_path_raw(XPathTokenizerBuffer &source,
 }
 
 std::unique_ptr<XPathExpression>
-parse_relative_location_path(XPathTokenizerBuffer &source)
+parse_relative_location_path(XPathParserTokenSource &source)
 {
   auto start_point = make_unique<ExpressionContextNode>();
   return parse_relative_location_path_raw(source, move(start_point));
 }
 
 std::unique_ptr<XPathExpression>
-parse_absolute_location_path(XPathTokenizerBuffer &source)
+parse_absolute_location_path(XPathParserTokenSource &source)
 {
   if (source.next_token_is(XPathTokenType::Slash)) {
     source.consume(XPathTokenType::Slash);
@@ -337,7 +337,7 @@ parse_absolute_location_path(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_location_path(XPathTokenizerBuffer &source)
+parse_location_path(XPathParserTokenSource &source)
 {
   std::vector<ParseFn> child_parses = {
     parse_relative_location_path,
@@ -348,7 +348,7 @@ parse_location_path(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_filter_expression(XPathTokenizerBuffer &source)
+parse_filter_expression(XPathParserTokenSource &source)
 {
   auto expr = parse_primary_expression(source);
   if (expr) {
@@ -359,7 +359,7 @@ parse_filter_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_path_expression(XPathTokenizerBuffer &source)
+parse_path_expression(XPathParserTokenSource &source)
 {
   auto expr = parse_location_path(source);
   if (expr) return expr;
@@ -384,7 +384,7 @@ parse_path_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_union_expression(XPathTokenizerBuffer &source)
+parse_union_expression(XPathParserTokenSource &source)
 {
   std::vector<BinaryRule<ExpressionUnion>> rules = {
     { XPathTokenType::Pipe, ExpressionUnion::Union }
@@ -395,7 +395,7 @@ parse_union_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_unary_expression(XPathTokenizerBuffer &source)
+parse_unary_expression(XPathParserTokenSource &source)
 {
   auto expr = parse_union_expression(source);
   if (expr) return expr;
@@ -415,7 +415,7 @@ parse_unary_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_multiplicative_expression(XPathTokenizerBuffer &source)
+parse_multiplicative_expression(XPathParserTokenSource &source)
 {
   std::vector<BinaryRule<ExpressionMath>> rules = {
     { XPathTokenType::Multiply,  ExpressionMath::Multiplication },
@@ -428,7 +428,7 @@ parse_multiplicative_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_additive_expression(XPathTokenizerBuffer &source)
+parse_additive_expression(XPathParserTokenSource &source)
 {
   std::vector<BinaryRule<ExpressionMath>> rules = {
     { XPathTokenType::PlusSign,  ExpressionMath::Addition },
@@ -440,7 +440,7 @@ parse_additive_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_relational_expression(XPathTokenizerBuffer &source)
+parse_relational_expression(XPathParserTokenSource &source)
 {
   std::vector<BinaryRule<ExpressionRelational>> rules = {
     { XPathTokenType::LessThan,           ExpressionRelational::LessThan },
@@ -454,7 +454,7 @@ parse_relational_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_equality_expression(XPathTokenizerBuffer &source)
+parse_equality_expression(XPathParserTokenSource &source)
 {
   std::vector<BinaryRule<ExpressionEqual>> rules = {
     { XPathTokenType::Equal,    ExpressionEqual::Equal },
@@ -466,7 +466,7 @@ parse_equality_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_and_expression(XPathTokenizerBuffer &source)
+parse_and_expression(XPathParserTokenSource &source)
 {
   std::vector<BinaryRule<ExpressionAnd>> rules = {
     { XPathTokenType::And, ExpressionAnd::And }
@@ -477,7 +477,7 @@ parse_and_expression(XPathTokenizerBuffer &source)
 }
 
 std::unique_ptr<XPathExpression>
-parse_or_expression(XPathTokenizerBuffer &source)
+parse_or_expression(XPathParserTokenSource &source)
 {
   std::vector<BinaryRule<ExpressionOr>> rules = {
     { XPathTokenType::Or, ExpressionOr::Or }

@@ -33,7 +33,7 @@ set(
   to-stream.cpp
   xpath-token.cpp
   xpath-tokenizer.cpp
-  xpath-tokenizer-buffer.cpp
+  xpath-parser-token-source.cpp
   xpath-token-deabbreviator.cpp
   xpath-token-disambiguator.cpp
   axis-parent.cpp

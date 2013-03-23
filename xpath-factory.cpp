@@ -1,6 +1,6 @@
 #include "xpath-factory.h"
 
-#include "xpath-tokenizer-buffer.h"
+#include "xpath-parser-token-source.h"
 #include "xpath-token-deabbreviator.h"
 #include "xpath-token-disambiguator.h"
 #include "xpath-parser.h"

@@ -1,19 +1,19 @@
-#include "xpath-tokenizer-buffer.h"
+#include "xpath-parser-token-source.h"
 #include "xpath-parsing-exceptions.h"
 
-XPathTokenizerBuffer::XPathTokenizerBuffer(XPathTokenSource &tokenizer) :
+XPathParserTokenSource::XPathParserTokenSource(XPathTokenSource &tokenizer) :
   _tokenizer(tokenizer), _token_is_saved(false), _token(XPathToken(""))
 {
 }
 
 bool
-XPathTokenizerBuffer::has_more_tokens() const
+XPathParserTokenSource::has_more_tokens() const
 {
   return _token_is_saved || _tokenizer.has_more_tokens();
 }
 
 XPathToken
-XPathTokenizerBuffer::next_token()
+XPathParserTokenSource::next_token()
 {
   if (_token_is_saved) {
     _token_is_saved = false;
@@ -24,7 +24,7 @@ XPathTokenizerBuffer::next_token()
 }
 
 XPathToken
-XPathTokenizerBuffer::peek_token()
+XPathParserTokenSource::peek_token()
 {
   if (! _token_is_saved) {
     _token = _tokenizer.next_token();
@@ -35,13 +35,13 @@ XPathTokenizerBuffer::peek_token()
 }
 
 bool
-XPathTokenizerBuffer::next_token_is(XPathTokenType type)
+XPathParserTokenSource::next_token_is(XPathTokenType type)
 {
   return has_more_tokens() && peek_token().is(type);
 }
 
 XPathToken
-XPathTokenizerBuffer::consume(XPathTokenType type) {
+XPathParserTokenSource::consume(XPathTokenType type) {
   auto token = next_token();
   if (! token.is(type)) {
     throw UnexpectedTokenException();
