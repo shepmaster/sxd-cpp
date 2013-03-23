@@ -2,6 +2,7 @@
 
 #include "document.h"
 #include "xpath-core-function-library.h"
+#include "xpath-variable-bindings-hash.h"
 #include "xpath-evaluation-context-impl.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
@@ -12,28 +13,12 @@
 
 using testing::ElementsAre;
 
-struct StubTokens : public XPathTokenSource {
-  bool has_more_tokens() const { return raw_tokens.has_more_tokens(); }
-  XPathToken next_token() { return raw_tokens.next_token(); }
-  void add(std::initializer_list<XPathToken> tokens) { raw_tokens.add(tokens); }
-  void add(XPathToken token) { raw_tokens.add(token); }
-
-  bool next_token_is(XPathTokenType type) {
-    return raw_tokens.has_more_tokens() &&
-      raw_tokens.tokens[raw_tokens.index].is(type);
-  }
-
-  RawTokenProvider raw_tokens;
-};
-
-#include "xpath-variable-bindings-hash.h"
-
 class XPathParserTest : public ::testing::Test {
 protected:
   Document doc;
   Element *top_node;
 
-  StubTokens tokens;
+  RawTokenProvider tokens;
   std::unique_ptr<XPathParser> parser;
 
   XPathFunctionLibrary functions;

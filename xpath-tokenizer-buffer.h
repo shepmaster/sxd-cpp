@@ -1,10 +1,9 @@
 #ifndef XPATH_TOKENIZER_BUFFER_H
 #define XPATH_TOKENIZER_BUFFER_H
 
-#include "xpath-token-source.h"
 #include "xpath-tokenizer.h"
 
-class XPathTokenizerBuffer : public XPathTokenSource {
+class XPathTokenizerBuffer {
 public:
   XPathTokenizerBuffer(XPathRawTokenSource &tokenizer);
   bool has_more_tokens() const;

@@ -13,8 +13,7 @@ XPathFactory::compile(std::string xpath)
   XPathTokenizer base_tokenizer(xpath);
   XPathTokenDeabbreviator deabbreviator(base_tokenizer);
   XPathTokenDisambiguator disambiguator(deabbreviator);
-  XPathTokenizerBuffer tokenizer(disambiguator);
 
-  XPathParser parser(tokenizer);
+  XPathParser parser(disambiguator);
   return XPath(parser.parse());
 }

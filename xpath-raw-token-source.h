@@ -6,6 +6,10 @@
 class XPathRawTokenSource {
 public:
   virtual bool has_more_tokens() const = 0;
+
+  /**
+   * Returns and consumes the next token.
+   */
   virtual XPathToken next_token() = 0;
 };
 
