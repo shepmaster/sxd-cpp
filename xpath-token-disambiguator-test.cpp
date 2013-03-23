@@ -3,8 +3,8 @@
 #include "xpath-token-disambiguator.h"
 
 #include "gmock/gmock.h"
-#include "xpath-raw-token-source-test.h"
-#include "mock-xpath-raw-token-source.h"
+#include "xpath-token-source-test.h"
+#include "mock-xpath-token-source.h"
 #include <iostream>
 
 using testing::DefaultValue;
@@ -14,8 +14,8 @@ using testing::Values;
 
 class XPathTokenDisambiguatorTest : public ::testing::Test {
 protected:
-  RawTokenProvider raw_tokenizer;
-  MockRawTokenSource token_source;
+  TokenProvider tokenizer;
+  MockTokenSource token_source;
 
   void SetUp() {
     DefaultValue<XPathToken>::Set(XPathToken(XPathTokenType::LeftParen));
@@ -29,12 +29,12 @@ class NodeTestDisambiguatorTest : public XPathTokenDisambiguatorTest,
 TEST_P(NodeTestDisambiguatorTest, disambiguates_node_test_functions)
 {
   auto name = GetParam();
-  raw_tokenizer.add({
+  tokenizer.add({
       XPathToken(name),
       XPathTokenType::LeftParen,
   });
 
-  XPathTokenDisambiguator disambig(raw_tokenizer);
+  XPathTokenDisambiguator disambig(tokenizer);
 
   ASSERT_THAT(all_tokens(disambig),
               ElementsAre(XPathToken(XPathTokenType::NodeTest, name),
@@ -47,12 +47,12 @@ INSTANTIATE_TEST_CASE_P(NodeNames,
 
 TEST_F(XPathTokenDisambiguatorTest, name_followed_by_left_paren_becomes_function_name)
 {
-  raw_tokenizer.add({
+  tokenizer.add({
       XPathToken("test"),
       XPathTokenType::LeftParen,
   });
 
-  XPathTokenDisambiguator disambig(raw_tokenizer);
+  XPathTokenDisambiguator disambig(tokenizer);
 
   ASSERT_THAT(all_tokens(disambig),
               ElementsAre(XPathToken(XPathTokenType::Function, "test"),
@@ -61,12 +61,12 @@ TEST_F(XPathTokenDisambiguatorTest, name_followed_by_left_paren_becomes_function
 
 TEST_F(XPathTokenDisambiguatorTest, name_followed_by_double_colon_becomes_axis_name)
 {
-  raw_tokenizer.add({
+  tokenizer.add({
       XPathToken("test"),
       XPathTokenType::DoubleColon,
   });
 
-  XPathTokenDisambiguator disambig(raw_tokenizer);
+  XPathTokenDisambiguator disambig(tokenizer);
 
   ASSERT_THAT(all_tokens(disambig),
               ElementsAre(XPathToken(XPathTokenType::Axis, "test"),

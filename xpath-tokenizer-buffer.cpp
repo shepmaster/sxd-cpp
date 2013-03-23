@@ -1,7 +1,7 @@
 #include "xpath-tokenizer-buffer.h"
 #include "xpath-parsing-exceptions.h"
 
-XPathTokenizerBuffer::XPathTokenizerBuffer(XPathRawTokenSource &tokenizer) :
+XPathTokenizerBuffer::XPathTokenizerBuffer(XPathTokenSource &tokenizer) :
   _tokenizer(tokenizer), _token_is_saved(false), _token(XPathToken(""))
 {
 }

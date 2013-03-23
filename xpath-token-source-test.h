@@ -1,11 +1,11 @@
-#ifndef XPATH_RAW_TOKEN_SOURCE_TEST_H
-#define XPATH_RAW_TOKEN_SOURCE_TEST_H
+#ifndef XPATH_TOKEN_SOURCE_TEST_H
+#define XPATH_TOKEN_SOURCE_TEST_H
 
-#include "xpath-raw-token-source.h"
+#include "xpath-token-source.h"
 #include "xpath-parsing-exceptions.h"
 
 std::vector<XPathToken>
-all_tokens(XPathRawTokenSource &tokenizer)
+all_tokens(XPathTokenSource &tokenizer)
 {
   std::vector<XPathToken> result;
   while (tokenizer.has_more_tokens()) {
@@ -14,7 +14,7 @@ all_tokens(XPathRawTokenSource &tokenizer)
   return result;
 }
 
-struct RawTokenProvider : public XPathRawTokenSource {
+struct TokenProvider : public XPathTokenSource {
   bool has_more_tokens() const {
     return index < tokens.size();
   }

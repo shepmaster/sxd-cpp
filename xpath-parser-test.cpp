@@ -8,7 +8,7 @@
 #include "xpath-parsing-exceptions.h"
 
 #include "gmock/gmock.h"
-#include "xpath-raw-token-source-test.h"
+#include "xpath-token-source-test.h"
 #include <iostream>
 
 using testing::ElementsAre;
@@ -18,7 +18,7 @@ protected:
   Document doc;
   Element *top_node;
 
-  RawTokenProvider tokens;
+  TokenProvider tokens;
   std::unique_ptr<XPathParser> parser;
 
   XPathFunctionLibrary functions;

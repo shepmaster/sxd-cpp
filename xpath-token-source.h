@@ -1,9 +1,9 @@
-#ifndef XPATH_RAW_TOKEN_SOURCE_H
-#define XPATH_RAW_TOKEN_SOURCE_H
+#ifndef XPATH_TOKEN_SOURCE_H
+#define XPATH_TOKEN_SOURCE_H
 
 #include "xpath-token.h"
 
-class XPathRawTokenSource {
+class XPathTokenSource {
 public:
   virtual bool has_more_tokens() const = 0;
 

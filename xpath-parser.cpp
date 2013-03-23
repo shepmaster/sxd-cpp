@@ -30,7 +30,7 @@
 
 using std::move;
 
-XPathParser::XPathParser(XPathRawTokenSource &source) :
+XPathParser::XPathParser(XPathTokenSource &source) :
   _source(XPathTokenizerBuffer(source))
 {
 }

@@ -2,7 +2,7 @@
 
 #include <set>
 
-XPathTokenDisambiguator::XPathTokenDisambiguator(XPathRawTokenSource &token_source) :
+XPathTokenDisambiguator::XPathTokenDisambiguator(XPathTokenSource &token_source) :
   _token_source(token_source)
 {}
 

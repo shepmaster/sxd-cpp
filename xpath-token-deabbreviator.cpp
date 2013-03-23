@@ -1,6 +1,6 @@
 #include "xpath-token-deabbreviator.h"
 
-XPathTokenDeabbreviator::XPathTokenDeabbreviator(XPathRawTokenSource &token_source) :
+XPathTokenDeabbreviator::XPathTokenDeabbreviator(XPathTokenSource &token_source) :
   _token_source(token_source)
 {}
 

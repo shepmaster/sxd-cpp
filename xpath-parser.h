@@ -1,7 +1,7 @@
 #ifndef XPATH_PARSER_H
 #define XPATH_PARSER_H
 
-#include "xpath-raw-token-source.h"
+#include "xpath-token-source.h"
 #include "xpath-expression.h"
 #include "xpath-tokenizer-buffer.h"
 
@@ -9,7 +9,7 @@
 
 class XPathParser {
 public:
-  XPathParser(XPathRawTokenSource &source);
+  XPathParser(XPathTokenSource &source);
   std::unique_ptr<XPathExpression> parse();
 
 private:

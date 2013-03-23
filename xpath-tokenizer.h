@@ -1,10 +1,10 @@
 #ifndef XPATH_TOKENIZER_H
 #define XPATH_TOKENIZER_H
 
-#include "xpath-raw-token-source.h"
+#include "xpath-token-source.h"
 #include <iostream>
 
-class XPathTokenizer : public XPathRawTokenSource {
+class XPathTokenizer : public XPathTokenSource {
 public:
   XPathTokenizer(std::string xpath);
   bool has_more_tokens() const;
