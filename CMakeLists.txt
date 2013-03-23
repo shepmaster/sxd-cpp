@@ -53,6 +53,7 @@ set(
   expression-step.cpp
   expression-predicate.cpp
   expression-path.cpp
+  expression-context-node.cpp
   expression-root-node.cpp
   expression-math.cpp
   expression-negation.cpp

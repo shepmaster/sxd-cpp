@@ -6,11 +6,13 @@
 class ExpressionPath : public XPathExpression
 {
 public:
-  ExpressionPath(std::vector<std::unique_ptr<XPathExpression>> steps);
+  ExpressionPath(std::unique_ptr<XPathExpression> start_point,
+                 std::vector<std::unique_ptr<XPathExpression>> steps);
 
   XPathValue evaluate(const XPathEvaluationContext &context) const;
 
 private:
+  std::unique_ptr<XPathExpression> _start_point;
   std::vector<std::unique_ptr<XPathExpression>> _steps;
 };
 

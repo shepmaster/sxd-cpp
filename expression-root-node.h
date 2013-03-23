@@ -6,12 +6,9 @@
 class ExpressionRootNode : public XPathExpression
 {
 public:
-  ExpressionRootNode(std::unique_ptr<XPathExpression> subexpression);
+  ExpressionRootNode();
 
   XPathValue evaluate(const XPathEvaluationContext &context) const;
-
-private:
-  std::unique_ptr<XPathExpression> _subexpression;
 };
 
 #endif

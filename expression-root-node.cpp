@@ -2,22 +2,14 @@
 
 #include "document.h"
 
-ExpressionRootNode::ExpressionRootNode(std::unique_ptr<XPathExpression> subexpression) :
-  _subexpression(move(subexpression))
+ExpressionRootNode::ExpressionRootNode()
 {}
 
 XPathValue
 ExpressionRootNode::evaluate(const XPathEvaluationContext &context) const
 {
+  Nodeset result;
   auto root_node = context.node()->document()->root();
-
-  if (! _subexpression) {
-    Nodeset nodeset;
-    nodeset.add(root_node);
-    return nodeset;
-  }
-
-  auto sub_context = context.new_context_for(1);
-  sub_context->next(root_node);
-  return _subexpression->evaluate(*sub_context);
+  result.add(root_node);
+  return result;
 }

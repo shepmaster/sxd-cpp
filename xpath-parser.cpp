@@ -15,6 +15,7 @@
 #include "expression-function.h"
 #include "expression-step.h"
 #include "expression-predicate.h"
+#include "expression-context-node.h"
 #include "expression-root-node.h"
 #include "expression-path.h"
 #include "expression-math.h"
@@ -293,7 +294,8 @@ parse_predicates(XPathTokenSource &source,
 }
 
 std::unique_ptr<XPathExpression>
-parse_relative_location_path(XPathTokenSource &source)
+parse_relative_location_path_raw(XPathTokenSource &source,
+                                 std::unique_ptr<XPathExpression> start_point)
 {
   std::vector<std::unique_ptr<XPathExpression>> steps;
 
@@ -314,10 +316,17 @@ parse_relative_location_path(XPathTokenSource &source)
       steps.push_back(move(next));
     }
 
-    return make_unique<ExpressionPath>(move(steps));
+    return make_unique<ExpressionPath>(move(start_point), move(steps));
   }
 
   return nullptr;
+}
+
+std::unique_ptr<XPathExpression>
+parse_relative_location_path(XPathTokenSource &source)
+{
+  auto start_point = make_unique<ExpressionContextNode>();
+  return parse_relative_location_path_raw(source, move(start_point));
 }
 
 std::unique_ptr<XPathExpression>
@@ -326,8 +335,11 @@ parse_absolute_location_path(XPathTokenSource &source)
   if (source.next_token_is(XPathTokenType::Slash)) {
     consume(source, XPathTokenType::Slash);
 
-    auto expr = parse_relative_location_path(source);
-    return make_unique<ExpressionRootNode>(move(expr));
+    auto start_point = make_unique<ExpressionRootNode>();
+    auto expr = parse_relative_location_path_raw(source, move(start_point));
+    if (expr) return expr;
+
+    return make_unique<ExpressionRootNode>();
   }
 
   return nullptr;
