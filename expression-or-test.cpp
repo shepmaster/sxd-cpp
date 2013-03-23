@@ -13,6 +13,7 @@ using testing::DefaultValue;
 using testing::NiceMock;
 using testing::Ref;
 using testing::Return;
+using testing::ValuesIn;
 using testing::_;
 
 class ExpressionOrTest : public ::testing::Test {
@@ -76,12 +77,16 @@ TEST_P(ExpressionOrLogicTest, has_or_truth_table)
   auto params = GetParam();
 
   EXPECT_CALL(*left,  evaluate(_)).WillRepeatedly(Return(params.left));
-  EXPECT_CALL(*left,  evaluate(_)).WillRepeatedly(Return(params.right));
+  EXPECT_CALL(*right,  evaluate(_)).WillRepeatedly(Return(params.right));
 
   auto result = expression.evaluate(context);
 
   ASSERT_EQ(params.left || params.right, result.boolean());
 }
+
+INSTANTIATE_TEST_CASE_P(TruthTable,
+                        ExpressionOrLogicTest,
+                        ValuesIn(params));
 
 int
 main(int argc, char **argv) {
