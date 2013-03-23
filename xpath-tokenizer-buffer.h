@@ -9,6 +9,7 @@ public:
   bool has_more_tokens() const;
   XPathToken next_token();
   bool next_token_is(XPathTokenType type);
+  XPathToken consume(XPathTokenType type);
 
 private:
   XPathToken peek_token();

@@ -1,4 +1,5 @@
 #include "xpath-tokenizer-buffer.h"
+#include "xpath-parsing-exceptions.h"
 
 XPathTokenizerBuffer::XPathTokenizerBuffer(XPathRawTokenSource &tokenizer) :
   _tokenizer(tokenizer), _token_is_saved(false), _token(XPathToken(""))
@@ -37,4 +38,13 @@ bool
 XPathTokenizerBuffer::next_token_is(XPathTokenType type)
 {
   return has_more_tokens() && peek_token().is(type);
+}
+
+XPathToken
+XPathTokenizerBuffer::consume(XPathTokenType type) {
+  auto token = next_token();
+  if (! token.is(type)) {
+    throw UnexpectedTokenException();
+  }
+  return token;
 }

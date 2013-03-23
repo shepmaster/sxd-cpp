@@ -66,7 +66,7 @@ public:
 
       for (auto rule : rules) {
         if (source.next_token_is(rule.type)) {
-          consume(source, rule.type);
+          source.consume(rule.type);
 
           auto right = child_parse(source);
           if (! right) {
@@ -102,21 +102,12 @@ parse_children_in_order(std::vector<ParseFn> child_parses, XPathTokenizerBuffer 
   return nullptr;
 }
 
-XPathToken
-consume(XPathTokenizerBuffer &source, XPathTokenType type) {
-  auto token = source.next_token();
-  if (! token.is(type)) {
-    throw UnexpectedTokenException();
-  }
-  return token;
-}
-
 std::unique_ptr<XPathAxis>
 parse_axis(XPathTokenizerBuffer &source) {
   if (source.next_token_is(XPathTokenType::Axis)) {
     auto token = source.next_token();
     auto name = token.string();
-    consume(source, XPathTokenType::DoubleColon);
+    source.consume(XPathTokenType::DoubleColon);
 
     if (name == "self") {
       return make_unique<AxisSelf>();
@@ -142,8 +133,8 @@ parse_node_test(XPathTokenizerBuffer &source) {
     auto token = source.next_token();
     auto name = token.string();
 
-    consume(source, XPathTokenType::LeftParen);
-    consume(source, XPathTokenType::RightParen);
+    source.consume(XPathTokenType::LeftParen);
+    source.consume(XPathTokenType::RightParen);
 
     if (name == "node") {
       return make_unique<NodeTestNode>();
@@ -177,8 +168,8 @@ std::unique_ptr<XPathExpression>
 parse_variable_reference(XPathTokenizerBuffer &source)
 {
   if (source.next_token_is(XPathTokenType::DollarSign)) {
-    consume(source, XPathTokenType::DollarSign);
-    auto token = consume(source, XPathTokenType::String);
+    source.consume(XPathTokenType::DollarSign);
+    auto token = source.consume(XPathTokenType::String);
 
     return make_unique<ExpressionVariable>(token.string());
   }
@@ -218,14 +209,14 @@ parse_function_call(XPathTokenizerBuffer &source)
 
     std::vector<std::shared_ptr<XPathExpression>> arguments;
 
-    consume(source, XPathTokenType::LeftParen);
+    source.consume(XPathTokenType::LeftParen);
     while (! source.next_token_is(XPathTokenType::RightParen)) {
       // TODO: this should be the top-level expression
       auto arg = parse_primary_expression(source);
       if (! arg) break;
       arguments.push_back(move(arg));
     }
-    consume(source, XPathTokenType::RightParen);
+    source.consume(XPathTokenType::RightParen);
 
     return make_unique<ExpressionFunction>(token.string(), std::move(arguments));
   }
@@ -249,7 +240,7 @@ std::unique_ptr<XPathExpression>
 parse_predicate_expression(XPathTokenizerBuffer &source)
 {
   if (source.next_token_is(XPathTokenType::LeftBracket)) {
-    consume(source, XPathTokenType::LeftBracket);
+    source.consume(XPathTokenType::LeftBracket);
 
     // TODO: This should be the top-level expression
     auto predicate = parse_primary_expression(source);
@@ -257,7 +248,7 @@ parse_predicate_expression(XPathTokenizerBuffer &source)
       throw EmptyPredicateException();
     }
 
-    consume(source, XPathTokenType::RightBracket);
+    source.consume(XPathTokenType::RightBracket);
 
     return predicate;
   }
@@ -305,7 +296,7 @@ parse_relative_location_path_raw(XPathTokenizerBuffer &source,
     steps.push_back(move(step));
 
     while (source.next_token_is(XPathTokenType::Slash)) {
-      consume(source, XPathTokenType::Slash);
+      source.consume(XPathTokenType::Slash);
 
       auto next = parse_step(source);
       if (! next) {
@@ -333,7 +324,7 @@ std::unique_ptr<XPathExpression>
 parse_absolute_location_path(XPathTokenizerBuffer &source)
 {
   if (source.next_token_is(XPathTokenType::Slash)) {
-    consume(source, XPathTokenType::Slash);
+    source.consume(XPathTokenType::Slash);
 
     auto start_point = make_unique<ExpressionRootNode>();
     auto expr = parse_relative_location_path_raw(source, move(start_point));
@@ -376,7 +367,7 @@ parse_path_expression(XPathTokenizerBuffer &source)
   auto filter = parse_filter_expression(source);
   if (filter) {
     if (source.next_token_is(XPathTokenType::Slash)) {
-      consume(source, XPathTokenType::Slash);
+      source.consume(XPathTokenType::Slash);
 
       filter = parse_relative_location_path_raw(source, move(filter));
       if (! filter) {
@@ -410,7 +401,7 @@ parse_unary_expression(XPathTokenizerBuffer &source)
   if (expr) return expr;
 
   if (source.next_token_is(XPathTokenType::MinusSign)) {
-    consume(source, XPathTokenType::MinusSign);
+    source.consume(XPathTokenType::MinusSign);
 
     expr = parse_unary_expression(source);
     if (! expr) {
