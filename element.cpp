@@ -59,6 +59,21 @@ Element::qname() const
   return _qname;
 }
 
+void
+Element::set_namespace_prefix(const std::string prefix, const std::string namespace_uri)
+{
+  _namespace_prefixes[prefix] = namespace_uri;
+}
+
+const std::string *
+Element::find_namespace_for_prefix(const std::string prefix)
+{
+  if (_namespace_prefixes.count(prefix) > 0) {
+    return &_namespace_prefixes[prefix];
+  }
+  return nullptr;
+}
+
 std::ostream &
 Element::to_stream(std::ostream& os) const
 {

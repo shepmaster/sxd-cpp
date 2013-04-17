@@ -29,6 +29,21 @@ TEST_F(ElementTest, element_can_have_a_namespace)
   ASSERT_EQ(QName("test:namespace", "element"), qname);
 }
 
+TEST_F(ElementTest, element_might_not_have_a_namespace_prefix_mapping)
+{
+  auto element = doc.new_element("element");
+
+  ASSERT_EQ(nullptr, element->find_namespace_for_prefix("ns"));
+}
+
+TEST_F(ElementTest, element_can_have_a_namespace_prefix_mapping)
+{
+  auto element = doc.new_element("element");
+  element->set_namespace_prefix("ns", "namespace");
+
+  ASSERT_EQ("namespace", *element->find_namespace_for_prefix("ns"));
+}
+
 TEST_F(ElementTest, mutated_name)
 {
   Element *element;

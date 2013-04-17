@@ -13,6 +13,9 @@ public:
   const std::string name() const;
   const QName qname() const;
 
+  void set_namespace_prefix(const std::string prefix, const std::string namespace_uri);
+  const std::string *find_namespace_for_prefix(const std::string prefix);
+
   void output(Output &output) const;
   Attribute *set_attribute(const std::string name, const std::string value);
   const std::string get_attribute(const std::string name);
@@ -24,6 +27,7 @@ public:
 private:
   QName _qname;
   std::map<std::string, Attribute *> _attributes;
+  std::map<std::string, std::string> _namespace_prefixes;
 };
 
 #endif
