@@ -21,6 +21,14 @@ TEST_F(ElementTest, new_element)
   ASSERT_EQ(element->name(), name);
 }
 
+TEST_F(ElementTest, element_can_have_a_namespace)
+{
+  auto element = doc.new_element("test:namespace", "element");
+  auto qname = element->qname();
+
+  ASSERT_EQ(QName("test:namespace", "element"), qname);
+}
+
 TEST_F(ElementTest, mutated_name)
 {
   Element *element;

@@ -3,16 +3,15 @@
 
 #include "document.h"
 
-Element::Element(Document *doc, const std::string name) :
+Element::Element(Document *doc, const QName qname) :
   Node(doc, NODE_TYPE_ELEMENT),
-  _name(name)
-{
-}
+  _qname(qname)
+{}
 
 void
 Element::output(Output &output) const
 {
-  output.output("<%s", _name.c_str());
+  output.output("<%s", name().c_str());
   for (auto pair : _attributes) {
     auto attr = pair.second;
     attr->output(output);
@@ -20,7 +19,7 @@ Element::output(Output &output) const
   if (first_child()) {
     output.output(">");
     output_children(output);
-    output.output("</%s>", _name.c_str());
+    output.output("</%s>", name().c_str());
   } else {
     output.output(" />");
   }
@@ -51,7 +50,13 @@ Element::foreach_attribute(foreach_fn_t fn) const
 const std::string
 Element::name() const
 {
-  return this->_name;
+  return _qname.name();
+}
+
+const QName
+Element::qname() const
+{
+  return _qname;
 }
 
 std::ostream &

@@ -16,7 +16,19 @@ Document::Document()
 Element *
 Document::new_element(const std::string name)
 {
-  auto saved_element = make_unique<Element>(this, name);
+  return new_element(QName(name));
+}
+
+Element *
+Document::new_element(const std::string namespace_uri, const std::string name)
+{
+  return new_element(QName(namespace_uri, name));
+}
+
+Element *
+Document::new_element(const QName qname)
+{
+  auto saved_element = make_unique<Element>(this, qname);
   auto returned_element = saved_element.get();
   _nodes.insert(std::move(saved_element));
   return returned_element;

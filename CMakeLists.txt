@@ -18,6 +18,7 @@ add_definitions(-ansi -Wall -pedantic -Werror -std=c++11 -stdlib=libc++)
 
 set(
   sxd_source
+  qname.cpp
   document.cpp
   element.cpp
   attribute.cpp
@@ -88,6 +89,7 @@ add_library(test-utilities SHARED test-utilities.cpp remembering-node-visitor.cp
 target_link_libraries(test-utilities ${GLIB2_LIBRARIES} sxd)
 
 set(test_programs
+  qname
   element
   document
   nmtoken

@@ -3,13 +3,16 @@
 
 #include "node.h"
 #include "attribute.h"
+#include "qname.h"
 #include <map>
 
 class Element : public Node {
 public:
-  Element(Document *doc, const std::string name);
+  Element(Document *doc, const QName qname);
 
   const std::string name() const;
+  const QName qname() const;
+
   void output(Output &output) const;
   Attribute *set_attribute(const std::string name, const std::string value);
   const std::string get_attribute(const std::string name);
@@ -19,7 +22,7 @@ public:
   std::ostream& to_stream(std::ostream& os) const;
 
 private:
-  std::string _name;
+  QName _qname;
   std::map<std::string, Attribute *> _attributes;
 };
 
