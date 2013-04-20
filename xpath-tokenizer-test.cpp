@@ -58,6 +58,13 @@ TEST_F(XPathTokenizerTest, ignores_whitespace_around_tokens)
                                                  XPathToken(XPathTokenType::AtSign)));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_wildcard_name_test)
+{
+  XPathTokenizer tokenizer("*");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken("*")));
+}
+
 TEST_F(XPathTokenizerTest, tokenizes_axis_separator)
 {
   XPathTokenizer tokenizer("::");

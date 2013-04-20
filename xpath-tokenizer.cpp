@@ -21,23 +21,37 @@ XPathTokenizer::has_more_tokens() const
   return false;
 }
 
-size_t while_valid_string(std::string xpath, size_t offset)
+static bool
+valid_ncname_start_char(std::string xpath, size_t offset)
 {
-  for (; offset < xpath.size(); offset++) {
-    auto c = xpath[offset];
+  char c = xpath[offset];
+  if (c >= 'A' && c <= 'Z') return true;
+  if (c == '_') return true;
+  if (c >= 'a' && c <= 'z') return true;
+  // TODO: All non-ASCII codepoints
+  return false;
+}
 
-    // Would be better to test for only valid string chars
-    if ('/' == c || ':' == c ||
-        '(' == c || ')' == c ||
-        '[' == c || ']' == c ||
-        '@' == c || '\'' == c ||
-        '"' == c || '+' == c ||
-        '-' == c || '=' == c ||
-        '!' == c || '<' == c ||
-        '>' == c || '$' == c ||
-        '|' == c)
-    {
-      break;
+static bool
+valid_ncname_follow_char(std::string xpath, size_t offset)
+{
+  char c = xpath[offset];
+  if (valid_ncname_start_char(xpath, offset)) return true;
+  if (c == '-') return true;
+  if (c == '.') return true;
+  if (c >= '0' && c <= '9') return true;
+  // TODO: All non-ASCII codepoints
+  return false;
+}
+
+static size_t
+while_valid_string(std::string xpath, size_t offset)
+{
+  if (valid_ncname_start_char(xpath, offset)) {
+    offset++;
+
+    while (offset < xpath.size() && valid_ncname_follow_char(xpath, offset)) {
+      offset++;
     }
   }
 
@@ -191,6 +205,11 @@ XPathTokenizer::raw_next_token()
           return XPathToken(named_op.type);
         }
       }
+    }
+
+    if (_xpath[offset] == '*') {
+      _start = offset + 1;
+      return XPathToken("*");
     }
 
     offset = while_valid_string(_xpath, offset);
