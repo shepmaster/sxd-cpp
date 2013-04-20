@@ -80,6 +80,13 @@ struct UnableToCreateTokenException : virtual std::runtime_error
   {};
 };
 
+struct MissingLocalNameException : virtual std::runtime_error
+{
+  MissingLocalNameException() :
+    std::runtime_error("A namespace prefix must be followed by a local name")
+  {};
+};
+
 struct MismatchedQuoteCharacterException : virtual std::runtime_error
 {
   MismatchedQuoteCharacterException(char actual) :

@@ -32,6 +32,7 @@ set(
   xpath-factory.cpp
   xpath.cpp
   to-stream.cpp
+  prefixed-name.cpp
   xpath-token.cpp
   xpath-tokenizer.cpp
   xpath-parser-token-source.cpp

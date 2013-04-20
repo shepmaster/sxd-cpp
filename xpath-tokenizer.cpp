@@ -213,9 +213,26 @@ XPathTokenizer::raw_next_token()
     }
 
     offset = while_valid_string(_xpath, offset);
+    if (_xpath[offset] == ':' && _xpath[offset + 1] != ':') {
+      auto prefix = _xpath.substr(current_start, offset - current_start);
 
-    _start = offset;
-    return XPathToken(_xpath.substr(current_start, offset - current_start));
+      offset++;
+
+      current_start = offset;
+      offset = while_valid_string(_xpath, offset);
+
+      if (current_start == offset) {
+        throw MissingLocalNameException();
+      }
+
+      auto name = _xpath.substr(current_start, offset - current_start);
+
+      _start = offset;
+      return XPathToken(PrefixedName(prefix, name));
+    } else {
+      _start = offset;
+      return XPathToken(_xpath.substr(current_start, offset - current_start));
+    }
   }
 }
 

@@ -1,28 +1,33 @@
 #include "xpath-token.h"
 
 XPathToken::XPathToken(std::string string) :
-  _type(XPathTokenType::String), _string(string)
+  _type(XPathTokenType::String), _prefixed_name(PrefixedName("", string))
+{
+}
+
+XPathToken::XPathToken(PrefixedName prefixed_name) :
+  _type(XPathTokenType::String), _prefixed_name(prefixed_name)
 {
 }
 
 XPathToken::XPathToken(double number) :
-  _type(XPathTokenType::Number), _number(number)
+  _type(XPathTokenType::Number), _prefixed_name(PrefixedName("", "")), _number(number)
 {
 }
 
 XPathToken::XPathToken(XPathTokenType type) :
-  _type(type)
+  _type(type), _prefixed_name(PrefixedName("", ""))
 {
 }
 
 XPathToken::XPathToken(XPathTokenType type, std::string string) :
-  _type(type), _string(string)
+  _type(type), _prefixed_name(PrefixedName("", string))
 {}
 
 std::string
 XPathToken::string() const
 {
-  return _string;
+  return _prefixed_name.name();
 }
 
 double
@@ -99,6 +104,7 @@ XPathToken::operator==(const XPathToken &other) const
   case XPathTokenType::NodeTest:
   case XPathTokenType::Function:
   case XPathTokenType::Axis:
+    return _prefixed_name == other._prefixed_name;
   case XPathTokenType::Literal:
     return _string == other._string;
   case XPathTokenType::Number:

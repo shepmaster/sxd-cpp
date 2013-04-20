@@ -49,6 +49,13 @@ TEST_F(XPathTokenizerTest, tokenizes_great_grandchild_selector)
                                                  XPathToken("world")));
 }
 
+TEST_F(XPathTokenizerTest, tokenizes_qualified_names)
+{
+  XPathTokenizer tokenizer("ns:foo");
+
+  ASSERT_THAT(all_tokens(tokenizer), ElementsAre(XPathToken(PrefixedName("ns", "foo"))));
+}
+
 TEST_F(XPathTokenizerTest, ignores_whitespace_around_tokens)
 {
   XPathTokenizer tokenizer(" @\t@\n@\r");
@@ -315,6 +322,13 @@ TEST_F(XPathTokenizerTest, exception_thrown_when_nothing_was_tokenized)
   XPathTokenizer tokenizer("!");
 
   ASSERT_THROW(tokenizer.next_token(), UnableToCreateTokenException);
+}
+
+TEST_F(XPathTokenizerTest, exception_thrown_when_name_test_has_no_local_name)
+{
+  XPathTokenizer tokenizer("ns:");
+
+  ASSERT_THROW(tokenizer.next_token(), MissingLocalNameException);
 }
 
 TEST_F(XPathTokenizerTest, exception_thrown_when_quote_characters_mismatched)

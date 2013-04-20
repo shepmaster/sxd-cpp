@@ -1,6 +1,8 @@
 #ifndef XPATH_TOKEN_H
 #define XPATH_TOKEN_H
 
+#include "prefixed-name.h"
+
 #include <iostream>
 #include <string>
 
@@ -41,6 +43,7 @@ enum class XPathTokenType {
 class XPathToken {
 public:
   XPathToken(std::string string);
+  XPathToken(PrefixedName prefixed_name);
   XPathToken(double number);
   XPathToken(XPathTokenType type);
   XPathToken(XPathTokenType type, std::string string);
@@ -57,6 +60,7 @@ public:
 
 private:
   XPathTokenType _type;
+  PrefixedName _prefixed_name;
   std::string _string;
   double _number;
 
