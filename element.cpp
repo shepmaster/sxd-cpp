@@ -66,10 +66,10 @@ Element::set_namespace_prefix(const std::string prefix, const std::string namesp
 }
 
 const std::string *
-Element::find_namespace_for_prefix(const std::string prefix)
+Element::find_namespace_for_prefix(const std::string prefix) const
 {
   if (_namespace_prefixes.count(prefix) > 0) {
-    return &_namespace_prefixes[prefix];
+    return &_namespace_prefixes.at(prefix);
   }
   return nullptr;
 }
