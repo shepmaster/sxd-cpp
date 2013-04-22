@@ -4,9 +4,10 @@
 #include "node.h"
 #include "attribute.h"
 #include "qname.h"
+#include "namespace-resolver.h"
 #include <map>
 
-class Element : public Node {
+class Element : public Node, NamespaceResolver {
 public:
   Element(Document *doc, const QName qname);
 
