@@ -49,6 +49,7 @@ public:
   XPathToken(XPathTokenType type, std::string string);
 
   std::string string() const;
+  PrefixedName prefixed_name() const;
   double number() const;
   bool is(XPathTokenType type) const;
 

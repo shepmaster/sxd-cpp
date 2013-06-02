@@ -1,7 +1,7 @@
 #include "xpath-token.h"
 
 XPathToken::XPathToken(std::string string) :
-  _type(XPathTokenType::String), _prefixed_name(PrefixedName("", string))
+  _type(XPathTokenType::String), _prefixed_name(PrefixedName(string))
 {
 }
 
@@ -21,13 +21,19 @@ XPathToken::XPathToken(XPathTokenType type) :
 }
 
 XPathToken::XPathToken(XPathTokenType type, std::string string) :
-  _type(type), _prefixed_name(PrefixedName("", string))
+  _type(type), _prefixed_name(PrefixedName(string))
 {}
 
 std::string
 XPathToken::string() const
 {
   return _prefixed_name.name();
+}
+
+PrefixedName
+XPathToken::prefixed_name() const
+{
+  return _prefixed_name;
 }
 
 double
