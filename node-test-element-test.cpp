@@ -35,6 +35,17 @@ TEST_F(NodeTestElementTest, does_not_select_other_names)
   ASSERT_THAT(result, ElementsAre());
 }
 
+TEST_F(NodeTestElementTest, does_not_select_when_the_element_does_not_have_a_namespace)
+{
+  auto element = doc.new_element("hello");
+  PrefixedName desired_name("ns", "hello");
+  auto test = NodeTestElement(desired_name);
+
+  test.test(element, result);
+
+  ASSERT_THAT(result, ElementsAre());
+}
+
 TEST_F(NodeTestElementTest, supports_a_wildcard_match)
 {
   auto element = doc.new_element("hello");

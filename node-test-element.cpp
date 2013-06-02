@@ -9,6 +9,11 @@ NodeTestElement::NodeTestElement(PrefixedName name) :
 void NodeTestElement::test(Node *node, Nodeset &result) const {
   if (node->type() == NODE_TYPE_ELEMENT) {
     Element *e = dynamic_cast<Element *>(node);
+
+    if (_name.has_prefix() != e->qname().has_namespace()) {
+      return;
+    }
+
     if (_name.name() == "*" || _name.name() == e->name()) {
       result.add(e);
     }
