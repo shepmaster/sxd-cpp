@@ -19,7 +19,8 @@ public:
   Element *new_element(const std::string name);
   Element *new_element(const std::string namespace_uri, const std::string name);
   Element *new_element(const QName qname);
-  Attribute *new_attribute(const std::string name, const std::string value);
+  Attribute *new_attribute(const Element &element,
+                           const std::string name, const std::string value);
   TextNode *new_text_node(const std::string text);
   Comment *new_comment(const std::string text);
 

@@ -35,9 +35,9 @@ Document::new_element(const QName qname)
 }
 
 Attribute *
-Document::new_attribute(const std::string name, const std::string value)
+Document::new_attribute(const Element &element, const std::string name, const std::string value)
 {
-  auto saved_attribute = make_unique<Attribute>(this, name, value);
+  auto saved_attribute = make_unique<Attribute>(this, element, name, value);
   auto returned_attribute = saved_attribute.get();
   _nodes.insert(std::move(saved_attribute));
   return returned_attribute;

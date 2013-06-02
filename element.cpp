@@ -28,7 +28,7 @@ Element::output(Output &output) const
 Attribute *
 Element::set_attribute(const std::string name, const std::string value)
 {
-  auto attr = document()->new_attribute(name, value);
+  auto attr = document()->new_attribute(*this, name, value);
   _attributes[name] = attr;
   return attr;
 }

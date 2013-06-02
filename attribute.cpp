@@ -1,8 +1,12 @@
 #include "attribute.h"
+#include "element.h"
 
-Attribute::Attribute(Document *doc, const std::string name, const std::string value) :
+Attribute::Attribute(Document *doc, const Element &element,
+                     const std::string name, const std::string value) :
   Node(doc, NODE_TYPE_ATTRIBUTE),
-  _name(name), _value(value)
+  _element(element),
+  _name(name),
+  _value(value)
 {
 }
 
@@ -16,6 +20,12 @@ const std::string
 Attribute::value() const
 {
   return _value;
+}
+
+const std::string *
+Attribute::find_namespace_for_prefix(const std::string prefix) const
+{
+  return _element.find_namespace_for_prefix(prefix);
 }
 
 void

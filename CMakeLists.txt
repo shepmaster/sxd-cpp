@@ -92,6 +92,7 @@ target_link_libraries(test-utilities ${GLIB2_LIBRARIES} sxd)
 set(test_programs
   qname
   element
+  attribute
   document
   nmtoken
   node
