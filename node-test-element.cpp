@@ -14,6 +14,14 @@ void NodeTestElement::test(Node *node, Nodeset &result) const {
       return;
     }
 
+    if (_name.has_prefix()) {
+      auto prefix_uri = e->find_namespace_for_prefix(_name.namespace_prefix());
+
+      if (! prefix_uri) {
+        return;
+      }
+    }
+
     if (_name.name() == "*" || _name.name() == e->name()) {
       result.add(e);
     }

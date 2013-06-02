@@ -15,6 +15,12 @@ PrefixedName::has_prefix() const
 }
 
 const std::string
+PrefixedName::namespace_prefix() const
+{
+  return _namespace_prefix;
+}
+
+const std::string
 PrefixedName::name() const
 {
   return _name;
