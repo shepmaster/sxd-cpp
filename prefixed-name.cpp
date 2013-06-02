@@ -1,5 +1,9 @@
 #include "prefixed-name.h"
 
+PrefixedName::PrefixedName(const std::string name) :
+  _name(name)
+{}
+
 PrefixedName::PrefixedName(const std::string namespace_prefix, const std::string name) :
   _name(name)
 {}

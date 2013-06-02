@@ -6,6 +6,7 @@
 class PrefixedName
 {
 public:
+  PrefixedName(const std::string name);
   PrefixedName(const std::string namespace_prefix, const std::string name);
 
   const std::string name() const;
