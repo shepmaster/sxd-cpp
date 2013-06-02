@@ -57,6 +57,18 @@ TEST_F(NodeTestElementTest, does_not_select_when_the_prefix_does_not_exist)
   ASSERT_THAT(result, ElementsAre());
 }
 
+TEST_F(NodeTestElementTest, does_not_select_when_the_prefix_does_not_match_the_namespace)
+{
+  auto element = doc.new_element("namespace-uri", "hello");
+  element->set_namespace_prefix("ns", "another-uri");
+  PrefixedName desired_name("ns", "hello");
+  auto test = NodeTestElement(desired_name);
+
+  test.test(element, result);
+
+  ASSERT_THAT(result, ElementsAre());
+}
+
 TEST_F(NodeTestElementTest, supports_a_wildcard_match)
 {
   auto element = doc.new_element("hello");

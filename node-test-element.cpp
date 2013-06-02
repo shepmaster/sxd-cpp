@@ -20,6 +20,10 @@ void NodeTestElement::test(Node *node, Nodeset &result) const {
       if (! prefix_uri) {
         return;
       }
+
+      if (*prefix_uri != e->qname().namespace_uri()) {
+        return;
+      }
     }
 
     if (_name.name() == "*" || _name.name() == e->name()) {

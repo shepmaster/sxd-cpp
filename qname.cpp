@@ -17,6 +17,12 @@ QName::has_namespace() const
 }
 
 const std::string
+QName::namespace_uri() const
+{
+  return _name.prefix();
+}
+
+const std::string
 QName::name() const
 {
   return _name.name();
