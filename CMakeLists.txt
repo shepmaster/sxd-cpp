@@ -105,6 +105,7 @@ set(test_programs
   xpath-token-disambiguator
   xpath-parser
   node-test-attribute
+  node-test-element
   xpath-value
   xpath-value-boolean
   xpath-value-nodeset
