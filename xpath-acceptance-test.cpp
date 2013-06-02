@@ -329,6 +329,20 @@ TEST_F(XPathAcceptanceTest, namespaced_nodes)
   ASSERT_THAT(selected_nodes, ElementsAre(namespaced_node));
 }
 
+TEST_F(XPathAcceptanceTest, selecting_the_wrong_namespace_returns_nothing)
+{
+  Element *parent = doc.new_element("parent");
+  Element *namespaced_node = doc.new_element("namespace", "child");
+  namespaced_node->set_namespace_prefix("ns1", "namespace");
+  namespaced_node->set_namespace_prefix("ns2", "another-namespace");
+  parent->append_child(namespaced_node);
+
+  XPath xpath = compile("ns2:child");
+  Nodeset selected_nodes = parent->select_nodes(xpath);
+
+  ASSERT_THAT(selected_nodes, ElementsAre());
+}
+
 TEST_F(XPathAcceptanceTest, location_paths_apply_to_variables)
 {
   Element *parent = doc.new_element("parent");
