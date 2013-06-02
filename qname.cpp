@@ -13,6 +13,12 @@ QName::QName(const std::string namespace_uri, const std::string name) :
   _name(name)
 {}
 
+const bool
+QName::has_namespace() const
+{
+  return _has_namespace;
+}
+
 const std::string
 QName::name() const
 {

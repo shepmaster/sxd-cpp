@@ -5,8 +5,14 @@ PrefixedName::PrefixedName(const std::string name) :
 {}
 
 PrefixedName::PrefixedName(const std::string namespace_prefix, const std::string name) :
-  _name(name)
+  _has_prefix(true), _name(name)
 {}
+
+const bool
+PrefixedName::has_prefix() const
+{
+  return _has_prefix;
+}
 
 const std::string
 PrefixedName::name() const

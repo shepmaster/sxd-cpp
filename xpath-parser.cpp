@@ -157,7 +157,7 @@ default_node_test(XPathParserTokenSource &source, std::unique_ptr<XPathAxis> &ax
     case PrincipalNodeType::Attribute:
       return make_unique<NodeTestAttribute>(token.string());
     case PrincipalNodeType::Element:
-      PrefixedName name("" ,token.string());
+      PrefixedName name(token.string());
       return make_unique<NodeTestElement>(name);
     }
   }

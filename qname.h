@@ -9,6 +9,7 @@ public:
   QName(const std::string name);
   QName(const std::string namespace_uri, const std::string name);
 
+  const bool has_namespace() const;
   const std::string name() const;
 
   bool operator==(const QName &other) const;
