@@ -1,6 +1,7 @@
 #ifndef QNAME_H
 #define QNAME_H
 
+#include "prefixed-name.h"
 #include <string>
 
 class QName
@@ -16,9 +17,7 @@ public:
   bool operator!=(const QName &other) const;
 
 private:
-  bool _has_namespace;
-  std::string _namespace_uri;
-  std::string _name;
+  PrefixedName _name;
 
   friend std::ostream &operator<<(std::ostream &os, const QName &obj);
 };
