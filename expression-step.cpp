@@ -11,7 +11,7 @@ XPathValue
 ExpressionStep::evaluate(const XPathEvaluationContext &context) const
 {
   Nodeset result;
-  _axis->select_nodes(context.node(), *_node_test, result);
+  _axis->select_nodes(context, *_node_test, result);
   return result;
 }
 

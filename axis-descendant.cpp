@@ -1,13 +1,18 @@
 #include "axis-descendant.h"
 
 void
-AxisDescendant::select_nodes(Node *current_node, XPathNodeTest const & node_test, Nodeset &result)
+AxisDescendant::select_nodes(XPathEvaluationContext const & context,
+                             XPathNodeTest const & node_test,
+                             Nodeset &result)
 {
   auto child_selector = [&](Node *child){
+    auto child_context = context.new_context_for(1);
+    child_context->next(child);
+
     node_test.test(child, result);
-    this->select_nodes(child, node_test, result);
+    this->select_nodes(*child_context, node_test, result);
   };
-  current_node->foreach_child(child_selector);
+  context.node()->foreach_child(child_selector);
 }
 
 std::ostream &

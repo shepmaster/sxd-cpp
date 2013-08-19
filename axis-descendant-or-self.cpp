@@ -2,11 +2,13 @@
 #include "axis-descendant.h"
 
 void
-AxisDescendantOrSelf::select_nodes(Node *current_node, XPathNodeTest const & node_test, Nodeset &result)
+AxisDescendantOrSelf::select_nodes(XPathEvaluationContext const & context,
+                                   XPathNodeTest const & node_test,
+                                   Nodeset &result)
 {
-  node_test.test(current_node, result);
+  node_test.test(context.node(), result);
   AxisDescendant descendant;
-  descendant.select_nodes(current_node, node_test, result);
+  descendant.select_nodes(context, node_test, result);
 }
 
 std::ostream &

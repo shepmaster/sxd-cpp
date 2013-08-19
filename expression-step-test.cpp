@@ -15,6 +15,7 @@ using std::make_shared;
 using testing::DefaultValue;
 using testing::NiceMock;
 using testing::Return;
+using testing::Ref;
 using testing::_;
 
 class ExpressionStepTest : public ::testing::Test {
@@ -35,9 +36,9 @@ protected:
   }
 };
 
-TEST_F(ExpressionStepTest, axis_is_passed_the_node)
+TEST_F(ExpressionStepTest, axis_is_passed_the_context)
 {
-  EXPECT_CALL(*axis, select_nodes(top_element, _, _));
+  EXPECT_CALL(*axis, select_nodes(Ref(context), _, _));
 
   ExpressionStep step(axis, node_test);
 

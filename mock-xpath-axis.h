@@ -5,7 +5,9 @@
 
 class MockAxis : public XPathAxis {
 public:
-  MOCK_METHOD3(select_nodes, void(Node *node, XPathNodeTest const &test, Nodeset &result));
+  MOCK_METHOD3(select_nodes, void(XPathEvaluationContext const &context,
+                                  XPathNodeTest const &test,
+                                  Nodeset &result));
 };
 
 #endif

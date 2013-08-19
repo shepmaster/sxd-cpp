@@ -2,9 +2,11 @@
 #include "element.h"
 
 void
-AxisAttribute::select_nodes(Node *current_node, XPathNodeTest const &node_test, Nodeset &result) {
-  if (current_node->type() == NODE_TYPE_ELEMENT) {
-    Element *element = dynamic_cast<Element *>(current_node);
+AxisAttribute::select_nodes(XPathEvaluationContext const &context,
+                            XPathNodeTest const &node_test,
+                            Nodeset &result) {
+  if (context.node()->type() == NODE_TYPE_ELEMENT) {
+    Element *element = dynamic_cast<Element *>(context.node());
 
     auto child_selector = [&](Node *attr) {
       node_test.test(attr, result);

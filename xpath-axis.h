@@ -2,7 +2,7 @@
 #define XPATH_AXIS_H
 
 #include "to-stream.h"
-#include "node.h"
+#include "xpath-evaluation-context.h"
 #include "xpath-node-test.h"
 #include "nodeset.h"
 
@@ -21,7 +21,9 @@ public:
    * adding matching nodes to the nodeset.
    */
   virtual void
-  select_nodes(Node *current_node, XPathNodeTest const & node_test, Nodeset &result) = 0;
+  select_nodes(XPathEvaluationContext const & context,
+               XPathNodeTest const & node_test,
+               Nodeset &result) = 0;
 
   /**
    * Describes what node type is naturally selected by this axis.
