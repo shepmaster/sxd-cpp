@@ -4,7 +4,7 @@ void
 AxisSelf::select_nodes(XPathEvaluationContext const & context,
                        XPathNodeTest const &node_test,
                        Nodeset &result) {
-  node_test.test(context.node(), result);
+  node_test.test(context, result);
 }
 
 std::ostream &

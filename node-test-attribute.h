@@ -6,7 +6,7 @@
 class NodeTestAttribute : public XPathNodeTest {
 public:
   NodeTestAttribute(std::string name);
-  void test(Node *node, Nodeset &result) const;
+  void test(XPathEvaluationContext const &context, Nodeset &result) const;
   std::ostream &to_stream(std::ostream &) const;
 
 private:

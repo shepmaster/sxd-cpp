@@ -9,7 +9,7 @@ AxisDescendant::select_nodes(XPathEvaluationContext const & context,
     auto child_context = context.new_context_for(1);
     child_context->next(child);
 
-    node_test.test(child, result);
+    node_test.test(*child_context, result);
     this->select_nodes(*child_context, node_test, result);
   };
   context.node()->foreach_child(child_selector);

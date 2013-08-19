@@ -6,7 +6,7 @@ AxisDescendantOrSelf::select_nodes(XPathEvaluationContext const & context,
                                    XPathNodeTest const & node_test,
                                    Nodeset &result)
 {
-  node_test.test(context.node(), result);
+  node_test.test(context, result);
   AxisDescendant descendant;
   descendant.select_nodes(context, node_test, result);
 }

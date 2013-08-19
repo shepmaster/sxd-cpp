@@ -1,7 +1,7 @@
 #include "node-test-node.h"
 
-void NodeTestNode::test(Node *node, Nodeset &result) const {
-  result.add(node);
+void NodeTestNode::test(XPathEvaluationContext const &context, Nodeset &result) const {
+  result.add(context.node());
 }
 
 std::ostream &

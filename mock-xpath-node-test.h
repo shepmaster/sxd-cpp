@@ -5,7 +5,7 @@
 
 class MockNodeTest : public XPathNodeTest {
 public:
-  MOCK_CONST_METHOD2(test, void(Node *node, Nodeset &result));
+  MOCK_CONST_METHOD2(test, void(XPathEvaluationContext const &context, Nodeset &result));
 };
 
 #endif

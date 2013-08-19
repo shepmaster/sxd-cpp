@@ -6,7 +6,10 @@ AxisChild::select_nodes(XPathEvaluationContext const & context,
                         Nodeset &result)
 {
   auto child_selector = [&](Node *child){
-    node_test.test(child, result);
+    auto child_context = context.new_context_for(1);
+    child_context->next(child);
+
+    node_test.test(*child_context, result);
   };
   context.node()->foreach_child(child_selector);
 }

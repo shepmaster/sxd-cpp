@@ -6,7 +6,9 @@ NodeTestElement::NodeTestElement(PrefixedName name) :
 {
 }
 
-void NodeTestElement::test(Node *node, Nodeset &result) const {
+void NodeTestElement::test(XPathEvaluationContext const &context, Nodeset &result) const {
+  auto node = context.node();
+
   if (node->type() != NODE_TYPE_ELEMENT) return;
 
   Element *e = dynamic_cast<Element *>(node);

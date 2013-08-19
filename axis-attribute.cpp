@@ -9,7 +9,10 @@ AxisAttribute::select_nodes(XPathEvaluationContext const &context,
     Element *element = dynamic_cast<Element *>(context.node());
 
     auto child_selector = [&](Node *attr) {
-      node_test.test(attr, result);
+      auto attr_context = context.new_context_for(1);
+      attr_context->next(attr);
+
+      node_test.test(*attr_context, result);
     };
     element->foreach_attribute(child_selector);
   }

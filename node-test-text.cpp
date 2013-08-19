@@ -1,6 +1,7 @@
 #include "node-test-text.h"
 
-void NodeTestText::test(Node *node, Nodeset &result) const {
+void NodeTestText::test(XPathEvaluationContext const &context, Nodeset &result) const {
+  auto node = context.node();
   if (node->type() == NODE_TYPE_TEXT_NODE) {
     result.add(node);
   }

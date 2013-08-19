@@ -6,7 +6,9 @@ NodeTestAttribute::NodeTestAttribute(std::string name) :
 {}
 
 void
-NodeTestAttribute::test(Node *node, Nodeset &result) const {
+NodeTestAttribute::test(XPathEvaluationContext const &context, Nodeset &result) const {
+  auto node = context.node();
+
   if (node->type() == NODE_TYPE_ATTRIBUTE) {
     Attribute *attribute = dynamic_cast<Attribute *>(node);
     if (_name == "*" || attribute->name() == _name) {
