@@ -8,7 +8,8 @@ class XPathEvaluationContextImpl : public XPathEvaluationContext
 public:
   XPathEvaluationContextImpl(unsigned long size,
                              const XPathFunctionLibrary &functions,
-                             const XPathVariableBindings &variables);
+                             const XPathVariableBindings &variables,
+                             const NamespaceResolver &namespaces);
   Node *node() const;
   unsigned long position() const;
   unsigned long size() const;
@@ -24,6 +25,9 @@ public:
   XPathValue
   variable_for_name(std::string name) const;
 
+  const std::string *
+  find_namespace_for_prefix(const std::string prefix) const;
+
   std::shared_ptr<XPathEvaluationContext>
   new_context_for(unsigned long size) const;
 
@@ -33,6 +37,7 @@ private:
   unsigned long _position;
   const XPathFunctionLibrary &_functions;
   const XPathVariableBindings &_variables;
+  const NamespaceResolver &_namespaces;
 };
 
 #endif

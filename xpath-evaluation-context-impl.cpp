@@ -4,11 +4,13 @@ using std::make_shared;
 
 XPathEvaluationContextImpl::XPathEvaluationContextImpl(unsigned long size,
                                                        const XPathFunctionLibrary &functions,
-                                                       const XPathVariableBindings &variables) :
+                                                       const XPathVariableBindings &variables,
+                                                       const NamespaceResolver &namespaces) :
   _size(size),
   _position(0),
   _functions(functions),
-  _variables(variables)
+  _variables(variables),
+  _namespaces(namespaces)
 {
 }
 
@@ -61,8 +63,14 @@ XPathEvaluationContextImpl::variable_for_name(std::string name) const
   return _variables.value_for(name);
 }
 
+const std::string *
+XPathEvaluationContextImpl::find_namespace_for_prefix(const std::string prefix) const
+{
+  return _namespaces.find_namespace_for_prefix(prefix);
+}
+
 std::shared_ptr<XPathEvaluationContext>
 XPathEvaluationContextImpl::new_context_for(unsigned long size) const
 {
-  return make_shared<XPathEvaluationContextImpl>(size, _functions, _variables);
+  return make_shared<XPathEvaluationContextImpl>(size, _functions, _variables, _namespaces);
 }

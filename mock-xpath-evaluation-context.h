@@ -13,6 +13,7 @@ public:
   MOCK_CONST_METHOD1(function_for_name, std::shared_ptr<XPathFunction>(std::string name));
   MOCK_CONST_METHOD1(has_variable, bool(std::string name));
   MOCK_CONST_METHOD1(variable_for_name, XPathValue(std::string name));
+  MOCK_CONST_METHOD1(find_namespace_for_prefix, std::string *(std::string prefix));
   MOCK_CONST_METHOD1(new_context_for,
                        std::shared_ptr<XPathEvaluationContext>(unsigned long size));
 };

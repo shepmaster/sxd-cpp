@@ -16,7 +16,7 @@ void NodeTestElement::test(XPathEvaluationContext const &context, Nodeset &resul
   if (_name.has_prefix() != e->qname().has_namespace()) return;
 
   if (_name.has_prefix()) {
-    auto prefix_uri = e->find_namespace_for_prefix(_name.prefix());
+    auto prefix_uri = context.find_namespace_for_prefix(_name.prefix());
 
     if (! prefix_uri) return;
     if (*prefix_uri != e->qname().namespace_uri()) return;

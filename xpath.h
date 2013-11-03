@@ -22,6 +22,7 @@ public:
 private:
   std::unique_ptr<XPathExpression> _expression;
   std::unique_ptr<XPathVariableBindingsHash> _variables;
+  std::unique_ptr<NamespaceResolver> _null_namespaces;
 };
 
 #endif

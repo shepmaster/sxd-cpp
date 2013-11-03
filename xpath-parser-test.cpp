@@ -4,6 +4,7 @@
 #include "xpath-core-function-library.h"
 #include "xpath-variable-bindings-hash.h"
 #include "xpath-evaluation-context-impl.h"
+#include "null-namespace-resolver.h"
 #include "make-unique.h"
 #include "xpath-parsing-exceptions.h"
 
@@ -23,6 +24,7 @@ protected:
 
   XPathFunctionLibrary functions;
   XPathVariableBindingsHash variables;
+  NullNamespaceResolver null_namespaces;
 
   void SetUp() {
     XPathCoreFunctionLibrary::register_functions(functions);
@@ -54,7 +56,7 @@ protected:
 
   XPathValue
   evaluate_on(const std::unique_ptr<XPathExpression> &expr, Node *node) {
-    XPathEvaluationContextImpl context(1, functions, variables);
+    XPathEvaluationContextImpl context(1, functions, variables, null_namespaces);
     context.next(node);
     return expr->evaluate(context);
   }

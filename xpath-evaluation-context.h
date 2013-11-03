@@ -5,11 +5,12 @@ class XPathFunction;
 
 #include "xpath-function-library.h"
 #include "xpath-variable-bindings.h"
+#include "namespace-resolver.h"
 
 /**
  * This class is not valid until you have called next() at least once.
  */
-class XPathEvaluationContext
+class XPathEvaluationContext : public NamespaceResolver
 {
 public:
   virtual ~XPathEvaluationContext() {};

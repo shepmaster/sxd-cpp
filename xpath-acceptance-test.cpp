@@ -320,7 +320,7 @@ TEST_F(XPathAcceptanceTest, namespaced_nodes)
 {
   Element *parent = doc.new_element("parent");
   Element *namespaced_node = doc.new_element("namespace", "child");
-  namespaced_node->set_namespace_prefix("ns", "namespace");
+  parent->set_namespace_prefix("ns", "namespace");
   parent->append_child(namespaced_node);
 
   XPath xpath = compile("ns:child");
